@@ -173,20 +173,37 @@ namespace OpenApi.Deserializers
                 this.logger.LogTrace("The optional Document.security property is not provided in the OpenApi document");
             }
 
-            // tags
             if (jsonElement.TryGetProperty("tags", out JsonElement tagsProperty))
             {
-                this.logger.LogWarning("TODO: the Document.tags property is not yet supported");
+                if (tagsProperty.ValueKind == JsonValueKind.Array)
+                {
+                    var tags = new List<Tag>();
+
+                    var tagDeSerializer = new TagDeSerializer(this.loggerFactory);
+
+                    foreach (var arrayItem in tagsProperty.EnumerateArray())
+                    {
+                        var tag = tagDeSerializer.DeSerialize(arrayItem);
+                        tags.Add(tag);
+                    }
+
+                    document.Tags = tags.ToArray();
+                }
+                else
+                {
+                    throw new SerializationException("the Document.tags property shall be an array");
+                }
             }
             else
             {
                 this.logger.LogTrace("The optional Document.tags property is not provided in the OpenApi document");
             }
-
-            // externalDocs
+            
             if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
             {
-                this.logger.LogWarning("TODO: the Document.externalDocs property is not yet supported");
+                var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
+
+                document.externalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty);
             }
             else
             {
