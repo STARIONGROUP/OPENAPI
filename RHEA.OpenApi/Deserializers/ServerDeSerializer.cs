@@ -20,7 +20,6 @@
 
 namespace OpenApi.Deserializers
 {
-    using System;
     using System.Runtime.Serialization;
     using System.Text.Json;
 
@@ -86,6 +85,10 @@ namespace OpenApi.Deserializers
             {
                 server.Description = descriptionProperty.GetString();
             }
+            else
+            {
+                this.logger.LogTrace("The optional Server.description property is not provided in the OpenApi document");
+            }
 
             if (jsonElement.TryGetProperty("variables", out JsonElement variablesProperty))
             {
@@ -101,6 +104,10 @@ namespace OpenApi.Deserializers
                 }
 
                 server.Description = descriptionProperty.GetString();
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Server.variables property is not provided in the OpenApi document");
             }
 
             return server;

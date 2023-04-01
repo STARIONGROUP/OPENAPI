@@ -92,8 +92,11 @@ namespace OpenApi.Deserializers
 
             if (jsonElement.TryGetProperty("jsonSchemaDialect", out JsonElement jsonSchemaDialectProperty))
             {
-                var propertyValue = jsonSchemaDialectProperty.GetString();
-                document.JsonSchemaDialect = propertyValue;
+                document.JsonSchemaDialect = jsonSchemaDialectProperty.GetString();
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Document.jsonSchemaDialect property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("servers", out JsonElement serversProperty))
@@ -117,7 +120,11 @@ namespace OpenApi.Deserializers
                     throw new SerializationException("the servers property shall be an array");
                 }
             }
-            
+            else
+            {
+                this.logger.LogTrace("The optional Document.servers property is not provided in the OpenApi document");
+            }
+
             if (jsonElement.TryGetProperty("paths", out JsonElement pathsProperty))
             {
                 var pathItemDeserializer = new PathItemDeserializer(this.loggerFactory);
@@ -131,35 +138,59 @@ namespace OpenApi.Deserializers
                     document.Paths.Add(pathItemName, pathItem);
                 }
             }
+            else
+            {
+                this.logger.LogWarning("The Document.paths property is not provided in the OpenApi document");
+            }
 
             // webhooks
             if (jsonElement.TryGetProperty("webhooks", out JsonElement webhooksProperty))
             {
-
+                this.logger.LogWarning("TODO: the Document.webhooks property is not yet supported");
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Document.webhooks property is not provided in the OpenApi document");
             }
 
             // components
             if (jsonElement.TryGetProperty("components", out JsonElement componentsProperty))
             {
-
+                this.logger.LogWarning("TODO: the Document.components property is not yet supported");
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Document.components property is not provided in the OpenApi document");
             }
 
             // security
             if (jsonElement.TryGetProperty("security", out JsonElement securityProperty))
             {
-
+                this.logger.LogWarning("TODO: the Document.security property is not yet supported");
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Document.security property is not provided in the OpenApi document");
             }
 
             // tags
             if (jsonElement.TryGetProperty("tags", out JsonElement tagsProperty))
             {
-
+                this.logger.LogWarning("TODO: the Document.tags property is not yet supported");
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Document.tags property is not provided in the OpenApi document");
             }
 
             // externalDocs
             if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
             {
-
+                this.logger.LogWarning("TODO: the Document.externalDocs property is not yet supported");
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Document.externalDocs property is not provided in the OpenApi document");
             }
 
             return document;

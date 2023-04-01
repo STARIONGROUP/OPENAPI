@@ -38,11 +38,6 @@ namespace OpenApi.Deserializers
     internal class LicenseDeSerializer
     {
         /// <summary>
-        /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
-        /// </summary>
-        private readonly ILoggerFactory loggerFactory;
-
-        /// <summary>
         /// The <see cref="ILogger"/> used to log
         /// </summary>
         private readonly ILogger<LicenseDeSerializer> logger;
@@ -55,9 +50,7 @@ namespace OpenApi.Deserializers
         /// </param>
         internal LicenseDeSerializer(ILoggerFactory loggerFactory = null)
         {
-            this.loggerFactory = loggerFactory;
-
-            this.logger = this.loggerFactory == null ? NullLogger<LicenseDeSerializer>.Instance : this.loggerFactory.CreateLogger<LicenseDeSerializer>();
+            this.logger = loggerFactory == null ? NullLogger<LicenseDeSerializer>.Instance : loggerFactory.CreateLogger<LicenseDeSerializer>();
         }
 
         /// <summary>
@@ -85,10 +78,18 @@ namespace OpenApi.Deserializers
             {
                 license.Identifier = identifierProperty.GetString();
             }
-            
+            else
+            {
+                this.logger.LogTrace("The optional License.identifier property is not provided in the OpenApi document");
+            }
+
             if (jsonElement.TryGetProperty("url", out JsonElement urlProperty))
             {
                 license.Url = urlProperty.GetString();
+            }
+            else
+            {
+                this.logger.LogTrace("The optional License.url property is not provided in the OpenApi document");
             }
 
             return license;

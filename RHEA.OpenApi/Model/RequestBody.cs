@@ -39,7 +39,7 @@ namespace OpenApi.Model
         /// REQUIRED. The content of the request body. The key is a media type or media type range and the value describes it.
         /// For requests that match multiple keys, only the most specific key is applicable. e.g. text/plain overrides text/*
         /// </summary>
-        public Dictionary<string, MediaType> Content { get; set; }
+        public Dictionary<string, MediaType> Content { get; set; } = new Dictionary<string, MediaType>();
 
         /// <summary>
         /// Determines if the request body is required in the request. Defaults to false.

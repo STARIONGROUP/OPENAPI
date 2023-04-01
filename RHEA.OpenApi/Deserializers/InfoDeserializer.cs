@@ -32,7 +32,6 @@ namespace OpenApi.Deserializers
     /// The purpose of the <see cref="InfoDeserializer"/> is to deserialize the <see cref="Info"/> object
     /// from a <see cref="JsonElement"/>
     /// </summary>
-    /// </summary>
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#info-object
     /// </remarks>
@@ -86,27 +85,47 @@ namespace OpenApi.Deserializers
             {
                 info.Summary = summaryProperty.GetString();
             }
-            
+            else
+            {
+                this.logger.LogTrace("The optional Info.summary property is not provided in the OpenApi document");
+            }
+
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
                 info.Description = descriptionProperty.GetString();
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Info.description property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("termsOfService", out JsonElement termsOfServiceProperty))
             {
                 info.TermsOfService= termsOfServiceProperty.GetString();
             }
-            
+            else
+            {
+                this.logger.LogTrace("The optional Info.termsOfService property is not provided in the OpenApi document");
+            }
+
             if (jsonElement.TryGetProperty("contact", out JsonElement contactProperty))
             {
                 var contactDeSerializer = new ContactDeSerializer(this.loggerFactory); 
                 info.Contact = contactDeSerializer.DeSerialize(contactProperty);
             }
-            
+            else
+            {
+                this.logger.LogTrace("The optional Info.contact property is not provided in the OpenApi document");
+            }
+
             if (jsonElement.TryGetProperty("license", out JsonElement licenseProperty))
             {
                 var licenseDeSerializer = new LicenseDeSerializer(this.loggerFactory);
                 info.License = licenseDeSerializer.DeSerialize(licenseProperty);
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Info.license property is not provided in the OpenApi document");
             }
 
             if (!jsonElement.TryGetProperty("version", out JsonElement versionProperty))

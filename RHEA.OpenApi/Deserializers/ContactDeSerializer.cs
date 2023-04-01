@@ -38,11 +38,6 @@ namespace OpenApi.Deserializers
     internal class ContactDeSerializer
     {
         /// <summary>
-        /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
-        /// </summary>
-        private readonly ILoggerFactory loggerFactory;
-
-        /// <summary>
         /// The <see cref="ILogger"/> used to log
         /// </summary>
         private readonly ILogger<ContactDeSerializer> logger;
@@ -55,9 +50,7 @@ namespace OpenApi.Deserializers
         /// </param>
         internal ContactDeSerializer(ILoggerFactory loggerFactory = null)
         {
-            this.loggerFactory = loggerFactory;
-
-            this.logger = this.loggerFactory == null ? NullLogger<ContactDeSerializer>.Instance : this.loggerFactory.CreateLogger<ContactDeSerializer>();
+            this.logger = loggerFactory == null ? NullLogger<ContactDeSerializer>.Instance : loggerFactory.CreateLogger<ContactDeSerializer>();
         }
 
         /// <summary>
@@ -70,23 +63,35 @@ namespace OpenApi.Deserializers
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Contact"/> object
         /// </exception>
-        public Contact DeSerialize(JsonElement jsonElement)
+        internal Contact DeSerialize(JsonElement jsonElement)
         {
             var contact = new Contact();
-            
+
             if (jsonElement.TryGetProperty("name", out JsonElement nameProperty))
             {
                 contact.Name = nameProperty.GetString();
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Contact.name property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("url", out JsonElement urlProperty))
             {
                 contact.Url = urlProperty.GetString();
             }
+            else
+            {
+                this.logger.LogTrace("The optional Contact.url property is not provided in the OpenApi document");
+            }
 
             if (jsonElement.TryGetProperty("email", out JsonElement emailProperty))
             {
                 contact.Email = emailProperty.GetString();
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Contact.email property is not provided in the OpenApi document");
             }
 
             return contact;

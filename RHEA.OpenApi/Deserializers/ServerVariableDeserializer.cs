@@ -40,11 +40,6 @@ namespace OpenApi.Deserializers
     internal class ServerVariableDeserializer
     {
         /// <summary>
-        /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
-        /// </summary>
-        private readonly ILoggerFactory loggerFactory;
-
-        /// <summary>
         /// The <see cref="ILogger"/> used to log
         /// </summary>
         private readonly ILogger<ServerVariableDeserializer> logger;
@@ -57,9 +52,7 @@ namespace OpenApi.Deserializers
         /// </param>
         internal ServerVariableDeserializer(ILoggerFactory loggerFactory = null)
         {
-            this.loggerFactory = loggerFactory;
-
-            this.logger = this.loggerFactory == null ? NullLogger<ServerVariableDeserializer>.Instance : this.loggerFactory.CreateLogger<ServerVariableDeserializer>();
+            this.logger = loggerFactory == null ? NullLogger<ServerVariableDeserializer>.Instance : loggerFactory.CreateLogger<ServerVariableDeserializer>();
         }
 
         /// <summary>
@@ -97,10 +90,18 @@ namespace OpenApi.Deserializers
 
                 serverVariable.Enum = enums.ToArray();
             }
-            
+            else
+            {
+                this.logger.LogTrace("The optional ServerVariable.enum property is not provided in the OpenApi document");
+            }
+
             if (jsonElement.TryGetProperty("default", out JsonElement defaultProperty))
             {
                 serverVariable.Default = defaultProperty.GetString();
+            }
+            else
+            {
+                this.logger.LogTrace("The optional ServerVariable.default property is not provided in the OpenApi document");
             }
 
             if (!string.IsNullOrEmpty(serverVariable.Default))
@@ -110,10 +111,14 @@ namespace OpenApi.Deserializers
                     throw new SerializationException("The ServerVariable.enum is specified and does not contain the ServerVariable.default value");
                 }
             }
-            
+
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
                 serverVariable.Description = descriptionProperty.GetString();
+            }
+            else
+            {
+                this.logger.LogTrace("The optional ServerVariable.description property is not provided in the OpenApi document");
             }
 
             return serverVariable;

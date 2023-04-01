@@ -20,6 +20,7 @@
 
 namespace OpenApi.Model
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -33,7 +34,7 @@ namespace OpenApi.Model
         /// <summary>
         /// A list of tags for API documentation control. Tags can be used for logical grouping of operations by resources or any other qualifier.
         /// </summary>
-        public string[] Tags { get; set; }
+        public string[] Tags { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// A short summary of what the operation does.
@@ -63,7 +64,13 @@ namespace OpenApi.Model
         /// A unique parameter is defined by a combination of a name and location.
         /// The list can use the Reference Object to link to parameters that are defined at the OpenAPI Object’s components/parameters.
         /// </summary>
-        public Parameter[] Parameters { get; set; }
+        public Parameter[] Parameters { get; set; } = Array.Empty<Parameter>();
+
+        /// <summary>
+        /// gets or sets an array of <see cref="Reference"/> that can be used to populate the <see cref="Parameter"/> array
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Reference[] ParameterReferences { get; set; } = Array.Empty<Reference>();
 
         /// <summary>
         /// The request body applicable for this operation. The requestBody is fully supported in HTTP methods where the HTTP 1.1 specification [RFC7231]
@@ -71,6 +78,12 @@ namespace OpenApi.Model
         /// requestBody is permitted but does not have well-defined semantics and SHOULD be avoided if possible.
         /// </summary>
         public RequestBody RequestBody { get; set; }
+
+        /// <summary>
+        /// gets or sets a <see cref="Reference"/> that can be used to populate the <see cref="RequestBody"/> property
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Reference RequestBodyReference { get; set; }
 
         /// <summary>
         /// The list of possible responses as they are returned from executing this operation.
@@ -81,7 +94,7 @@ namespace OpenApi.Model
         /// A map of possible out-of band callbacks related to the parent operation. The key is a unique identifier for the Callback Object.
         /// Each value in the map is a Callback Object that describes a request that may be initiated by the API provider and the expected responses.
         /// </summary>
-        public Dictionary<string, Callback> Callbacks { get; set; }
+        public Dictionary<string, Callback> Callbacks { get; set; } = new Dictionary<string, Callback>();
 
         /// <summary>
         /// Declares this operation to be deprecated. Consumers SHOULD refrain from usage of the declared operation. Default value is false.
@@ -100,6 +113,6 @@ namespace OpenApi.Model
         /// An alternative server array to service this operation. If an alternative server object is specified at the Path Item Object or Root level,
         /// it will be overridden by this value.
         /// </summary>
-        public Server[] Servers { get; set; }
+        public Server[] Servers { get; set; } = Array.Empty<Server>();
     }
 }

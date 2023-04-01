@@ -131,17 +131,42 @@ namespace OpenApi.Deserializers
                         }
                         else
                         {
-                            throw new SerializationException("the servers property shall be an array");
+                            throw new SerializationException("the PathItem.servers property shall be an array");
                         }
                         break;
                     case "parameters":
                         if (jsonProperty.Value.ValueKind == JsonValueKind.Array)
                         {
-                            this.logger.LogWarning("TODO: The parameters property of the PathItem is not yet supported");
+                            var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+                            var parameterReferences = new List<Reference>();
+
+                            var parameterDeSerializer = new ParameterDeSerializer(this.loggerFactory);
+                            var parameters = new List<Parameter>();
+
+                            foreach (var arrayItem in jsonProperty.Value.EnumerateArray())
+                            {
+                                foreach (var arrayItemProperty in arrayItem.EnumerateObject())
+                                {
+                                    switch (arrayItemProperty.Name)
+                                    {
+                                        case "$ref":
+                                            var reference = referenceDeSerializer.DeSerialize(arrayItem);
+                                            parameterReferences.Add(reference);
+                                            break;
+                                        case "name":
+                                            var parameter = parameterDeSerializer.DeSerialize(arrayItem);
+                                            parameters.Add(parameter);
+                                            break;
+                                    }
+                                }
+                            }
+
+                            pathItem.ParameterReferences = parameterReferences.ToArray();
+                            pathItem.Parameters = parameters.ToArray();
                         }
                         else
                         {
-                            throw new SerializationException("the parameters property shall be an array");
+                            throw new SerializationException("the PathItem.parameters property shall be an array");
                         }
                         break;
                     default:
