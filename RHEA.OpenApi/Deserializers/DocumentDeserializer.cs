@@ -20,6 +20,7 @@
 
 namespace OpenApi.Deserializers
 {
+    using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Text.Json;
 
@@ -68,9 +69,9 @@ namespace OpenApi.Deserializers
         /// </param>
         /// <returns></returns>
         /// <exception cref="SerializationException">
-        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/>
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
         /// </exception>
-        public Document DeSerialize(JsonElement jsonElement)
+        internal Document DeSerialize(JsonElement jsonElement)
         {
             var document = new Document();
 
@@ -95,20 +96,64 @@ namespace OpenApi.Deserializers
                 document.JsonSchemaDialect = propertyValue;
             }
 
-
             // servers
+            if (jsonElement.TryGetProperty("servers", out JsonElement serversProperty))
+            {
+                if (serversProperty.ValueKind == JsonValueKind.Array)
+                {
+                    var servers = new List<Server>();
+
+                    var serverDeSerializer = new ServerDeSerializer(this.loggerFactory);
+
+                    foreach (var arrayItem in serversProperty.EnumerateArray())
+                    {
+                        var server = serverDeSerializer.DeSerialize(arrayItem);
+                        servers.Add(server);
+                    }
+
+                    document.Servers = servers.ToArray();
+                }
+                else
+                {
+                    throw new SerializationException("the servers property shall be an array");
+                }
+            }
 
             // paths
+            if (jsonElement.TryGetProperty("paths", out JsonElement pathsProperty))
+            {
+
+            }
 
             // webhooks
+            if (jsonElement.TryGetProperty("webhooks", out JsonElement webhooksProperty))
+            {
+
+            }
 
             // components
+            if (jsonElement.TryGetProperty("components", out JsonElement componentsProperty))
+            {
+
+            }
 
             // security
+            if (jsonElement.TryGetProperty("security", out JsonElement securityProperty))
+            {
+
+            }
 
             // tags
+            if (jsonElement.TryGetProperty("tags", out JsonElement tagsProperty))
+            {
+
+            }
 
             // externalDocs
+            if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
+            {
+
+            }
 
             return document;
         }

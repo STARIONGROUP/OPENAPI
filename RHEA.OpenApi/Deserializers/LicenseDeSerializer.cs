@@ -35,7 +35,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#license-object
     /// </remarks>
-    public class LicenseDeSerializer
+    internal class LicenseDeSerializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -68,9 +68,9 @@ namespace OpenApi.Deserializers
         /// </param>
         /// <returns></returns>
         /// <exception cref="SerializationException">
-        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="License"/>
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="License"/> object
         /// </exception>
-        public License DeSerialize(JsonElement jsonElement)
+        internal License DeSerialize(JsonElement jsonElement)
         {
             var license = new License();
             

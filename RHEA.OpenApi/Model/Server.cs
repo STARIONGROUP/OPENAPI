@@ -45,6 +45,6 @@ namespace OpenApi.Model
         /// <summary>
         /// A map between a variable name and its value. The value is used for substitution in the server’s URL template
         /// </summary>
-        public Dictionary<string, ServerVariable> Variables { get; set; }
+        public Dictionary<string, ServerVariable> Variables { get; set; } = new Dictionary<string, ServerVariable>();
     }
 }

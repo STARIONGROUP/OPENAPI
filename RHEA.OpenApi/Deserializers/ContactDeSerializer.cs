@@ -35,7 +35,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#contact-object
     /// </remarks>
-    public class ContactDeSerializer
+    internal class ContactDeSerializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -68,7 +68,7 @@ namespace OpenApi.Deserializers
         /// </param>
         /// <returns></returns>
         /// <exception cref="SerializationException">
-        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Contact"/>
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Contact"/> object
         /// </exception>
         public Contact DeSerialize(JsonElement jsonElement)
         {

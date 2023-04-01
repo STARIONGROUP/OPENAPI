@@ -36,7 +36,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#info-object
     /// </remarks>
-    public class InfoDeserializer
+    internal class InfoDeserializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -69,9 +69,9 @@ namespace OpenApi.Deserializers
         /// </param>
         /// <returns></returns>
         /// <exception cref="SerializationException">
-        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Info"/>
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Info"/> object
         /// </exception>
-        public Info DeSerialize(JsonElement jsonElement)
+        internal Info DeSerialize(JsonElement jsonElement)
         {
             var info = new Info();
 

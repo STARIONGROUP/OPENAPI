@@ -12,8 +12,6 @@ The RHEA.OpenApi library is a naive JSON reader implementation of the [OpenAPI S
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=RHEAGROUP_OPENAPI&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=RHEAGROUP_OPENAPI)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=RHEAGROUP_OPENAPI&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=RHEAGROUP_OPENAPI)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=RHEAGROUP_OPENAPI&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=RHEAGROUP_OPENAPI)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/RHEAGROUP/OPENAPI.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/RHEAGROUP/OPENAPI/alerts/)
-
 
 ## Installation
 
