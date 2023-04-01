@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Version>0.1.0</Version>
+        <Description>A Naive .NET implementation of the OpenApi 3.1 specification.</Description>
+        <PackageId>RHEA.OpenApi</PackageId>
+        <Company>RHEA System S.A.</Company>
+        <Copyright>Copyright 2023 RHEA System S.A.</Copyright>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/RHEAGROUP/OPENAPI.git</RepositoryUrl>
+        <RepositoryType>Git</RepositoryType>
+        <Authors>Sam Gerené</Authors>
+        <RequireLicenseAcceptance>true</RequireLicenseAcceptance>
+        <PackageReleaseNotes>
+          [Initial] non-functional package release
+        </PackageReleaseNotes>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.Text.Json" Version="7.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Model\" />
+      <Folder Include="Deserializers\" />
+    </ItemGroup>
+
+</Project>
