@@ -19,9 +19,9 @@ The RHEA.OpenApi library is a naive JSON reader implementation of the [OpenAPI S
 
 The package is available on Nuget at:
 
-project                                                     | Nuget
-------------------------------------------------------------| ------------
-[SysML2.NET](https://www.nuget.org/packages/RHEA.OpenApi)   | [![NuGet Badge](https://buildstats.info/nuget/RHEA.OpenApi)](https://buildstats.info/nuget/RHEA.OpenApi)
+project                                                       | Nuget
+--------------------------------------------------------------| ------------
+[RHEA.OpenApi](https://www.nuget.org/packages/RHEA.OpenApi)   | [![NuGet Badge](https://buildstats.info/nuget/RHEA.OpenApi)](https://buildstats.info/nuget/RHEA.OpenApi)
 
 ## Build Status
 
