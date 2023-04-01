@@ -20,16 +20,16 @@
 
 namespace OpenApi
 {
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Runtime.Serialization;
     using System.Text. Json;
     using System.Threading.Tasks;
-
+    
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
 
+    using OpenApi.Deserializers;
     using OpenApi.Model;
 
     /// <summary>
@@ -61,11 +61,20 @@ namespace OpenApi
             this.logger = this.loggerFactory == null ? NullLogger<DeSerializer>.Instance : this.loggerFactory.CreateLogger<DeSerializer>();
         }
 
+        /// <summary>
+        /// Deserializes the JSON stream to an <see cref="Document"/>
+        /// </summary>
+        /// <param name="stream">
+        /// the JSON input stream
+        /// </param>
+        /// <returns>
+        /// an <see cref="Document"/>
+        /// </returns>
         public Document DeSerialize(Stream stream)
         {
             var sw = Stopwatch.StartNew();
 
-            var document = new Document();
+            Document document;
 
             using (var jsonDocument = JsonDocument.Parse(stream))
             {
@@ -74,8 +83,8 @@ namespace OpenApi
                 switch (root.ValueKind)
                 {
                     case JsonValueKind.Object:
-                        
-                        
+                        var documentDeserializer = new DocumentDeserializer();
+                        document = documentDeserializer.DeSerialize(root);
                         break;
                     default:
                         throw new SerializationException();
@@ -87,6 +96,15 @@ namespace OpenApi
             return document;
         }
 
+        /// <summary>
+        /// Asynchronously deserializes the JSON stream to an <see cref="Document"/>
+        /// </summary>
+        /// <param name="stream">
+        /// the JSON input stream
+        /// </param>
+        /// <returns>
+        /// an <see cref="Document"/>
+        /// </returns>
         public Task<Document> DeSerializeAsync(Stream stream)
         {
             throw new System.NotImplementedException();

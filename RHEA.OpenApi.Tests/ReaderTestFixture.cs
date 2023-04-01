@@ -43,7 +43,7 @@ namespace OpenApi.Tests
         [Test]
         public void Verify_that_an_openapi_doc_can_be_deserialized()
         {
-            var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "openapi.json");
+            var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "sysml2.openapi.json");
 
             var document = this.reader.Read(fileName);
 

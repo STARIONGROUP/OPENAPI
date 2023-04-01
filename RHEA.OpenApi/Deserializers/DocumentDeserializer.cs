@@ -20,17 +20,56 @@
 
 namespace OpenApi.Deserializers
 {
-    using System;
     using System.Runtime.Serialization;
     using System.Text.Json;
 
+    using Microsoft.Extensions.Logging;
+
+    using Microsoft.Extensions.Logging.Abstractions;
     using OpenApi.Model;
 
     /// <summary>
     /// The purpose of the <see cref="DocumentDeserializer"/> is to deserialize the <see cref="Document"/> object
+    /// from a <see cref="JsonElement"/>
     /// </summary>
-    public class DocumentDeserializer
+    /// <remarks>
+    /// https://spec.openapis.org/oas/latest.html#openapi-object
+    /// </remarks>
+    internal class DocumentDeserializer
     {
+        /// <summary>
+        /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
+        /// </summary>
+        private readonly ILoggerFactory loggerFactory;
+
+        /// <summary>
+        /// The <see cref="ILogger"/> used to log
+        /// </summary>
+        private readonly ILogger<DocumentDeserializer> logger;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentDeserializer"/> class.
+        /// </summary>
+        /// <param name="loggerFactory">
+        /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
+        /// </param>
+        internal DocumentDeserializer(ILoggerFactory loggerFactory = null)
+        {
+            this.loggerFactory = loggerFactory;
+
+            this.logger = this.loggerFactory == null ? NullLogger<DocumentDeserializer>.Instance : this.loggerFactory.CreateLogger<DocumentDeserializer>();
+        }
+
+        /// <summary>
+        /// Deserializes an instance of <see cref="Document"/> from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Document"/> json object
+        /// </param>
+        /// <returns></returns>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/>
+        /// </exception>
         public Document DeSerialize(JsonElement jsonElement)
         {
             var document = new Document();
@@ -47,11 +86,15 @@ namespace OpenApi.Deserializers
                 throw new SerializationException("The REQUIRED info property is not available, this is an invalid OpenAPI document");
             }
 
-            var info = new Info();
+            var infoDeserializer = new InfoDeserializer(this.loggerFactory);
+            document.Info = infoDeserializer.DeSerialize(infoProperty);
 
-            return document;
+            if (jsonElement.TryGetProperty("jsonSchemaDialect", out JsonElement jsonSchemaDialectProperty))
+            {
+                var propertyValue = jsonSchemaDialectProperty.GetString();
+                document.JsonSchemaDialect = propertyValue;
+            }
 
-            // jsonSchemaDialect
 
             // servers
 
@@ -66,6 +109,8 @@ namespace OpenApi.Deserializers
             // tags
 
             // externalDocs
+
+            return document;
         }
     }
 }
