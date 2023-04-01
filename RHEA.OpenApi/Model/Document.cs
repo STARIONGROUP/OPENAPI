@@ -20,6 +20,8 @@
 
 namespace OpenApi.Model
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// A self-contained or composite resource which defines or describes an API or elements of an API.
     /// The OpenAPI document MUST contain at least one paths field, a components field or a webhooks field.
@@ -57,7 +59,7 @@ namespace OpenApi.Model
         /// <summary>
         /// The available paths and operations for the API.
         /// </summary>
-        public Paths Paths { get; set; }
+        public Dictionary<string, PathItem> Paths { get; set; } = new Dictionary<string, PathItem>();
 
         /// <summary>
         /// An element to hold various schemas for the document.

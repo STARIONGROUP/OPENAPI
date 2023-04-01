@@ -87,7 +87,6 @@ namespace OpenApi.Deserializers
                 server.Description = descriptionProperty.GetString();
             }
 
-            // variables
             if (jsonElement.TryGetProperty("variables", out JsonElement variablesProperty))
             {
                 var serverVariableDeserializer = new ServerVariableDeserializer(this.loggerFactory);
@@ -103,7 +102,6 @@ namespace OpenApi.Deserializers
 
                 server.Description = descriptionProperty.GetString();
             }
-
 
             return server;
         }

@@ -96,7 +96,6 @@ namespace OpenApi.Deserializers
                 document.JsonSchemaDialect = propertyValue;
             }
 
-            // servers
             if (jsonElement.TryGetProperty("servers", out JsonElement serversProperty))
             {
                 if (serversProperty.ValueKind == JsonValueKind.Array)
@@ -118,11 +117,19 @@ namespace OpenApi.Deserializers
                     throw new SerializationException("the servers property shall be an array");
                 }
             }
-
-            // paths
+            
             if (jsonElement.TryGetProperty("paths", out JsonElement pathsProperty))
             {
+                var pathItemDeserializer = new PathItemDeserializer(this.loggerFactory);
 
+                foreach (var p in pathsProperty.EnumerateObject())
+                {
+                    var pathItemName = p.Name;
+
+                    var pathItem = pathItemDeserializer.DeSerialize(p.Value);
+
+                    document.Paths.Add(pathItemName, pathItem);
+                }
             }
 
             // webhooks

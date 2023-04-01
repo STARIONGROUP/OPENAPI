@@ -20,6 +20,8 @@
 
 namespace OpenApi.Model
 {
+    using System;
+
     /// <summary>
     /// Describes the operations available on a single path. A Path Item MAY be empty, due to ACL constraints.
     /// The path itself is still exposed to the documentation viewer but they will not know which operations and parameters are available.
@@ -29,6 +31,12 @@ namespace OpenApi.Model
     /// </remarks>
     public class PathItem
     {
+        /// <summary>
+        /// Allows for a referenced definition of this path item. The referenced structure MUST be in the form of a Path Item Object.
+        /// In case a Path Item Object field appears both in the defined object and the referenced object, the behavior is undefined.
+        /// </summary>
+        public string Ref { get; set; }
+
         /// <summary>
         /// An optional, string summary, intended to apply to all operations in this path.
         /// </summary>
@@ -82,7 +90,7 @@ namespace OpenApi.Model
         /// <summary>
         /// An alternative server array to service all operations in this path.
         /// </summary>
-        public Server[] Servers { get; set; }
+        public Server[] Servers { get; set; } = Array.Empty<Server>();
 
         /// <summary>
         /// A list of parameters that are applicable for all the operations described under this path.
@@ -90,6 +98,12 @@ namespace OpenApi.Model
         /// The list MUST NOT include duplicated parameters. A unique parameter is defined by a combination of a name and location.
         /// The list can use the Reference Object to link to parameters that are defined at the OpenAPI Object’s components/parameters.
         /// </summary>
-        public Parameter[] Parameters { get; set; }
+        public Parameter[] Parameters { get; set; } = Array.Empty<Parameter>();
+
+        /// <summary>
+        /// gets or sets an array of <see cref="Reference"/> that can be used to populate the <see cref="Parameter"/> array
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Reference[] ParameterReferences { get; set; } = Array.Empty<Reference>();
     }
 }
