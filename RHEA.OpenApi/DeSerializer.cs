@@ -83,7 +83,7 @@ namespace OpenApi
                 switch (root.ValueKind)
                 {
                     case JsonValueKind.Object:
-                        var documentDeserializer = new DocumentDeserializer();
+                        var documentDeserializer = new DocumentDeserializer(loggerFactory);
                         document = documentDeserializer.DeSerialize(root);
                         break;
                     default:
