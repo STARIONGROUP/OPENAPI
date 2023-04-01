@@ -44,7 +44,7 @@ namespace OpenApi.Model
         /// <summary>
         /// An object to hold reusable Parameter Objects.
         /// </summary>
-        public Dictionary<string, Parameter> Parameters { get; set; }
+        public Dictionary<string, Parameter> Parameters { get; set; } = new Dictionary<string, Parameter>();
 
         /// <summary>
         /// An object to hold reusable Example Objects.
@@ -54,7 +54,7 @@ namespace OpenApi.Model
         /// <summary>
         /// An object to hold reusable Request Body Objects
         /// </summary>
-        public Dictionary<string, RequestBody> RequestBodies { get; set; }
+        public Dictionary<string, RequestBody> RequestBodies { get; set; } = new Dictionary<string, RequestBody>();
 
         /// <summary>
         /// An object to hold reusable Header Objects.
@@ -79,6 +79,6 @@ namespace OpenApi.Model
         /// <summary>
         /// An object to hold reusable Paths Item Object.
         /// </summary>
-        public Dictionary<string, PathItem> PathItems { get; set; }
+        public Dictionary<string, PathItem> PathItems { get; set; } = new Dictionary<string, PathItem>();
     }
 }

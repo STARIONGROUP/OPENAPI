@@ -153,10 +153,11 @@ namespace OpenApi.Deserializers
                 this.logger.LogTrace("The optional Document.webhooks property is not provided in the OpenApi document");
             }
 
-            // components
             if (jsonElement.TryGetProperty("components", out JsonElement componentsProperty))
             {
-                this.logger.LogWarning("TODO: the Document.components property is not yet supported");
+                var componentsDeSerializer = new ComponentsDeSerializer(this.loggerFactory);
+
+                document.Components = componentsDeSerializer.DeSerialize(componentsProperty);
             }
             else
             {
