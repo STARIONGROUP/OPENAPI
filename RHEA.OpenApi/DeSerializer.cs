@@ -24,7 +24,6 @@ namespace OpenApi
     using System.IO;
     using System.Runtime.Serialization;
     using System.Text. Json;
-    using System.Threading.Tasks;
     
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
@@ -92,7 +91,7 @@ namespace OpenApi
                         document = documentDeserializer.DeSerialize(root, strict);
                         break;
                     default:
-                        throw new SerializationException();
+                        throw new SerializationException("The provided stream does not contain valid open api JSON");
                 }
             }
 

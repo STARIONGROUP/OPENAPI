@@ -21,7 +21,7 @@
 namespace OpenApi.Tests
 {
     using System.IO;
-
+    using System.Runtime.Serialization;
     using NUnit.Framework;
 
     [TestFixture]
@@ -66,6 +66,16 @@ namespace OpenApi.Tests
             var document = this.deSerializer.DeSerialize(fs);
 
             Assert.That(document, Is.Not.Null);
+        }
+
+        [Test]
+        public void Verify_that_the_when_reading_invalid_docs_exception_is_thrown()
+        {
+            var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "invalid.openapi.json");
+
+            using var fs = File.OpenRead(fileName);
+            
+            Assert.Throws<SerializationException>(() => this.deSerializer.DeSerialize(fs));
         }
     }
 }

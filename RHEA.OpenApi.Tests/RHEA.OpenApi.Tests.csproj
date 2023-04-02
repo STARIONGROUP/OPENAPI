@@ -37,6 +37,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Update="Data\invalid.openapi.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Update="Data\petstore_1.openapi.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
