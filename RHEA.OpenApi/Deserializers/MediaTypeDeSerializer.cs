@@ -154,7 +154,7 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="MediaType"/> json object
         /// </param>
-        /// <param name="document">
+        /// <param name="mediaType">
         /// The <see cref="MediaType"/> that is being deserialized
         /// </param>
         /// <param name="strict">
