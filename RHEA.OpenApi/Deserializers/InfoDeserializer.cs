@@ -66,11 +66,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Info"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="Info"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Info"/> object
         /// </exception>
-        internal Info DeSerialize(JsonElement jsonElement)
+        internal Info DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start InfoDeserializer.DeSerialize");
 
@@ -78,10 +85,19 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("title", out JsonElement titleProperty))
             {
-                throw new SerializationException("The REQUIRED Info.title property is not available, this is an invalid OpenAPI document");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED Info.title property is not available, this is an invalid OpenAPI document");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED Info.title property is not available, this is an invalid OpenAPI document");
+                }
             }
-            
-            info.Title= titleProperty.GetString();
+            else
+            {
+                info.Title = titleProperty.GetString();
+            }
 
             if (jsonElement.TryGetProperty("summary", out JsonElement summaryProperty))
             {
@@ -107,15 +123,24 @@ namespace OpenApi.Deserializers
             if (jsonElement.TryGetProperty("license", out JsonElement licenseProperty))
             {
                 var licenseDeSerializer = new LicenseDeSerializer(this.loggerFactory);
-                info.License = licenseDeSerializer.DeSerialize(licenseProperty);
+                info.License = licenseDeSerializer.DeSerialize(licenseProperty, strict);
             }
 
             if (!jsonElement.TryGetProperty("version", out JsonElement versionProperty))
             {
-                throw new SerializationException("The REQUIRED Info.version property is not available, this is an invalid OpenAPI document");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED Info.version property is not available, this is an invalid OpenAPI document");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED Info.version property is not available, this is an invalid OpenAPI document");
+                }
             }
-
-            info.Version = versionProperty.GetString();
+            else
+            {
+                info.Version = versionProperty.GetString();
+            }
 
             this.logger.LogTrace("Finish InfoDeserializer.DeSerialize");
 

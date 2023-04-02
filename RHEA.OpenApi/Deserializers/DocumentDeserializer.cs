@@ -67,13 +67,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Document"/> json object
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <returns>
         /// An instance of an Open Api <see cref="Document"/>
         /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
         /// </exception>
-        internal Document DeSerialize(JsonElement jsonElement)
+        internal Document DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start DocumentDeserializer.DeSerialize");
 
@@ -81,31 +86,40 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("openapi", out JsonElement openapiProperty))
             {
-                throw new SerializationException("The REQUIRED Document.openapi property is not available, this is an invalid OpenAPI document");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED Document.openapi property is not available, this is an invalid OpenAPI document");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED Document.openapi property is not available, this is an invalid OpenAPI document");
+                }
+            }
+            else
+            {
+                document.OpenApi = openapiProperty.GetString();
             }
 
-            document.OpenApi = openapiProperty.GetString();
-
-            this.DeserializeInfo(jsonElement, document);
+            this.DeserializeInfo(jsonElement, document, strict);
             
             if (jsonElement.TryGetProperty("jsonSchemaDialect", out JsonElement jsonSchemaDialectProperty))
             {
                 document.JsonSchemaDialect = jsonSchemaDialectProperty.GetString();
             }
 
-            this.DeserializeServers(jsonElement, document);
+            this.DeserializeServers(jsonElement, document, strict);
 
-            this.DeserializePathItems(jsonElement, document);
+            this.DeserializePathItems(jsonElement, document, strict);
 
-            this.DeserializeWebhooks(jsonElement, document);
+            this.DeserializeWebhooks(jsonElement, document, strict);
 
-            this.DeserializeComponents(jsonElement, document);
+            this.DeserializeComponents(jsonElement, document, strict);
             
             this.DeserializeSecurityRequirements(jsonElement, document);
 
-            this.DeserializeTags(jsonElement, document);
+            this.DeserializeTags(jsonElement, document, strict);
 
-            this.DeserializeExternalDocumentation(jsonElement, document);
+            this.DeserializeExternalDocumentation(jsonElement, document, strict);
 
             this.logger.LogTrace("Finish DocumentDeserializer.DeSerialize");
 
@@ -121,18 +135,32 @@ namespace OpenApi.Deserializers
         /// <param name="document">
         /// The <see cref="Document"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
         /// </exception>
-        private void DeserializeInfo(JsonElement jsonElement, Document document)
+        private void DeserializeInfo(JsonElement jsonElement, Document document, bool strict)
         {
             if (!jsonElement.TryGetProperty("info", out JsonElement infoProperty))
             {
-                throw new SerializationException("The REQUIRED info property is not available, this is an invalid OpenAPI document");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED info property is not available, this is an invalid OpenAPI document");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED info property is not available, this is an invalid OpenAPI document");
+                }
             }
-
-            var infoDeserializer = new InfoDeserializer(this.loggerFactory);
-            document.Info = infoDeserializer.DeSerialize(infoProperty);
+            else
+            {
+                var infoDeserializer = new InfoDeserializer(this.loggerFactory);
+                document.Info = infoDeserializer.DeSerialize(infoProperty, strict);
+            }
         }
 
         /// <summary>
@@ -144,10 +172,15 @@ namespace OpenApi.Deserializers
         /// <param name="document">
         /// The <see cref="Document"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
         /// </exception>
-        private void DeserializeServers(JsonElement jsonElement, Document document)
+        private void DeserializeServers(JsonElement jsonElement, Document document, bool strict)
         {
             if (jsonElement.TryGetProperty("servers", out JsonElement serversProperty))
             {
@@ -159,7 +192,7 @@ namespace OpenApi.Deserializers
 
                     foreach (var arrayItem in serversProperty.EnumerateArray())
                     {
-                        var server = serverDeSerializer.DeSerialize(arrayItem);
+                        var server = serverDeSerializer.DeSerialize(arrayItem, strict);
                         servers.Add(server);
                     }
 
@@ -181,10 +214,15 @@ namespace OpenApi.Deserializers
         /// <param name="document">
         /// The <see cref="Document"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
         /// </exception>
-        private void DeserializePathItems(JsonElement jsonElement, Document document)
+        private void DeserializePathItems(JsonElement jsonElement, Document document, bool strict)
         {
             if (jsonElement.TryGetProperty("paths", out JsonElement pathsProperty))
             {
@@ -194,7 +232,7 @@ namespace OpenApi.Deserializers
                 {
                     var pathItemName = p.Name;
 
-                    var pathItem = pathItemDeserializer.DeSerialize(p.Value);
+                    var pathItem = pathItemDeserializer.DeSerialize(p.Value, strict);
 
                     document.Paths.Add(pathItemName, pathItem);
                 }
@@ -210,10 +248,15 @@ namespace OpenApi.Deserializers
         /// <param name="document">
         /// The <see cref="Document"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
         /// </exception>
-        private void DeserializeWebhooks(JsonElement jsonElement, Document document)
+        private void DeserializeWebhooks(JsonElement jsonElement, Document document, bool strict)
         {
             if (jsonElement.TryGetProperty("webhooks", out JsonElement webhooksProperty))
             {
@@ -223,19 +266,23 @@ namespace OpenApi.Deserializers
                 foreach (var itemProperty in webhooksProperty.EnumerateObject())
                 {
                     var key = itemProperty.Name;
+                    var isRef = false;
 
                     foreach (var value in itemProperty.Value.EnumerateObject())
                     {
                         if (value.Name == "$ref")
                         {
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value);
+                            isRef = true;
+
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                             document.WebhooksReferences.Add(key, reference);
                         }
-                        else
-                        {
-                            var pathItem  =  pathItemDeserializer.DeSerialize(itemProperty.Value);
-                            document.Webhooks.Add(key, pathItem);
-                        }
+                    }
+
+                    if (!isRef)
+                    {
+                        var pathItem = pathItemDeserializer.DeSerialize(itemProperty.Value, strict);
+                        document.Webhooks.Add(key, pathItem);
                     }
                 }
             }
@@ -250,16 +297,21 @@ namespace OpenApi.Deserializers
         /// <param name="document">
         /// The <see cref="Document"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
         /// </exception>
-        private void DeserializeComponents(JsonElement jsonElement, Document document)
+        private void DeserializeComponents(JsonElement jsonElement, Document document, bool strict)
         {
             if (jsonElement.TryGetProperty("components", out JsonElement componentsProperty))
             {
                 var componentsDeSerializer = new ComponentsDeSerializer(this.loggerFactory);
 
-                document.Components = componentsDeSerializer.DeSerialize(componentsProperty);
+                document.Components = componentsDeSerializer.DeSerialize(componentsProperty, strict);
             }
         }
 
@@ -309,10 +361,15 @@ namespace OpenApi.Deserializers
         /// <param name="document">
         /// The <see cref="Document"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
         /// </exception>
-        private void DeserializeTags(JsonElement jsonElement, Document document)
+        private void DeserializeTags(JsonElement jsonElement, Document document, bool strict)
         {
             if (jsonElement.TryGetProperty("tags", out JsonElement tagsProperty))
             {
@@ -324,7 +381,7 @@ namespace OpenApi.Deserializers
 
                     foreach (var arrayItem in tagsProperty.EnumerateArray())
                     {
-                        var tag = tagDeSerializer.DeSerialize(arrayItem);
+                        var tag = tagDeSerializer.DeSerialize(arrayItem, strict);
                         tags.Add(tag);
                     }
 
@@ -346,16 +403,21 @@ namespace OpenApi.Deserializers
         /// <param name="document">
         /// The <see cref="Document"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
         /// </exception>
-        private void DeserializeExternalDocumentation(JsonElement jsonElement, Document document)
+        private void DeserializeExternalDocumentation(JsonElement jsonElement, Document document, bool strict)
         {
             if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
             {
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
 
-                document.externalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty);
+                document.externalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty, strict);
             }
         }
     }

@@ -66,11 +66,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="RequestBody"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="RequestBody"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="RequestBody"/> object
         /// </exception>
-        internal RequestBody DeSerialize(JsonElement jsonElement)
+        internal RequestBody DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start RequestBodyDeSerializer.DeSerialize");
 
@@ -83,7 +90,14 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("content", out JsonElement contentProperty))
             {
-                throw new SerializationException("The REQUIRED RequestBody.content property is not available, this is an invalid OpenAPI document");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED RequestBody.content property is not available, this is an invalid OpenAPI document");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED RequestBody.content property is not available, this is an invalid OpenAPI document");
+                }
             }
             else
             {
@@ -93,7 +107,7 @@ namespace OpenApi.Deserializers
                 {
                     var mediaTypeName = c.Name;
 
-                    var mediaType = mediaTypeDeSerializer.DeSerialize(c.Value);
+                    var mediaType = mediaTypeDeSerializer.DeSerialize(c.Value, strict);
 
                     requestBody.Content.Add(mediaTypeName, mediaType);
                 }

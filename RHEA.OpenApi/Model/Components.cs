@@ -34,12 +34,18 @@ namespace OpenApi.Model
         /// <summary>
         /// An object to hold reusable Schema Objects.
         /// </summary>
-        public Dictionary<string, Schema> Schemas { get; set; }
+        public Dictionary<string, Schema> Schemas { get; set; } = new Dictionary<string, Schema>();
 
         /// <summary>
         /// An object to hold reusable Response Objects.
         /// </summary>
-        public Dictionary<string, Response> Responses { get; set; }
+        public Dictionary<string, Response> Responses { get; set; } = new Dictionary<string, Response>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Responses"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> ResponsesReferences { get; set; } = new Dictionary<string, Reference>();
 
         /// <summary>
         /// An object to hold reusable Parameter Objects.
@@ -47,9 +53,21 @@ namespace OpenApi.Model
         public Dictionary<string, Parameter> Parameters { get; set; } = new Dictionary<string, Parameter>();
 
         /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Parameters"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> ParametersReferences { get; set; } = new Dictionary<string, Reference>();
+
+        /// <summary>
         /// An object to hold reusable Example Objects.
         /// </summary>
-        public Dictionary<string, Example> Examples { get; set; }
+        public Dictionary<string, Example> Examples { get; set; } = new Dictionary<string, Example>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Examples"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> ExamplesReferences { get; set; } = new Dictionary<string, Reference>();
 
         /// <summary>
         /// An object to hold reusable Request Body Objects
@@ -57,28 +75,64 @@ namespace OpenApi.Model
         public Dictionary<string, RequestBody> RequestBodies { get; set; } = new Dictionary<string, RequestBody>();
 
         /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="RequestBodies"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> RequestBodiesReferences { get; set; } = new Dictionary<string, Reference>();
+
+        /// <summary>
         /// An object to hold reusable Header Objects.
         /// </summary>
-        public Dictionary<string, Header> Headers { get; set; }
+        public Dictionary<string, Header> Headers { get; set; } = new Dictionary<string, Header>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Headers"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> HeadersReferences { get; set; } = new Dictionary<string, Reference>();
 
         /// <summary>
         /// An object to hold reusable Security Scheme Objects.
         /// </summary>
-        public Dictionary<string, SecurityScheme> SecuritySchemes { get; set; }
+        public Dictionary<string, SecurityScheme> SecuritySchemes { get; set; } = new Dictionary<string, SecurityScheme>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="SecuritySchemes"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> SecuritySchemesReferences { get; set; } = new Dictionary<string, Reference>();
 
         /// <summary>
         /// An object to hold reusable Link Objects.
         /// </summary>
-        public Dictionary<string, Link> Links { get; set; }
+        public Dictionary<string, Link> Links { get; set; } = new Dictionary<string, Link>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Links"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> LinksReferences { get; set; } = new Dictionary<string, Reference>();
 
         /// <summary>
         /// An object to hold reusable Link Objects.
         /// </summary>
-        public Dictionary<string, Callback> Callbacks { get; set; }
+        public Dictionary<string, Callback> Callbacks { get; set; } = new Dictionary<string, Callback>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Callbacks"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> CallbacksReferences { get; set; } = new Dictionary<string, Reference>();
 
         /// <summary>
         /// An object to hold reusable Paths Item Object.
         /// </summary>
         public Dictionary<string, PathItem> PathItems { get; set; } = new Dictionary<string, PathItem>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="PathItems"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> PathItemsReferences { get; set; } = new Dictionary<string, Reference>();
     }
 }

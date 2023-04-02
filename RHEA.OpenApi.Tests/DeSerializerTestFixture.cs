@@ -62,7 +62,7 @@ namespace OpenApi.Tests
             var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "petstore_2.openapi.json");
 
             using var fs = File.OpenRead(fileName);
-            var document = this.deSerializer.DeSerialize(fs);
+            var document = this.deSerializer.DeSerialize(fs, false);
 
             Assert.That(document, Is.Not.Null);
         }

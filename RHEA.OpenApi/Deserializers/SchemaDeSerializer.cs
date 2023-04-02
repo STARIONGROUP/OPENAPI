@@ -66,11 +66,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Schema"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="Schema"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Schema"/> object
         /// </exception>
-        internal Schema DeSerialize(JsonElement jsonElement)
+        internal Schema DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start SchemaDeSerializer.DeSerialize");
 
@@ -79,7 +86,7 @@ namespace OpenApi.Deserializers
             if (jsonElement.TryGetProperty("discriminator", out JsonElement discriminatorProperty))
             {
                 var discriminatorDeSerializer = new DiscriminatorDeSerializer(this.loggerFactory);
-                schema.Discriminator = discriminatorDeSerializer.DeSerialize(discriminatorProperty);
+                schema.Discriminator = discriminatorDeSerializer.DeSerialize(discriminatorProperty, strict);
             }
 
             if (jsonElement.TryGetProperty("xml", out JsonElement xmlProperty))
@@ -91,7 +98,7 @@ namespace OpenApi.Deserializers
             if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
             {
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
-                schema.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty);
+                schema.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty, strict);
 
             }
 

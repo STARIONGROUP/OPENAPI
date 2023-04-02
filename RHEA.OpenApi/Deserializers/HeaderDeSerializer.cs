@@ -66,13 +66,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Header"/> json object
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <returns>
         /// An instance of an Open Api <see cref="Header"/>
         /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Header"/> object
         /// </exception>
-        internal Header DeSerialize(JsonElement jsonElement)
+        internal Header DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start HeaderDeSerializer.DeSerialize");
 
@@ -80,12 +85,26 @@ namespace OpenApi.Deserializers
 
             if (jsonElement.TryGetProperty("name", out JsonElement nameProperty))
             {
-                throw new SerializationException("Header.name MUST NOT be specified, it is given in the corresponding headers map.");
+                if (strict)
+                {
+                    throw new SerializationException("Header.name MUST NOT be specified, it is given in the corresponding headers map.");
+                }
+                else
+                {
+                    this.logger.LogWarning("Header.name MUST NOT be specified, it is given in the corresponding headers map.");
+                }
             }
 
             if (jsonElement.TryGetProperty("in", out JsonElement inProperty))
             {
-                throw new SerializationException("Header.in MUST NOT be specified, it is implicitly in header.");
+                if (strict)
+                {
+                    throw new SerializationException("Header.in MUST NOT be specified, it is implicitly in header.");
+                }
+                else
+                {
+                    this.logger.LogWarning("Header.in MUST NOT be specified, it is implicitly in header.");
+                }
             }
 
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
@@ -126,7 +145,7 @@ namespace OpenApi.Deserializers
             if (jsonElement.TryGetProperty("schema", out JsonElement schemaProperty))
             {
                 var schemaDeSerializer = new SchemaDeSerializer(this.loggerFactory);
-                header.Schema = schemaDeSerializer.DeSerialize(schemaProperty);
+                header.Schema = schemaDeSerializer.DeSerialize(schemaProperty, strict);
             }
 
             if (jsonElement.TryGetProperty("example", out JsonElement exampleProperty))
@@ -134,9 +153,9 @@ namespace OpenApi.Deserializers
                 header.Example = exampleProperty.ToString();
             }
 
-            this.DeserializeExamples(jsonElement, header);
+            this.DeserializeExamples(jsonElement, header, strict);
 
-            this.DeserializeContent(jsonElement, header);
+            this.DeserializeContent(jsonElement, header, strict);
 
             this.logger.LogTrace("Finish HeaderDeSerializer.DeSerialize");
 
@@ -152,10 +171,15 @@ namespace OpenApi.Deserializers
         /// <param name="header">
         /// The <see cref="Header"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Header"/> object
         /// </exception>
-        private void DeserializeExamples(JsonElement jsonElement, Header header)
+        private void DeserializeExamples(JsonElement jsonElement, Header header, bool strict)
         {
             if (jsonElement.TryGetProperty("examples", out JsonElement examplesProperty))
             {
@@ -170,7 +194,7 @@ namespace OpenApi.Deserializers
                     {
                         if (value.Name == "$ref")
                         {
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value);
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                             header.ExamplesReferences.Add(key, reference);
                         }
                         else
@@ -192,10 +216,15 @@ namespace OpenApi.Deserializers
         /// <param name="header">
         /// The <see cref="Header"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Header"/> object
         /// </exception>
-        private void DeserializeContent(JsonElement jsonElement, Header header)
+        private void DeserializeContent(JsonElement jsonElement, Header header, bool strict)
         {
             if (jsonElement.TryGetProperty("content", out JsonElement contentProperty))
             {
@@ -205,7 +234,7 @@ namespace OpenApi.Deserializers
                 {
                     var mediaTypeName = x.Name;
 
-                    var mediaType = mediaTypeDeSerializer.DeSerialize(x.Value);
+                    var mediaType = mediaTypeDeSerializer.DeSerialize(x.Value, strict);
 
                     header.Content.Add(mediaTypeName, mediaType);
                 }

@@ -73,17 +73,17 @@ namespace OpenApi.Deserializers
             {
                 contact.Name = nameProperty.GetString();
             }
-            
+
             if (jsonElement.TryGetProperty("url", out JsonElement urlProperty))
             {
                 contact.Url = urlProperty.GetString();
             }
-            
+
             if (jsonElement.TryGetProperty("email", out JsonElement emailProperty))
             {
                 contact.Email = emailProperty.GetString();
             }
-            
+
             this.logger.LogTrace("Finish ContactDeSerializer.DeSerialize");
 
             return contact;

@@ -66,13 +66,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Encoding"/> json object
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <returns>
         /// An instance of an Open Api <see cref="Document"/>
         /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Encoding"/> object
         /// </exception>
-        internal Encoding DeSerialize(JsonElement jsonElement)
+        internal Encoding DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start EncodingDeSerializer.DeSerialize");
 
@@ -83,7 +88,7 @@ namespace OpenApi.Deserializers
                 encoding.ContentType = contentTypeProperty.GetString();
             }
 
-            this.DeserializeHeaders(jsonElement, encoding);
+            this.DeserializeHeaders(jsonElement, encoding, strict);
             
             if (jsonElement.TryGetProperty("style", out JsonElement styleProperty))
             {
@@ -114,10 +119,15 @@ namespace OpenApi.Deserializers
         /// <param name="encoding">
         /// The <see cref="Encoding"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Encoding"/> object
         /// </exception>
-        private void DeserializeHeaders(JsonElement jsonElement, Encoding encoding)
+        private void DeserializeHeaders(JsonElement jsonElement, Encoding encoding, bool strict)
         {
             if (jsonElement.TryGetProperty("headers", out JsonElement headersProperty))
             {
@@ -132,12 +142,12 @@ namespace OpenApi.Deserializers
                     {
                         if (value.Name == "$ref")
                         {
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value);
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                             encoding.HeadersReferences.Add(key, reference);
                         }
                         else
                         {
-                            var header = headerDeSerializer.DeSerialize(itemProperty.Value);
+                            var header = headerDeSerializer.DeSerialize(itemProperty.Value, strict);
                             encoding.Headers.Add(key, header);
                         }
                     }

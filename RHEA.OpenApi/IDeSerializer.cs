@@ -37,20 +37,14 @@ namespace OpenApi
         /// <param name="stream">
         /// the JSON input stream
         /// </param>
-        /// <returns>
-        /// an <see cref="Document"/>
-        /// </returns>
-        Document DeSerialize(Stream stream);
-
-        /// <summary>
-        /// Asynchronously deserializes the JSON stream to an <see cref="Document"/>
-        /// </summary>
-        /// <param name="stream">
-        /// the JSON input stream
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
         /// </param>
         /// <returns>
         /// an <see cref="Document"/>
         /// </returns>
-        Task<Document>  DeSerializeAsync(Stream stream);
+        Document DeSerialize(Stream stream, bool strict = true);
     }
 }

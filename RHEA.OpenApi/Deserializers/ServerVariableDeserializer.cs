@@ -61,11 +61,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="ServerVariable"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="ServerVariable"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="ServerVariable"/> object
         /// </exception>
-        internal ServerVariable DeSerialize(JsonElement jsonElement)
+        internal ServerVariable DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start ServerDeSerializer.DeSerialize");
 
@@ -75,7 +82,14 @@ namespace OpenApi.Deserializers
             {
                 if (enumProperty.ValueKind != JsonValueKind.Array)
                 {
-                    throw new SerializationException("The ServerVariable.enum property must be an array");
+                    if (strict)
+                    {
+                        throw new SerializationException("The ServerVariable.enum property must be an array");
+                    }
+                    else
+                    {
+                        this.logger.LogWarning("The ServerVariable.enum property must be an array");
+                    }
                 }
 
                 var enums = new List<string>();
@@ -87,10 +101,19 @@ namespace OpenApi.Deserializers
 
                 if (!enums.Any())
                 {
-                    throw new SerializationException("The ServerVariable.enum must not be empty");
+                    if (strict)
+                    {
+                        throw new SerializationException("The ServerVariable.enum must not be empty");
+                    }
+                    else
+                    {
+                        this.logger.LogWarning("The ServerVariable.enum must not be empty");
+                    }
                 }
-
-                serverVariable.Enum = enums.ToArray();
+                else
+                {
+                    serverVariable.Enum = enums.ToArray();
+                }
             }
 
             if (jsonElement.TryGetProperty("default", out JsonElement defaultProperty))
@@ -102,7 +125,14 @@ namespace OpenApi.Deserializers
             {
                 if (serverVariable.Enum.Any() && !serverVariable.Enum.Contains(serverVariable.Default))
                 {
-                    throw new SerializationException("The ServerVariable.enum is specified and does not contain the ServerVariable.default value");
+                    if (strict)
+                    {
+                        throw new SerializationException("The ServerVariable.enum is specified and does not contain the ServerVariable.default value");
+                    }
+                    else
+                    {
+                        this.logger.LogWarning("The ServerVariable.enum is specified and does not contain the ServerVariable.default value");
+                    }
                 }
             }
 

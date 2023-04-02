@@ -59,11 +59,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="License"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="License"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="License"/> object
         /// </exception>
-        internal License DeSerialize(JsonElement jsonElement)
+        internal License DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start LicenseDeSerializer.DeSerialize");
 
@@ -71,11 +78,20 @@ namespace OpenApi.Deserializers
             
             if (!jsonElement.TryGetProperty("name", out JsonElement nameProperty))
             {
-                throw new SerializationException("The REQUIRED License.name property is not available, this is an invalid OpenAPI document");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED License.name property is not available, this is an invalid OpenAPI document");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED License.name property is not available, this is an invalid OpenAPI document");
+                }
+            }
+            else
+            {
+                license.Name = nameProperty.GetString();
             }
 
-            license.Name = nameProperty.GetString();
-            
             if (jsonElement.TryGetProperty("identifier", out JsonElement identifierProperty))
             {
                 license.Identifier = identifierProperty.GetString();

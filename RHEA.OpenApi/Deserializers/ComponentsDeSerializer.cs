@@ -20,6 +20,7 @@
 
 namespace OpenApi.Deserializers
 {
+    using System.ComponentModel;
     using System.Runtime.Serialization;
     using System.Text.Json;
 
@@ -66,74 +67,37 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Components"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="Components"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Components"/> object
         /// </exception>
-        internal Components DeSerialize(JsonElement jsonElement)
+        internal Components DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start ComponentsDeSerializer.DeSerialize");
 
             var components = new Components();
 
-            //  schemas
-            if (jsonElement.TryGetProperty("schemas", out JsonElement schemasProperty))
-            {
-                // TODO: implement schemas
-            }
+            this.DeserializeSchemas(jsonElement, components, strict);
 
-            //  responses
-            if (jsonElement.TryGetProperty("responses", out JsonElement responsesProperty))
-            {
-                // TODO: implement responses
-            }
-
-            if (jsonElement.TryGetProperty("parameters", out JsonElement parametersProperty))
-            {
-                var parameterDeSerializer = new ParameterDeSerializer(this.loggerFactory);
-
-                foreach (var p in parametersProperty.EnumerateObject())
-                {
-                    var parameterName = p.Name;
-
-                    var parameter = parameterDeSerializer.DeSerialize(p.Value);
-
-                    components.Parameters.Add(parameterName, parameter);
-                }
-            }
-
-            //  examples
-            if (jsonElement.TryGetProperty("examples", out JsonElement examplesProperty))
-            {
-                // TODO: implement examples
-            }
-
-            if (jsonElement.TryGetProperty("requestBodies", out JsonElement requestBodiesProperty))
-            {
-                var requestBodyDeSerializer = new RequestBodyDeSerializer(this.loggerFactory);
-
-                foreach (var r in requestBodiesProperty.EnumerateObject())
-                {
-                    var requestBodyName = r.Name;
-
-                    var requestBody = requestBodyDeSerializer.DeSerialize(r.Value);
-
-                    components.RequestBodies.Add(requestBodyName, requestBody);
-                }
-            }
-
-            //  headers
-            if (jsonElement.TryGetProperty("headers", out JsonElement headersProperty))
-            {
-                // TODO: implement headers
-            }
-
-            //  securitySchemes
-            if (jsonElement.TryGetProperty("securitySchemes", out JsonElement securitySchemesProperty))
-            {
-                // TODO: implement securitySchemes
-            }
+            this.DeserializeResponses(jsonElement, components);
             
+            this.DeserializeParameters(jsonElement, components, strict);
+
+            this.DeserializeExamples(jsonElement, components, strict);
+
+            this.DeserializeRequestBodies(jsonElement, components, strict);
+
+            this.DeserializeHeaders(jsonElement, components, strict);
+
+            this.DeserializeSecuritySchemes(jsonElement, components, strict);
+
             //  links
             if (jsonElement.TryGetProperty("links", out JsonElement linksProperty))
             {
@@ -142,7 +106,7 @@ namespace OpenApi.Deserializers
             
             if (jsonElement.TryGetProperty("callbacks", out JsonElement callbacksProperty))
             {
-                this.logger.LogWarning("TODO: callbacks are not yet supported");
+                this.logger.LogWarning("callbacks are not yet supported");
             }
             
             if (jsonElement.TryGetProperty("pathItems", out JsonElement pathItemsProperty))
@@ -155,7 +119,7 @@ namespace OpenApi.Deserializers
                 {
                     var pathItemName = p.Name;
 
-                    var pathItem = pathItemsDeSerializer.DeSerialize(p.Value);
+                    var pathItem = pathItemsDeSerializer.DeSerialize(p.Value, strict);
 
                     components.PathItems.Add(pathItemName, pathItem);
                 }
@@ -164,6 +128,301 @@ namespace OpenApi.Deserializers
             this.logger.LogTrace("Finish ComponentsDeSerializer.DeSerialize");
 
             return components;
+        }
+
+        /// <summary>
+        /// Deserializes the Components.Schemas from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Component"/> json object
+        /// </param>
+        /// <param name="components">
+        /// The <see cref="Components"/> that is being deserialized
+        /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Component"/> object
+        /// </exception>
+        private void DeserializeSchemas(JsonElement jsonElement, Components components, bool strict)
+        {
+            if (jsonElement.TryGetProperty("schemas", out JsonElement schemasProperty))
+            {
+                var schemaDeSerializer = new SchemaDeSerializer(this.loggerFactory);
+
+                foreach (var item in schemasProperty.EnumerateObject())
+                {
+                    var key = item.Name;
+
+                    var schema = schemaDeSerializer.DeSerialize(item.Value, strict);
+
+                    components.Schemas.Add(key, schema);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the Parameter.Content <see cref="MediaType"/> from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Component"/> json object
+        /// </param>
+        /// <param name="components">
+        /// The <see cref="Components"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Component"/> object
+        /// </exception>
+        private void DeserializeResponses(JsonElement jsonElement, Components components)
+        {
+            // TODO: implement responses
+
+            if (jsonElement.TryGetProperty("responses", out JsonElement responsesProperty))
+            {
+                //var schemaDeSerializer = new ResponseDeSerializer(this.loggerFactory);
+
+                //foreach (var item in schemasProperty.EnumerateObject())
+                //{
+                //    var key = item.Name;
+
+                //    var schema = schemaDeSerializer.DeSerialize(item.Value);
+
+                //    components.Schemas.Add(key, schema);
+                //}
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the Components.parameters from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Component"/> json object
+        /// </param>
+        /// <param name="components">
+        /// The <see cref="Components"/> that is being deserialized
+        /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Component"/> object
+        /// </exception>
+        private void DeserializeParameters(JsonElement jsonElement, Components components, bool strict)
+        {
+            if (jsonElement.TryGetProperty("parameters", out JsonElement parametersProperty))
+            {
+                var parameterDeSerializer = new ParameterDeSerializer(this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+
+                foreach (var itemProperty in parametersProperty.EnumerateObject())
+                {
+                    var key = itemProperty.Name;
+                    var isRef = false;
+
+                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    {
+                        if (value.Name == "$ref")
+                        {
+                            isRef = true;
+
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                            components.ParametersReferences.Add(key, reference);
+                        }
+                    }
+
+                    if (!isRef)
+                    {
+                        var parameter = parameterDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.Parameters.Add(key, parameter);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the Components.examples from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Component"/> json object
+        /// </param>
+        /// <param name="components">
+        /// The <see cref="Components"/> that is being deserialized
+        /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Component"/> object
+        /// </exception>
+        private void DeserializeExamples(JsonElement jsonElement, Components components, bool strict)
+        {
+            if (jsonElement.TryGetProperty("examples", out JsonElement parametersProperty))
+            {
+                var exampleDeSerializer = new ExampleDeSerializer(this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+
+                foreach (var itemProperty in parametersProperty.EnumerateObject())
+                {
+                    var key = itemProperty.Name;
+                    var isRef = false;
+
+                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    {
+                        if (value.Name == "$ref")
+                        {
+                            isRef = true;
+
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                            components.ExamplesReferences.Add(key, reference);
+                        }
+                    }
+
+                    if (!isRef)
+                    {
+                        var example = exampleDeSerializer.DeSerialize(itemProperty.Value);
+                        components.Examples.Add(key, example);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the Components. requestBodies from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Component"/> json object
+        /// </param>
+        /// <param name="components">
+        /// The <see cref="Components"/> that is being deserialized
+        /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Component"/> object
+        /// </exception>
+        private void DeserializeRequestBodies(JsonElement jsonElement, Components components, bool strict)
+        {
+            if (jsonElement.TryGetProperty("requestBodies", out JsonElement requestBodiesProperty))
+            {
+                var requestBodyDeSerializer = new RequestBodyDeSerializer(this.loggerFactory);
+
+                foreach (var r in requestBodiesProperty.EnumerateObject())
+                {
+                    var requestBodyName = r.Name;
+
+                    var requestBody = requestBodyDeSerializer.DeSerialize(r.Value, strict);
+
+                    components.RequestBodies.Add(requestBodyName, requestBody);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the Components.parameters from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Component"/> json object
+        /// </param>
+        /// <param name="components">
+        /// The <see cref="Components"/> that is being deserialized
+        /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Component"/> object
+        /// </exception>
+        private void DeserializeHeaders(JsonElement jsonElement, Components components, bool strict)
+        {
+            if (jsonElement.TryGetProperty("headers", out JsonElement parametersProperty))
+            {
+                var headerDeSerializer = new HeaderDeSerializer(this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+
+                foreach (var itemProperty in parametersProperty.EnumerateObject())
+                {
+                    var key = itemProperty.Name;
+                    var isRef = false;
+
+                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    {
+                        if (value.Name == "$ref")
+                        {
+                            isRef = true;
+
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                            components.HeadersReferences.Add(key, reference);
+                        }
+                    }
+
+                    if (!isRef)
+                    {
+                        var header = headerDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.Headers.Add(key, header);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the Components.parameters from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Component"/> json object
+        /// </param>
+        /// <param name="components">
+        /// The <see cref="Components"/> that is being deserialized
+        /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Component"/> object
+        /// </exception>
+        private void DeserializeSecuritySchemes(JsonElement jsonElement, Components components, bool strict)
+        {
+            if (jsonElement.TryGetProperty("securitySchemes", out JsonElement parametersProperty))
+            {
+                var headerDeSerializer = new SecuritySchemeDeSerializer(this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+
+                foreach (var itemProperty in parametersProperty.EnumerateObject())
+                {
+                    var key = itemProperty.Name;
+                    var isRef = false;
+
+                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    {
+                        if (value.Name == "$ref")
+                        {
+                            isRef = true;
+
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                            components.SecuritySchemesReferences.Add(key, reference);
+                        }
+                    }
+
+                    if (!isRef)
+                    {
+                        var securityScheme = headerDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.SecuritySchemes.Add(key, securityScheme);
+                    }
+                }
+            }
         }
     }
 }

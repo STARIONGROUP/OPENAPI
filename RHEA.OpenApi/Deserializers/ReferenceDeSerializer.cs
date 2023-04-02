@@ -59,11 +59,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Reference"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="Reference"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Reference"/> object
         /// </exception>
-        internal Reference DeSerialize(JsonElement jsonElement)
+        internal Reference DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start ReferenceDeSerializer.DeSerialize");
 
@@ -71,10 +78,19 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("$ref", out JsonElement rwfProperty))
             {
-                throw new SerializationException("The REQUIRED Reference.$ref property is not available, this is an invalid Reference object");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED Reference.$ref property is not available, this is an invalid Reference object");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED Reference.$ref property is not available, this is an invalid Reference object");
+                }
             }
-
-            reference.Ref = rwfProperty.GetString();
+            else
+            {
+                reference.Ref = rwfProperty.GetString();
+            }
 
             if (jsonElement.TryGetProperty("summary", out JsonElement summaryProperty))
             {

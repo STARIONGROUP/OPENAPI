@@ -63,7 +63,7 @@ namespace OpenApi.Deserializers
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Discriminator"/> object
         /// </exception>
-        internal Discriminator DeSerialize(JsonElement jsonElement)
+        internal Discriminator DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start DiscriminatorDeSerializer.DeSerialize");
 
@@ -71,10 +71,19 @@ namespace OpenApi.Deserializers
             
             if (!jsonElement.TryGetProperty("propertyName", out JsonElement propertyNameProperty))
             {
-                throw new SerializationException("The REQUIRED Discriminator.propertyName property is not available, this is an invalid OpenAPI document");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED Discriminator.propertyName property is not available, this is an invalid OpenAPI document");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED Discriminator.propertyName property is not available, this is an invalid OpenAPI document");
+                }
             }
-
-            discriminator.PropertyName = propertyNameProperty.GetString();
+            else
+            {
+                discriminator.PropertyName = propertyNameProperty.GetString();
+            }
 
             if (jsonElement.TryGetProperty("mapping", out JsonElement mappingProperty))
             {

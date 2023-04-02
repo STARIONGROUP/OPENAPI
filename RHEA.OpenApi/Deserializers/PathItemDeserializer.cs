@@ -67,11 +67,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="PathItem"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="PathItem"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="PathItem"/> object
         /// </exception>
-        internal PathItem DeSerialize(JsonElement jsonElement)
+        internal PathItem DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start PathItemDeserializer.DeSerialize");
 
@@ -93,28 +100,28 @@ namespace OpenApi.Deserializers
                         pathItem.Description = jsonProperty.Value.GetString();
                         break;
                     case "get":
-                        pathItem.Get = operationDeSerializer.DeSerialize(jsonProperty.Value);
+                        pathItem.Get = operationDeSerializer.DeSerialize(jsonProperty.Value, strict);
                         break;
                     case "put":
-                        pathItem.Put = operationDeSerializer.DeSerialize(jsonProperty.Value);
+                        pathItem.Put = operationDeSerializer.DeSerialize(jsonProperty.Value, strict);
                         break;
                     case "post":
-                        pathItem.Post = operationDeSerializer.DeSerialize(jsonProperty.Value);
+                        pathItem.Post = operationDeSerializer.DeSerialize(jsonProperty.Value, strict);
                         break;
                     case "delete":
-                        pathItem.Delete = operationDeSerializer.DeSerialize(jsonProperty.Value);
+                        pathItem.Delete = operationDeSerializer.DeSerialize(jsonProperty.Value, strict);
                         break;
                     case "options":
-                        pathItem.Options = operationDeSerializer.DeSerialize(jsonProperty.Value);
+                        pathItem.Options = operationDeSerializer.DeSerialize(jsonProperty.Value, strict);
                         break;
                     case "head":
-                        pathItem.Head = operationDeSerializer.DeSerialize(jsonProperty.Value);
+                        pathItem.Head = operationDeSerializer.DeSerialize(jsonProperty.Value, strict);
                         break;
                     case "patch":
-                        pathItem.Patch = operationDeSerializer.DeSerialize(jsonProperty.Value);
+                        pathItem.Patch = operationDeSerializer.DeSerialize(jsonProperty.Value, strict);
                         break;
                     case "trace":
-                        pathItem.Trace = operationDeSerializer.DeSerialize(jsonProperty.Value);
+                        pathItem.Trace = operationDeSerializer.DeSerialize(jsonProperty.Value, strict);
                         break;
                     case "servers":
                         if (jsonProperty.Value.ValueKind == JsonValueKind.Array)
@@ -125,7 +132,7 @@ namespace OpenApi.Deserializers
 
                             foreach (var arrayItem in jsonProperty.Value.EnumerateArray())
                             {
-                                var server = serverDeSerializer.DeSerialize(arrayItem);
+                                var server = serverDeSerializer.DeSerialize(arrayItem, strict);
                                 servers.Add(server);
                             }
 
@@ -152,11 +159,11 @@ namespace OpenApi.Deserializers
                                     switch (arrayItemProperty.Name)
                                     {
                                         case "$ref":
-                                            var reference = referenceDeSerializer.DeSerialize(arrayItem);
+                                            var reference = referenceDeSerializer.DeSerialize(arrayItem, strict);
                                             parameterReferences.Add(reference);
                                             break;
                                         case "name":
-                                            var parameter = parameterDeSerializer.DeSerialize(arrayItem);
+                                            var parameter = parameterDeSerializer.DeSerialize(arrayItem, strict);
                                             parameters.Add(parameter);
                                             break;
                                     }

@@ -67,10 +67,15 @@ namespace OpenApi
         /// <param name="stream">
         /// the JSON input stream
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <returns>
         /// an <see cref="Document"/>
         /// </returns>
-        public Document DeSerialize(Stream stream)
+        public Document DeSerialize(Stream stream, bool strict = true)
         {
             var sw = Stopwatch.StartNew();
 
@@ -84,7 +89,7 @@ namespace OpenApi
                 {
                     case JsonValueKind.Object:
                         var documentDeserializer = new DocumentDeserializer(loggerFactory);
-                        document = documentDeserializer.DeSerialize(root);
+                        document = documentDeserializer.DeSerialize(root, strict);
                         break;
                     default:
                         throw new SerializationException();
@@ -94,20 +99,6 @@ namespace OpenApi
             this.logger.LogInformation("stream deserialized in {ElapsedTime} [ms]", sw.ElapsedMilliseconds);
 
             return document;
-        }
-
-        /// <summary>
-        /// Asynchronously deserializes the JSON stream to an <see cref="Document"/>
-        /// </summary>
-        /// <param name="stream">
-        /// the JSON input stream
-        /// </param>
-        /// <returns>
-        /// an <see cref="Document"/>
-        /// </returns>
-        public Task<Document> DeSerializeAsync(Stream stream)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

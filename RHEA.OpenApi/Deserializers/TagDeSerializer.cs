@@ -66,11 +66,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Tag"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="Tag"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Tag"/> object
         /// </exception>
-        internal Tag DeSerialize(JsonElement jsonElement)
+        internal Tag DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start TagDeSerializer.DeSerialize");
 
@@ -78,10 +85,19 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("name", out JsonElement nameProperty))
             {
-                throw new SerializationException("The REQUIRED Tag.name property is not available, this is an invalid OpenAPI document");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED Tag.name property is not available, this is an invalid OpenAPI document");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED Tag.name property is not available, this is an invalid OpenAPI document");
+                }
             }
-
-            tag.Name = nameProperty.GetString();
+            else
+            {
+                tag.Name = nameProperty.GetString();
+            }
 
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
@@ -91,7 +107,7 @@ namespace OpenApi.Deserializers
             if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
             {
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
-                tag.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty);
+                tag.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty, strict);
             }
 
             this.logger.LogTrace("Finish TagDeSerializer.DeSerialize");

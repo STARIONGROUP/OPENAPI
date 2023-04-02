@@ -66,11 +66,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="MediaType"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="MediaType"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="MediaType"/> object
         /// </exception>
-        internal MediaType DeSerialize(JsonElement jsonElement)
+        internal MediaType DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start MediaTypeDeSerializer.DeSerialize");
 
@@ -79,7 +86,7 @@ namespace OpenApi.Deserializers
             if (jsonElement.TryGetProperty("schema", out JsonElement schemaProperty))
             {
                 var schemaDeSerializer = new SchemaDeSerializer(this.loggerFactory);
-                mediaType.Schema = schemaDeSerializer.DeSerialize(schemaProperty);
+                mediaType.Schema = schemaDeSerializer.DeSerialize(schemaProperty, strict);
             }
 
             if (jsonElement.TryGetProperty("example", out JsonElement exampleProperty))
@@ -87,9 +94,9 @@ namespace OpenApi.Deserializers
                 mediaType.Example = exampleProperty.ToString();
             }
 
-            this.DeserializeExamples(jsonElement, mediaType);
+            this.DeserializeExamples(jsonElement, mediaType, strict);
 
-            this.DeserializeEncoding(jsonElement, mediaType);
+            this.DeserializeEncoding(jsonElement, mediaType, strict);
 
             this.logger.LogTrace("Finish MediaTypeDeSerializer.DeSerialize");
 
@@ -105,10 +112,15 @@ namespace OpenApi.Deserializers
         /// <param name="mediaType">
         /// The <see cref="MediaType"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="MediaType"/> object
         /// </exception>
-        private void DeserializeExamples(JsonElement jsonElement, MediaType mediaType)
+        private void DeserializeExamples(JsonElement jsonElement, MediaType mediaType, bool strict)
         {
             if (jsonElement.TryGetProperty("examples", out JsonElement examplesProperty))
             {
@@ -123,7 +135,7 @@ namespace OpenApi.Deserializers
                     {
                         if (value.Name == "$ref")
                         {
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value);
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                             mediaType.ExamplesReferences.Add(key, reference);
                         }
                         else
@@ -145,10 +157,15 @@ namespace OpenApi.Deserializers
         /// <param name="document">
         /// The <see cref="MediaType"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="MediaType"/> object
         /// </exception>
-        private void DeserializeEncoding(JsonElement jsonElement, MediaType mediaType)
+        private void DeserializeEncoding(JsonElement jsonElement, MediaType mediaType, bool strict)
         {
             if (jsonElement.TryGetProperty("encoding", out JsonElement encodingProperty))
             {
@@ -158,7 +175,7 @@ namespace OpenApi.Deserializers
                 {
                     var encodingName = e.Name;
 
-                    var encoding = encodingDeSerializer.DeSerialize(e.Value);
+                    var encoding = encodingDeSerializer.DeSerialize(e.Value, strict);
 
                     mediaType.Encoding.Add(encodingName, encoding);
                 }

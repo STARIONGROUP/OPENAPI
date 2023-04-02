@@ -67,11 +67,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Operation"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="Operation"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Operation"/> object
         /// </exception>
-        public Operation DeSerialize(JsonElement jsonElement)
+        public Operation DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start OperationDeSerializer.DeSerialize");
 
@@ -92,7 +99,7 @@ namespace OpenApi.Deserializers
             if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
             {
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
-                operation.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty);
+                operation.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty, strict);
             }
 
             if (jsonElement.TryGetProperty("operationId", out JsonElement operationIdProperty))
@@ -100,9 +107,9 @@ namespace OpenApi.Deserializers
                 operation.OperationId = operationIdProperty.GetString();
             }
 
-            this.DeserializeParameters(jsonElement, operation);
+            this.DeserializeParameters(jsonElement, operation, strict);
             
-            this.DeserializeRequestBody(jsonElement, operation);
+            this.DeserializeRequestBody(jsonElement, operation, strict);
 
             // responses
             this.logger.LogWarning("TODO: the Operation.responses property is not yet supported");
@@ -117,7 +124,7 @@ namespace OpenApi.Deserializers
             
             this.DeserializeSecurityRequirements(jsonElement, operation);
             
-            this.DeserializeServers(jsonElement, operation);
+            this.DeserializeServers(jsonElement, operation, strict);
 
             this.logger.LogTrace("Finish OperationDeSerializer.DeSerialize");
 
@@ -167,10 +174,15 @@ namespace OpenApi.Deserializers
         /// <param name="operation">
         /// The <see cref="Operation"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Operation"/> object
         /// </exception>
-        private void DeserializeParameters(JsonElement jsonElement, Operation operation)
+        private void DeserializeParameters(JsonElement jsonElement, Operation operation, bool strict)
         {
             if (jsonElement.TryGetProperty("parameters", out JsonElement parametersProperty))
             {
@@ -189,11 +201,11 @@ namespace OpenApi.Deserializers
                             switch (arrayItemProperty.Name)
                             {
                                 case "$ref":
-                                    var reference = referenceDeSerializer.DeSerialize(arrayItem);
+                                    var reference = referenceDeSerializer.DeSerialize(arrayItem, strict);
                                     parameterReferences.Add(reference);
                                     break;
                                 case "name":
-                                    var parameter = parameterDeSerializer.DeSerialize(arrayItem);
+                                    var parameter = parameterDeSerializer.DeSerialize(arrayItem, strict);
                                     parameters.Add(parameter);
                                     break;
                             }
@@ -219,10 +231,15 @@ namespace OpenApi.Deserializers
         /// <param name="operation">
         /// The <see cref="Operation"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Operation"/> object
         /// </exception>
-        private void DeserializeRequestBody(JsonElement jsonElement, Operation operation)
+        private void DeserializeRequestBody(JsonElement jsonElement, Operation operation, bool strict)
         {
             if (jsonElement.TryGetProperty("requestBody", out JsonElement requestBodyProperty))
             {
@@ -237,11 +254,11 @@ namespace OpenApi.Deserializers
                         switch (itemProperty.Name)
                         {
                             case "$ref":
-                                var reference = referenceDeSerializer.DeSerialize(requestBodyProperty);
+                                var reference = referenceDeSerializer.DeSerialize(requestBodyProperty, strict);
                                 operation.RequestBodyReference = reference;
                                 break;
                             case "content":
-                                var requestBody = parameterDeSerializer.DeSerialize(requestBodyProperty);
+                                var requestBody = parameterDeSerializer.DeSerialize(requestBodyProperty, strict);
                                 operation.RequestBody = requestBody;
                                 break;
                         }
@@ -300,10 +317,15 @@ namespace OpenApi.Deserializers
         /// <param name="operation">
         /// The <see cref="Operation"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Operation"/> object
         /// </exception>
-        private void DeserializeServers(JsonElement jsonElement, Operation operation)
+        private void DeserializeServers(JsonElement jsonElement, Operation operation, bool strict)
         {
             if (jsonElement.TryGetProperty("servers", out JsonElement serversProperty))
             {
@@ -315,7 +337,7 @@ namespace OpenApi.Deserializers
 
                     foreach (var arrayItem in serversProperty.EnumerateArray())
                     {
-                        var server = serverDeSerializer.DeSerialize(arrayItem);
+                        var server = serverDeSerializer.DeSerialize(arrayItem, strict);
                         servers.Add(server);
                     }
 

@@ -59,11 +59,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="ExternalDocumentation"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="ExternalDocumentation"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="ExternalDocumentation"/> object
         /// </exception>
-        internal ExternalDocumentation DeSerialize(JsonElement jsonElement)
+        internal ExternalDocumentation DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start ExternalDocumentationDeSerializer.DeSerialize");
 
@@ -76,10 +83,19 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("url", out JsonElement urlProperty))
             {
-                throw new SerializationException("The REQUIRED ExternalDocumentation.url property is not available, this is an invalid OpenAPI document");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED ExternalDocumentation.url property is not available, this is an invalid OpenAPI document");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED ExternalDocumentation.url property is not available, this is an invalid OpenAPI document");
+                }
             }
-
-            externalDocumentation.Url = urlProperty.GetString();
+            else
+            {
+                externalDocumentation.Url = urlProperty.GetString();
+            }
 
             this.logger.LogTrace("Finish ExternalDocumentationDeSerializer.DeSerialize");
 

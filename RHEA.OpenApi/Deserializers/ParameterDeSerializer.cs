@@ -66,11 +66,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Parameter"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="Parameter"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Parameter"/> object
         /// </exception>
-        internal Parameter DeSerialize(JsonElement jsonElement)
+        internal Parameter DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start ParameterDeSerializer.DeSerialize");
 
@@ -78,17 +85,35 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("name", out JsonElement nameProperty))
             {
-                throw new SerializationException("The REQUIRED Parameter.name property is not available, this is an invalid Parameter object");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED Parameter.name property is not available, this is an invalid Parameter object");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED Parameter.name property is not available, this is an invalid Parameter object");
+                }
             }
-
-            parameter.Name = nameProperty.GetString();
+            else
+            {
+                parameter.Name = nameProperty.GetString();
+            }
 
             if (!jsonElement.TryGetProperty("in", out JsonElement inProperty))
             {
-                throw new SerializationException("The REQUIRED Parameter.in property is not available, this is an invalid Parameter object");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED Parameter.in property is not available, this is an invalid Parameter object");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED Parameter.in property is not available, this is an invalid Parameter object");
+                }
             }
-
-            parameter.In = inProperty.GetString();
+            else
+            {
+                parameter.In = inProperty.GetString();
+            }
 
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
@@ -128,7 +153,7 @@ namespace OpenApi.Deserializers
             if (jsonElement.TryGetProperty("schema", out JsonElement schemaProperty))
             {
                 var schemaDeSerializer = new SchemaDeSerializer(this.loggerFactory);
-                parameter.Schema = schemaDeSerializer.DeSerialize(schemaProperty);
+                parameter.Schema = schemaDeSerializer.DeSerialize(schemaProperty, strict);
             }
 
             if (jsonElement.TryGetProperty("example", out JsonElement exampleProperty))
@@ -136,9 +161,9 @@ namespace OpenApi.Deserializers
                 parameter.Example = exampleProperty.ToString();
             }
 
-            this.DeserializeExamples(jsonElement, parameter);
+            this.DeserializeExamples(jsonElement, parameter, strict);
 
-            this.DeserializeContent(jsonElement, parameter);
+            this.DeserializeContent(jsonElement, parameter, strict);
 
             this.logger.LogTrace("Finish ParameterDeSerializer.DeSerialize");
 
@@ -154,10 +179,15 @@ namespace OpenApi.Deserializers
         /// <param name="parameter">
         /// The <see cref="Parameter "/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Parameter "/> object
         /// </exception>
-        private void DeserializeExamples(JsonElement jsonElement, Parameter parameter)
+        private void DeserializeExamples(JsonElement jsonElement, Parameter parameter, bool strict)
         {
             if (jsonElement.TryGetProperty("examples", out JsonElement examplesProperty))
             {
@@ -172,7 +202,7 @@ namespace OpenApi.Deserializers
                     {
                         if (value.Name == "$ref")
                         {
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value);
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                             parameter.ExamplesReferences.Add(key, reference);
                         }
                         else
@@ -194,10 +224,15 @@ namespace OpenApi.Deserializers
         /// <param name="parameter">
         /// The <see cref="Parameter"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Parameter"/> object
         /// </exception>
-        private void DeserializeContent(JsonElement jsonElement, Parameter parameter)
+        private void DeserializeContent(JsonElement jsonElement, Parameter parameter, bool strict)
         {
             if (jsonElement.TryGetProperty("content", out JsonElement contentProperty))
             {
@@ -207,7 +242,7 @@ namespace OpenApi.Deserializers
                 {
                     var mediaTypeName = x.Name;
 
-                    var mediaType = mediaTypeDeSerializer.DeSerialize(x.Value);
+                    var mediaType = mediaTypeDeSerializer.DeSerialize(x.Value, strict);
 
                     parameter.Content.Add(mediaTypeName, mediaType);
                 }

@@ -66,11 +66,18 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Server"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <returns>
+        /// an instance of <see cref="Server"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Server"/> object
         /// </exception>
-        internal Server DeSerialize(JsonElement jsonElement)
+        internal Server DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start ServerDeSerializer.DeSerialize");
 
@@ -78,11 +85,20 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("url", out JsonElement urlProperty))
             {
-                throw new SerializationException("The REQUIRED Server.url property is not available, this is an invalid OpenAPI document");
+                if (strict)
+                {
+                    throw new SerializationException("The REQUIRED Server.url property is not available, this is an invalid OpenAPI document");
+                }
+                else
+                {
+                    this.logger.LogWarning("The REQUIRED Server.url property is not available, this is an invalid OpenAPI document");
+                }
+            }
+            else
+            {
+                server.Url = urlProperty.GetString();
             }
 
-            server.Url = urlProperty.GetString();
-            
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
                 server.Description = descriptionProperty.GetString();
@@ -96,7 +112,7 @@ namespace OpenApi.Deserializers
                 {
                     var serverVariableName = v.Name;
 
-                    var serverVariable = serverVariableDeserializer.DeSerialize(v.Value);
+                    var serverVariable = serverVariableDeserializer.DeSerialize(v.Value, strict);
 
                     server.Variables.Add(serverVariableName, serverVariable);
                 }
