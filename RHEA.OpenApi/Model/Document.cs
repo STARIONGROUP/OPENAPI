@@ -20,6 +20,7 @@
 
 namespace OpenApi.Model
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -86,7 +87,7 @@ namespace OpenApi.Model
         /// that can be used. Only one of the security requirement objects need to be satisfied to authorize a request.
         /// Individual operations can override this definition. To make security optional, an empty security requirement ({}) can be included in the array.
         /// </summary>
-        public SecurityRequirement[] Security { get; set; }
+        public SecurityRequirement[] Security { get; set; } = Array.Empty<SecurityRequirement>();
 
         /// <summary>
         /// A list of tags used by the document with additional metadata.

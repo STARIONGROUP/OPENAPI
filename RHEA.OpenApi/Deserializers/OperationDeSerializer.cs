@@ -129,15 +129,7 @@ namespace OpenApi.Deserializers
                 operation.Deprecated = deprecatedProperty.GetBoolean();
             }
             
-            if (jsonElement.TryGetProperty("security", out JsonElement securityProperty))
-            {
-                var securityRequirementDeSerializer = new SecurityRequirementDeSerializer(this.loggerFactory);
-                operation.SecurityRequirement = securityRequirementDeSerializer.DeSerialize(securityProperty);
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Operation.security property is not provided in the OpenApi document");
-            }
+            this.DeserializeSecurityRequirements(jsonElement, operation);
             
             this.DeserializeServers(jsonElement, operation);
 
@@ -283,6 +275,47 @@ namespace OpenApi.Deserializers
             else
             {
                 this.logger.LogTrace("The optional Operation.requestBody property is not provided in the OpenApi document");
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the <see cref="SecurityRequirement"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Operation"/> json object
+        /// </param>
+        /// <param name="operation">
+        /// The <see cref="Operation"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Operation"/> object
+        /// </exception>
+        private void DeserializeSecurityRequirements(JsonElement jsonElement, Operation operation)
+        {
+            if (jsonElement.TryGetProperty("security", out JsonElement securityProperty))
+            {
+                if (securityProperty.ValueKind == JsonValueKind.Array)
+                {
+                    var securityRequirementDeSerializer = new SecurityRequirementDeSerializer(this.loggerFactory);
+
+                    var securityRequirements = new List<SecurityRequirement>();
+
+                    foreach (var arrayItem in securityProperty.EnumerateArray())
+                    {
+                        var securityRequirement = securityRequirementDeSerializer.DeSerialize(arrayItem);
+                        securityRequirements.Add(securityRequirement);
+                    }
+
+                    operation.Security = securityRequirements.ToArray();
+                }
+                else
+                {
+                    throw new SerializationException("the Operation.security property shall be an array");
+                }
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Document.security property is not provided in the OpenApi document");
             }
         }
 

@@ -107,7 +107,7 @@ namespace OpenApi.Model
         /// objects need to be satisfied to authorize a request. To make security optional, an empty security requirement ({}) can
         /// be included in the array. This definition overrides any declared top-level security. To remove a top-level security declaration, an empty array can be used.
         /// </summary>
-        public SecurityRequirement SecurityRequirement { get; set; }
+        public SecurityRequirement[] Security { get; set; } = Array.Empty<SecurityRequirement>();
 
         /// <summary>
         /// An alternative server array to service this operation. If an alternative server object is specified at the Path Item Object or Root level,

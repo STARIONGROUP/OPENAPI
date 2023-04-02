@@ -20,6 +20,7 @@
 
 namespace OpenApi.Deserializers
 {
+    using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Text.Json;
 
@@ -67,7 +68,19 @@ namespace OpenApi.Deserializers
         {
             var securityRequirement = new SecurityRequirement();
 
-            // TODO: implement SecurityRequirement
+            foreach (var item in jsonElement.EnumerateObject())
+            {
+                var key = item.Name;
+
+                var values = new List<string>();
+
+                foreach (var arrayItem in item.Value.EnumerateArray())
+                {
+                    values.Add(arrayItem.GetString());
+                }
+
+                securityRequirement.Add(key, values.ToArray());
+            }
 
             return securityRequirement;
         }
