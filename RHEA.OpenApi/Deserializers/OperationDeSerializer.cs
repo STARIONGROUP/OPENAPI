@@ -75,28 +75,7 @@ namespace OpenApi.Deserializers
         {
             var operation = new Operation();
 
-            if (jsonElement.TryGetProperty("tags", out JsonElement tagsProperty))
-            {
-                if (tagsProperty.ValueKind == JsonValueKind.Array)
-                {
-                    var tags = new List<string>();
-
-                    foreach (var arrayItem in tagsProperty.EnumerateArray())
-                    {
-                        tags.Add(arrayItem.GetString());
-                    }
-
-                    operation.Tags = tags.ToArray();
-                }
-                else
-                {
-                    throw new SerializationException("the Operation.tags property shall be an array");
-                }
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Operation.tags property is not provided in the OpenApi document");
-            }
+            this.DeserializeTags(jsonElement, operation);
 
             if (jsonElement.TryGetProperty("summary", out JsonElement summaryProperty))
             {
@@ -135,6 +114,88 @@ namespace OpenApi.Deserializers
                 this.logger.LogTrace("The optional Operation.operationId property is not provided in the OpenApi document");
             }
 
+            this.DeserializeParameters(jsonElement, operation);
+            
+            this.DeserializeRequestBody(jsonElement, operation);
+
+            // responses
+            this.logger.LogWarning("TODO: the Operation.responses property is not yet supported");
+
+            // callbacks
+            this.logger.LogWarning("TODO: the Operation.callbacks property is not yet supported");
+
+            if (jsonElement.TryGetProperty("deprecated", out JsonElement deprecatedProperty))
+            {
+                operation.Deprecated = deprecatedProperty.GetBoolean();
+            }
+            
+            if (jsonElement.TryGetProperty("security", out JsonElement securityProperty))
+            {
+                var securityRequirementDeSerializer = new SecurityRequirementDeSerializer(this.loggerFactory);
+                operation.SecurityRequirement = securityRequirementDeSerializer.DeSerialize(securityProperty);
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Operation.security property is not provided in the OpenApi document");
+            }
+            
+            this.DeserializeServers(jsonElement, operation);
+
+            return operation;
+        }
+
+        /// <summary>
+        /// Deserializes the <see cref="Tag"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Operation"/> json object
+        /// </param>
+        /// <param name="operation">
+        /// The <see cref="Operation"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Operation"/> object
+        /// </exception>
+        private void DeserializeTags(JsonElement jsonElement, Operation operation)
+        {
+            if (jsonElement.TryGetProperty("tags", out JsonElement tagsProperty))
+            {
+                if (tagsProperty.ValueKind == JsonValueKind.Array)
+                {
+                    var tags = new List<string>();
+
+                    foreach (var arrayItem in tagsProperty.EnumerateArray())
+                    {
+                        tags.Add(arrayItem.GetString());
+                    }
+
+                    operation.Tags = tags.ToArray();
+                }
+                else
+                {
+                    throw new SerializationException("the Operation.tags property shall be an array");
+                }
+            }
+            else
+            {
+                this.logger.LogTrace("The optional Operation.tags property is not provided in the OpenApi document");
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the <see cref="Parameter"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Operation"/> json object
+        /// </param>
+        /// <param name="operation">
+        /// The <see cref="Operation"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Operation"/> object
+        /// </exception>
+        private void DeserializeParameters(JsonElement jsonElement, Operation operation)
+        {
             if (jsonElement.TryGetProperty("parameters", out JsonElement parametersProperty))
             {
                 if (parametersProperty.ValueKind == JsonValueKind.Array)
@@ -162,7 +223,7 @@ namespace OpenApi.Deserializers
                             }
                         }
                     }
-                    
+
                     operation.ParameterReferences = parameterReferences.ToArray();
                     operation.Parameters = parameters.ToArray();
                 }
@@ -175,7 +236,22 @@ namespace OpenApi.Deserializers
             {
                 this.logger.LogTrace("The optional Operation.parameters property is not provided in the OpenApi document");
             }
+        }
 
+        /// <summary>
+        /// Deserializes the <see cref="RequestBody"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Operation"/> json object
+        /// </param>
+        /// <param name="operation">
+        /// The <see cref="Operation"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Operation"/> object
+        /// </exception>
+        private void DeserializeRequestBody(JsonElement jsonElement, Operation operation)
+        {
             if (jsonElement.TryGetProperty("requestBody", out JsonElement requestBodyProperty))
             {
                 if (requestBodyProperty.ValueKind == JsonValueKind.Object)
@@ -183,7 +259,7 @@ namespace OpenApi.Deserializers
                     var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                     var parameterDeSerializer = new RequestBodyDeSerializer(this.loggerFactory);
-                    
+
                     foreach (var itemProperty in requestBodyProperty.EnumerateObject())
                     {
                         switch (itemProperty.Name)
@@ -208,21 +284,22 @@ namespace OpenApi.Deserializers
             {
                 this.logger.LogTrace("The optional Operation.requestBody property is not provided in the OpenApi document");
             }
+        }
 
-            // responses
-            this.logger.LogWarning("TODO: the Operation.responses property is not yet supported");
-
-            // callbacks
-            this.logger.LogWarning("TODO: the Operation.callbacks property is not yet supported");
-
-            if (jsonElement.TryGetProperty("deprecated", out JsonElement deprecatedProperty))
-            {
-                operation.Deprecated = deprecatedProperty.GetBoolean();
-            }
-
-            // security
-            this.logger.LogWarning("TODO: the Operation.security property is not yet supported");
-
+        /// <summary>
+        /// Deserializes the <see cref="Server"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Operation"/> json object
+        /// </param>
+        /// <param name="operation">
+        /// The <see cref="Operation"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Operation"/> object
+        /// </exception>
+        private void DeserializeServers(JsonElement jsonElement, Operation operation)
+        {
             if (jsonElement.TryGetProperty("servers", out JsonElement serversProperty))
             {
                 if (serversProperty.ValueKind == JsonValueKind.Array)
@@ -244,8 +321,6 @@ namespace OpenApi.Deserializers
                     throw new SerializationException("the Operation.servers property shall be an array");
                 }
             }
-
-            return operation;
         }
     }
 }

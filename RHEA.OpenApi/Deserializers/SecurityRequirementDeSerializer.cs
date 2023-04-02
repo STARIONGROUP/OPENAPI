@@ -67,6 +67,8 @@ namespace OpenApi.Deserializers
         {
             var securityRequirement = new SecurityRequirement();
 
+            // TODO: implement SecurityRequirement
+
             return securityRequirement;
         }
     }

@@ -79,7 +79,7 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("openapi", out JsonElement openapiProperty))
             {
-                throw new SerializationException("The REQUIRED openapi property is not available, this is an invalid OpenAPI document");
+                throw new SerializationException("The REQUIRED Document.openapi property is not available, this is an invalid OpenAPI document");
             }
 
             document.OpenApi = openapiProperty.GetString();

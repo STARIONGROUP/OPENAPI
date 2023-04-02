@@ -20,7 +20,6 @@
 
 namespace OpenApi.Deserializers
 {
-    using System.Diagnostics.Contracts;
     using System.Runtime.Serialization;
     using System.Text.Json;
 
