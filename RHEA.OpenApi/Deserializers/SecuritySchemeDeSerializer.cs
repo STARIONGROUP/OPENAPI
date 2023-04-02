@@ -102,13 +102,13 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("name", out JsonElement nameProperty))
             {
-                if (strict)
+                if (securityScheme.Type == "apiKey" && strict)
                 {
-                    throw new SerializationException("The REQUIRED SecurityScheme.name property is not available, this is an invalid OpenAPI document");
+                    throw new SerializationException("The REQUIRED SecurityScheme.name property is not available while the securityScheme.Type=apiKey, this is an invalid OpenAPI document");
                 }
                 else
                 {
-                    this.logger.LogWarning("The REQUIRED SecurityScheme.name property is not available, this is an invalid OpenAPI document");
+                    this.logger.LogWarning("The REQUIRED SecurityScheme.name property is not available while the securityScheme.Type=apiKey, this is an invalid OpenAPI document");
                 }
             }
             else
@@ -118,13 +118,13 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("in", out JsonElement inProperty))
             {
-                if (strict)
+                if (securityScheme.Type == "apiKey" && strict)
                 {
-                    throw new SerializationException("The REQUIRED SecurityScheme.in property is not available, this is an invalid OpenAPI document");
+                    throw new SerializationException("The REQUIRED SecurityScheme.in property is not available while the securityScheme.Type=apiKey, this is an invalid OpenAPI document");
                 }
                 else
                 {
-                    this.logger.LogWarning("The REQUIRED SecurityScheme.in property is not available, this is an invalid OpenAPI document");
+                    this.logger.LogWarning("The REQUIRED SecurityScheme.in property is not available while the securityScheme.Type=apiKey, this is an invalid OpenAPI document");
                 }
             }
             else
@@ -134,9 +134,9 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("scheme", out JsonElement schemeProperty))
             {
-                if (strict)
+                if (securityScheme.Type == "http" && strict)
                 {
-                    throw new SerializationException("The REQUIRED SecurityScheme.scheme property is not available, this is an invalid OpenAPI document");
+                    throw new SerializationException("The REQUIRED SecurityScheme.scheme property is not available while the securityScheme.Type=http, this is an invalid OpenAPI document");
                 }
                 else
                 {
@@ -155,13 +155,13 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("flows", out JsonElement flowsProperty))
             {
-                if (strict)
+                if (securityScheme.Type == "oauth2" && strict)
                 {
-                    throw new SerializationException("The REQUIRED SecurityScheme.flows property is not available, this is an invalid OpenAPI document");
+                    throw new SerializationException("The REQUIRED SecurityScheme.flows property is not available while the securityScheme.Type=oauth2, this is an invalid OpenAPI document");
                 }
                 else
                 {
-                    this.logger.LogWarning("The REQUIRED SecurityScheme.flows property is not available, this is an invalid OpenAPI document");
+                    this.logger.LogWarning("The REQUIRED SecurityScheme.flows property is not available while the securityScheme.Type=oauth2, this is an invalid OpenAPI document");
                 }
             }
             else
@@ -172,13 +172,13 @@ namespace OpenApi.Deserializers
 
             if (!jsonElement.TryGetProperty("openIdConnectUrl", out JsonElement openIdConnectUrlProperty))
             {
-                if (strict)
+                if (securityScheme.Type == "openIdConnect" && strict)
                 {
-                    throw new SerializationException("The REQUIRED SecurityScheme.openIdConnectUrl property is not available, this is an invalid OpenAPI document");
+                    throw new SerializationException("The REQUIRED SecurityScheme.openIdConnectUrl property is not available while the securityScheme.Type=openIdConnect, this is an invalid OpenAPI document");
                 }
                 else
                 {
-                    this.logger.LogWarning("The REQUIRED SecurityScheme.openIdConnectUrl property is not available, this is an invalid OpenAPI document");
+                    this.logger.LogWarning("The REQUIRED SecurityScheme.openIdConnectUrl property is not available while the securityScheme.Type=openIdConnect, this is an invalid OpenAPI document");
                 }
             }
             else

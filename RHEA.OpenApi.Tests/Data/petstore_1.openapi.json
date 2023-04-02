@@ -1,17 +1,20 @@
 ﻿{
   "openapi": "3.1.0",
   "info": {
-    "version": "1.0.0",
-    "title": "Swagger Petstore",
+    "title": "Sample Pet Store App",
+    "summary": "A pet store manager.",
+    "description": "This is a sample server for a pet store.",
+    "termsOfService": "https://example.com/terms/",
     "contact": {
       "name": "API Support",
       "url": "https://www.example.com/support",
       "email": "support@example.com"
     },
     "license": {
-      "name": "MIT",
-      "url": "https://opensource.org/licenses/MIT"
-    }
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.1"
   },
   "servers": [
     {
@@ -213,6 +216,65 @@
           },
           "message": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "parameters": {
+      "skipParam": {
+        "name": "skip",
+        "in": "query",
+        "description": "number of items to skip",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "limitParam": {
+        "name": "limit",
+        "in": "query",
+        "description": "max records to return",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "responses": {
+      "NotFound": {
+        "description": "Entity not found."
+      },
+      "IllegalInput": {
+        "description": "Illegal input for operation."
+      },
+      "GeneralError": {
+        "description": "General Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GeneralError"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "api_key",
+        "in": "header"
+      },
+      "petstore_auth": {
+        "type": "oauth2",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "https://example.org/api/oauth/dialog",
+            "scopes": {
+              "write:pets": "modify pets in your account",
+              "read:pets": "read your pets"
+            }
           }
         }
       }

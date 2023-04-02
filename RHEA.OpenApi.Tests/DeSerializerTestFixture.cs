@@ -20,8 +20,9 @@
 
 namespace OpenApi.Tests
 {
-    using NUnit.Framework;
     using System.IO;
+
+    using NUnit.Framework;
 
     [TestFixture]
     public class DeSerializerTestFixture
@@ -62,7 +63,7 @@ namespace OpenApi.Tests
             var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "petstore_2.openapi.json");
 
             using var fs = File.OpenRead(fileName);
-            var document = this.deSerializer.DeSerialize(fs, false);
+            var document = this.deSerializer.DeSerialize(fs);
 
             Assert.That(document, Is.Not.Null);
         }
