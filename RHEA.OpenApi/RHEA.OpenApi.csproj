@@ -9,6 +9,10 @@
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/RHEAGROUP/OPENAPI.git</RepositoryUrl>
         <RepositoryType>Git</RepositoryType>
+        <PackageTags>OpenAPI .NET</PackageTags>
+        <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+        <IncludeSource>true</IncludeSource>
+        <IncludeSymbols>true</IncludeSymbols>
         <Authors>Sam Gerené</Authors>
         <RequireLicenseAcceptance>true</RequireLicenseAcceptance>
         <PackageReleaseNotes>

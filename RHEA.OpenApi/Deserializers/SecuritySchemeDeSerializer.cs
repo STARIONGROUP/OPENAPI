@@ -66,6 +66,11 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="SecurityScheme"/> json object
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <returns>
         /// An instance of an Open Api <see cref="SecurityScheme"/>
         /// </returns>
@@ -73,7 +78,6 @@ namespace OpenApi.Deserializers
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="SecurityScheme"/> object
         /// </exception>
         internal SecurityScheme DeSerialize(JsonElement jsonElement, bool strict)
-
         {
             this.logger.LogTrace("Start SecuritySchemeDeSerializer.DeSerialize");
 

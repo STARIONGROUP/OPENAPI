@@ -18,6 +18,7 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
   "tags": [
     {
       "name": "pet",
@@ -356,7 +357,8 @@
                   "name": "pet"
                 },
                 "type": "object"
-              }
+              },
+			  "example": "this is an example"
             },
             "application/xml": {
               "schema": {
