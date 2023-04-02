@@ -30,6 +30,8 @@
   ],
   "paths": {
     "/pet": {
+	  "summary": "this is a pathitem summary",
+	  "description": "this is a pathitem description",
       "post": {
         "tags": [
           "pet"
@@ -1109,7 +1111,13 @@
             }
           }
         }
-      }
+      },
+	  "servers": [
+		{
+			"url": "https://development.gigantic-server.com/v1",
+			"description": "Development server"
+		}
+		]
     },
     "/pet/findByStatus": {
       "get": {
@@ -1125,7 +1133,11 @@
             "in": "query",
             "description": "Status values that need to be considered for filter",
             "required": false,
+			"deprecated": false,
+			"allowEmptyValue": false,
+			"style": "simple",
             "explode": true,
+			"allowReserved": true,
             "schema": {
               "type": "string",
               "enum": [
