@@ -20,6 +20,8 @@
 
 namespace OpenApi.Model
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// Describes a single operation parameter.
     /// </summary>
@@ -60,5 +62,55 @@ namespace OpenApi.Model
         /// Use of this property is NOT RECOMMENDED, as it is likely to be removed in a later revision.
         /// </summary>
         public bool AllowEmptyValue { get; set; }
+
+        /// <summary>
+        /// Describes how the parameter value will be serialized depending on the type of the parameter value.
+        /// Default values (based on value of in): for query - form; for path - simple; for header - simple; for cookie - form.
+        /// </summary>
+        public string Style { get; set; }
+
+        /// <summary>
+        /// When this is true, parameter values of type array or object generate separate parameters for each value of the array or key-value pair of the map.
+        /// For other types of parameters this property has no effect. When style is form, the default value is true. For all other styles, the default value is false.
+        /// </summary>
+        public bool Explode { get; set; }
+
+        /// <summary>
+        /// Determines whether the parameter value SHOULD allow reserved characters, as defined by [RFC3986] :/?#[]@!$&'()*+,;= to be included without
+        /// percent-encoding. This property only applies to parameters with an in value of query. The default value is false.
+        /// </summary>
+        public bool AllowReserved { get; set; }
+
+        /// <summary>
+        /// The schema defining the type used for the <see cref="Parameter"/>
+        /// </summary>
+        public Schema Schema { get; set; }
+
+        /// <summary>
+        /// Example of the parameter’s potential value. The example SHOULD match the specified schema and encoding properties if present.
+        /// The example field is mutually exclusive of the examples field. Furthermore, if referencing a schema that contains an example,
+        /// the example value SHALL override the example provided by the schema. To represent examples of media types that cannot naturally
+        /// be represented in JSON or YAML, a string value can contain the example with escaping where necessary.
+        /// </summary>
+        public object Example { get; set; }
+
+        /// <summary>
+        /// Examples of the parameter’s potential value. Each example SHOULD contain a value in the correct format as specified in the parameter encoding.
+        /// The examples field is mutually exclusive of the example field. Furthermore, if referencing a schema that contains an example,
+        /// the examples value SHALL override the example provided by the schema.
+        /// </summary>
+        public Dictionary<string, Example> Examples { get; set; } = new Dictionary<string, Example>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Example"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> ExamplesReferences { get; set; } = new Dictionary<string, Reference>();
+
+        /// <summary>
+        /// A map containing the representations for the parameter. The key is the media type and the value describes it.
+        /// The map MUST only contain one entry.
+        /// </summary>
+        public Dictionary<string, MediaType> Content { get; set; } = new Dictionary<string, MediaType>();
     }
 }

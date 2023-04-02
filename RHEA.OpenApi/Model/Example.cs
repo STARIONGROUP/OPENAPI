@@ -42,7 +42,7 @@ namespace OpenApi.Model
         /// Embedded literal example. The value field and externalValue field are mutually exclusive. To represent examples of media types
         /// that cannot naturally represented in JSON or YAML, use a string value to contain the example, escaping where necessary.
         /// </summary>
-        public object Any { get; set; }
+        public object Value { get; set; }
 
         /// <summary>
         /// A URI that points to the literal example. This provides the capability to reference examples that cannot easily be included in JSON or YAML documents.

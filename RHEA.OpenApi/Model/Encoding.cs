@@ -45,6 +45,12 @@ namespace OpenApi.Model
         public Dictionary<string, Header> Headers { get; set; }
 
         /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Headers"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> HeadersReferences { get; set; } = new Dictionary<string, Reference>();
+
+        /// <summary>
         /// Describes how a specific property value will be serialized depending on its type.
         /// See Parameter Object for details on the style property.
         /// The behavior follows the same values as query parameters, including default values. This property SHALL be ignored if

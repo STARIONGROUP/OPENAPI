@@ -35,7 +35,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#media-type-object
     /// </remarks>
-    public class MediaTypeDeSerializer
+    internal class MediaTypeDeSerializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -74,15 +74,107 @@ namespace OpenApi.Deserializers
         {
             var mediaType = new MediaType();
 
-            // TODO: schema
+            if (jsonElement.TryGetProperty("schema", out JsonElement schemaProperty))
+            {
+                var schemaDeSerializer = new SchemaDeSerializer(this.loggerFactory);
+                mediaType.Schema = schemaDeSerializer.DeSerialize(schemaProperty);
+            }
+            else
+            {
+                this.logger.LogTrace("The optional MediaType.schema property is not provided in the OpenApi document");
+            }
 
-            // TODO: example
+            if (jsonElement.TryGetProperty("example", out JsonElement exampleProperty))
+            {
+                mediaType.Example = exampleProperty.ToString();
+            }
+            else
+            {
+                this.logger.LogTrace("The optional MediaType.example property is not provided in the OpenApi document");
+            }
 
-            // TODO: examples
+            this.DeserializeExamples(jsonElement, mediaType);
 
-            // TODO: encoding
+            this.DeserializeEncoding(jsonElement, mediaType);
 
             return mediaType;
+        }
+
+        /// <summary>
+        /// Deserializes the web hook <see cref="Encoding"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="MediaType"/> json object
+        /// </param>
+        /// <param name="mediaType">
+        /// The <see cref="MediaType"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="MediaType"/> object
+        /// </exception>
+        private void DeserializeExamples(JsonElement jsonElement, MediaType mediaType)
+        {
+            if (jsonElement.TryGetProperty("examples", out JsonElement examplesProperty))
+            {
+                var exampleDeSerializer = new ExampleDeSerializer(this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+
+                foreach (var itemProperty in examplesProperty.EnumerateObject())
+                {
+                    var key = itemProperty.Name;
+
+                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    {
+                        if (value.Name == "$ref")
+                        {
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value);
+                            mediaType.ExamplesReferences.Add(key, reference);
+                        }
+                        else
+                        {
+                            var example = exampleDeSerializer.DeSerialize(itemProperty.Value);
+                            mediaType.Examples.Add(key, example);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                this.logger.LogTrace("The optional MediaType.example property is not provided in the OpenApi document");
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the web hook <see cref="Encoding"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="MediaType"/> json object
+        /// </param>
+        /// <param name="document">
+        /// The <see cref="MediaType"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="MediaType"/> object
+        /// </exception>
+        private void DeserializeEncoding(JsonElement jsonElement, MediaType mediaType)
+        {
+            if (jsonElement.TryGetProperty("encoding", out JsonElement encodingProperty))
+            {
+                var encodingDeSerializer = new EncodingDeSerializer(this.loggerFactory);
+
+                foreach (var e in encodingProperty.EnumerateObject())
+                {
+                    var encodingName = e.Name;
+
+                    var encoding = encodingDeSerializer.DeSerialize(e.Value);
+
+                    mediaType.Encoding.Add(encodingName, encoding);
+                }
+            }
+            else
+            {
+                this.logger.LogTrace("The optional MediaType.encoding property is not provided in the OpenApi document");
+            }
         }
     }
 }

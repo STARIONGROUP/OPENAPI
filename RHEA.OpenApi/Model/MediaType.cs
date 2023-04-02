@@ -41,14 +41,20 @@ namespace OpenApi.Model
         /// The example field is mutually exclusive of the examples field. Furthermore, if referencing a schema which contains an example,
         /// the example value SHALL override the example provided by the schema.
         /// </summary>
-        public object Exanple { get; set; }
+        public object Example { get; set; }
 
         /// <summary>
         /// Examples of the media type. Each example object SHOULD match the media type and specified schema if present.
         /// The examples field is mutually exclusive of the example field. Furthermore, if referencing a schema which contains an example,
         /// the examples value SHALL override the example provided by the schema.
         /// </summary>
-        public Dictionary<string, Example> Examples { get; set; }
+        public Dictionary<string, Example> Examples { get; set; } = new Dictionary<string, Example>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Example"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> ExamplesReferences { get; set; } = new Dictionary<string, Reference>();
 
         /// <summary>
         /// A map between a property name and its encoding information. The key, being the property name, MUST exist in the schema as a property.

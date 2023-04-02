@@ -1,5 +1,5 @@
 ﻿// -------------------------------------------------------------------------------------------------
-// <copyright file="ParameterDeSerializer.cs" company="RHEA System S.A.">
+// <copyright file="HeaderDeSerializer.cs" company="RHEA System S.A.">
 // 
 //   Copyright 2023 RHEA System S.A.
 // 
@@ -20,7 +20,6 @@
 
 namespace OpenApi.Deserializers
 {
-    using System.Data.Common;
     using System.Runtime.Serialization;
     using System.Text.Json;
 
@@ -30,13 +29,13 @@ namespace OpenApi.Deserializers
     using OpenApi.Model;
 
     /// <summary>
-    /// The purpose of the <see cref="ParameterDeSerializer"/> is to deserialize the <see cref="Parameter"/> object
+    /// The purpose of the <see cref="HeaderDeSerializer"/> is to deserialize the <see cref="Header"/> object
     /// from a <see cref="JsonElement"/>
     /// </summary>
     /// <remarks>
-    /// https://spec.openapis.org/oas/latest.html#parameter-object
+    /// https://spec.openapis.org/oas/latest.html#header-object
     /// </remarks>
-    internal class ParameterDeSerializer
+    internal class HeaderDeSerializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -46,7 +45,7 @@ namespace OpenApi.Deserializers
         /// <summary>
         /// The <see cref="ILogger"/> used to log
         /// </summary>
-        private readonly ILogger<ParameterDeSerializer> logger;
+        private readonly ILogger<HeaderDeSerializer> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactDeSerializer"/> class.
@@ -54,143 +53,141 @@ namespace OpenApi.Deserializers
         /// <param name="loggerFactory">
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
         /// </param>
-        internal ParameterDeSerializer(ILoggerFactory loggerFactory = null)
+        internal HeaderDeSerializer(ILoggerFactory loggerFactory = null)
         {
             this.loggerFactory = loggerFactory;
 
-            this.logger = this.loggerFactory == null ? NullLogger<ParameterDeSerializer>.Instance : this.loggerFactory.CreateLogger<ParameterDeSerializer>();
+            this.logger = this.loggerFactory == null ? NullLogger<HeaderDeSerializer>.Instance : this.loggerFactory.CreateLogger<HeaderDeSerializer>();
         }
 
         /// <summary>
-        /// Deserializes an instance of <see cref="Parameter"/> from the provided <paramref name="jsonElement"/>
+        /// Deserializes an instance of <see cref="Header"/> from the provided <paramref name="jsonElement"/>
         /// </summary>
         /// <param name="jsonElement">
-        /// The <see cref="JsonElement"/> that contains the <see cref="Parameter"/> json object
+        /// The <see cref="JsonElement"/> that contains the <see cref="Header"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// An instance of an Open Api <see cref="Header"/>
+        /// </returns>
         /// <exception cref="SerializationException">
-        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Parameter"/> object
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Header"/> object
         /// </exception>
-        internal Parameter DeSerialize(JsonElement jsonElement)
+        internal Header DeSerialize(JsonElement jsonElement)
         {
-            var parameter = new Parameter();
+            var header = new Header();
 
-            if (!jsonElement.TryGetProperty("name", out JsonElement nameProperty))
+            if (jsonElement.TryGetProperty("name", out JsonElement nameProperty))
             {
-                throw new SerializationException("The REQUIRED Parameter.name property is not available, this is an invalid Parameter object");
+                throw new SerializationException("Header.name MUST NOT be specified, it is given in the corresponding headers map.");
             }
 
-            parameter.Name = nameProperty.GetString();
-
-            if (!jsonElement.TryGetProperty("in", out JsonElement inProperty))
+            if (jsonElement.TryGetProperty("in", out JsonElement inProperty))
             {
-                throw new SerializationException("The REQUIRED Parameter.in property is not available, this is an invalid Parameter object");
+                throw new SerializationException("Header.in MUST NOT be specified, it is implicitly in header.");
             }
-
-            parameter.In = inProperty.GetString();
 
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
-                parameter.Description = descriptionProperty.GetString();
+                header.Description = descriptionProperty.GetString();
             }
             else
             {
-                this.logger.LogTrace("The optional Parameter.description property is not provided in the OpenApi document");
+                this.logger.LogTrace("The optional Header.description property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("required", out JsonElement requiredProperty))
             {
-                parameter.Required = requiredProperty.GetBoolean();
+                header.Required = requiredProperty.GetBoolean();
             }
             else
             {
-                this.logger.LogTrace("The optional Parameter.required property is not provided in the OpenApi document");
+                this.logger.LogTrace("The optional Header.required property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("deprecated", out JsonElement deprecatedProperty))
             {
-                parameter.Deprecated = deprecatedProperty.GetBoolean();
+                header.Deprecated = deprecatedProperty.GetBoolean();
             }
             else
             {
-                this.logger.LogTrace("The optional Parameter.deprecated property is not provided in the OpenApi document");
+                this.logger.LogTrace("The optional Header.deprecated property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("allowEmptyValue", out JsonElement allowEmptyValueProperty))
             {
-                parameter.AllowEmptyValue = allowEmptyValueProperty.GetBoolean();
+                header.AllowEmptyValue = allowEmptyValueProperty.GetBoolean();
             }
             else
             {
-                this.logger.LogTrace("The optional Parameter.allowEmptyValue property is not provided in the OpenApi document");
+                this.logger.LogTrace("The optional Header.allowEmptyValue property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("style", out JsonElement styleProperty))
             {
-                parameter.Style = styleProperty.GetString();
+                header.Style = styleProperty.GetString();
             }
             else
             {
-                this.logger.LogTrace("The optional Parameter.description property is not provided in the OpenApi document");
+                this.logger.LogTrace("The optional Header.description property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("explode", out JsonElement explodeProperty))
             {
-                parameter.Explode = explodeProperty.GetBoolean();
+                header.Explode = explodeProperty.GetBoolean();
             }
             else
             {
-                this.logger.LogTrace("The optional Parameter.explode property is not provided in the OpenApi document");
+                this.logger.LogTrace("The optional Header.explode property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("allowReserved", out JsonElement allowReservedProperty))
             {
-                parameter.AllowReserved = allowReservedProperty.GetBoolean();
+                header.AllowReserved = allowReservedProperty.GetBoolean();
             }
             else
             {
-                this.logger.LogTrace("The optional Parameter.allowReserved property is not provided in the OpenApi document");
+                this.logger.LogTrace("The optional Header.allowReserved property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("schema", out JsonElement schemaProperty))
             {
                 var schemaDeSerializer = new SchemaDeSerializer(this.loggerFactory);
-                parameter.Schema = schemaDeSerializer.DeSerialize(schemaProperty);
+                header.Schema = schemaDeSerializer.DeSerialize(schemaProperty);
             }
             else
             {
-                this.logger.LogTrace("The optional Parameter.schema property is not provided in the OpenApi document");
+                this.logger.LogTrace("The optional Header.schema property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("example", out JsonElement exampleProperty))
             {
-                parameter.Example = exampleProperty.ToString();
+                header.Example = exampleProperty.ToString();
             }
             else
             {
-                this.logger.LogTrace("The optional Parameter.example property is not provided in the OpenApi document");
+                this.logger.LogTrace("The optional Header.example property is not provided in the OpenApi document");
             }
 
-            this.DeserializeExamples(jsonElement, parameter);
+            this.DeserializeExamples(jsonElement, header);
 
-            this.DeserializeContent(jsonElement, parameter);
+            this.DeserializeContent(jsonElement, header);
 
-            return parameter;
+            return header;
         }
 
         /// <summary>
-        /// Deserializes the Parameter  <see cref="Example"/>s from the provided <paramref name="jsonElement"/>
+        /// Deserializes the header <see cref="Example"/>s from the provided <paramref name="jsonElement"/>
         /// </summary>
         /// <param name="jsonElement">
-        /// The <see cref="JsonElement"/> that contains the <see cref="Parameter "/> json object
+        /// The <see cref="JsonElement"/> that contains the <see cref="Header"/> json object
         /// </param>
-        /// <param name="parameter">
-        /// The <see cref="Parameter "/> that is being deserialized
+        /// <param name="header">
+        /// The <see cref="Header"/> that is being deserialized
         /// </param>
         /// <exception cref="SerializationException">
-        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Parameter "/> object
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Header"/> object
         /// </exception>
-        private void DeserializeExamples(JsonElement jsonElement, Parameter parameter)
+        private void DeserializeExamples(JsonElement jsonElement, Header header)
         {
             if (jsonElement.TryGetProperty("examples", out JsonElement examplesProperty))
             {
@@ -206,12 +203,12 @@ namespace OpenApi.Deserializers
                         if (value.Name == "$ref")
                         {
                             var reference = referenceDeSerializer.DeSerialize(itemProperty.Value);
-                            parameter.ExamplesReferences.Add(key, reference);
+                            header.ExamplesReferences.Add(key, reference);
                         }
                         else
                         {
                             var example = exampleDeSerializer.DeSerialize(itemProperty.Value);
-                            parameter.Examples.Add(key, example);
+                            header.Examples.Add(key, example);
                         }
                     }
                 }
@@ -223,18 +220,18 @@ namespace OpenApi.Deserializers
         }
 
         /// <summary>
-        /// Deserializes the Parameter.Content <see cref="MediaType"/> from the provided <paramref name="jsonElement"/>
+        /// Deserializes the Header.Content <see cref="MediaType"/> from the provided <paramref name="jsonElement"/>
         /// </summary>
         /// <param name="jsonElement">
-        /// The <see cref="JsonElement"/> that contains the <see cref="Parameter"/> json object
+        /// The <see cref="JsonElement"/> that contains the <see cref="Header"/> json object
         /// </param>
-        /// <param name="parameter">
-        /// The <see cref="Parameter"/> that is being deserialized
+        /// <param name="header">
+        /// The <see cref="Header"/> that is being deserialized
         /// </param>
         /// <exception cref="SerializationException">
-        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Parameter"/> object
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Header"/> object
         /// </exception>
-        private void DeserializeContent(JsonElement jsonElement, Parameter parameter)
+        private void DeserializeContent(JsonElement jsonElement, Header header)
         {
             if (jsonElement.TryGetProperty("content", out JsonElement contentProperty))
             {
@@ -246,7 +243,7 @@ namespace OpenApi.Deserializers
 
                     var mediaType = mediaTypeDeSerializer.DeSerialize(x.Value);
 
-                    parameter.Content.Add(mediaTypeName, mediaType);
+                    header.Content.Add(mediaTypeName, mediaType);
                 }
             }
             else

@@ -71,7 +71,7 @@ namespace OpenApi.Model
         public Dictionary<string, PathItem> Webhooks { get; set; } = new Dictionary<string, PathItem>();
 
         /// <summary>
-        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Webhooks"/> array
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Webhooks"/> Dictionary
         /// once the complete Open API document has been deserialized
         /// </summary>
         internal Dictionary<string, Reference> WebhooksReferences { get; set; } = new Dictionary<string, Reference>();
