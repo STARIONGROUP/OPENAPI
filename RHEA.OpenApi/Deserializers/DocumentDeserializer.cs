@@ -67,7 +67,9 @@ namespace OpenApi.Deserializers
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Document"/> json object
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// An instance of an Open Api <see cref="Document"/>
+        /// </returns>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
         /// </exception>
@@ -82,14 +84,8 @@ namespace OpenApi.Deserializers
 
             document.OpenApi = openapiProperty.GetString();
 
-            if (!jsonElement.TryGetProperty("info", out JsonElement infoProperty))
-            {
-                throw new SerializationException("The REQUIRED info property is not available, this is an invalid OpenAPI document");
-            }
-
-            var infoDeserializer = new InfoDeserializer(this.loggerFactory);
-            document.Info = infoDeserializer.DeSerialize(infoProperty);
-
+            this.DeserializeInfo(jsonElement, document);
+            
             if (jsonElement.TryGetProperty("jsonSchemaDialect", out JsonElement jsonSchemaDialectProperty))
             {
                 document.JsonSchemaDialect = jsonSchemaDialectProperty.GetString();
@@ -99,6 +95,60 @@ namespace OpenApi.Deserializers
                 this.logger.LogTrace("The optional Document.jsonSchemaDialect property is not provided in the OpenApi document");
             }
 
+            this.DeserializeServers(jsonElement, document);
+
+            this.DeserializePathItems(jsonElement, document);
+
+            this.DeserializeWebhooks(jsonElement, document);
+
+            this.DeserializeComponents(jsonElement, document);
+            
+            this.DeserializeSecurityRequirements(jsonElement, document);
+
+            this.DeserializeTags(jsonElement, document);
+
+            this.DeserializeExternalDocumentation(jsonElement, document);
+            
+            return document;
+        }
+
+        /// <summary>
+        /// Deserializes the <see cref="Info"/> from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Document"/> json object
+        /// </param>
+        /// <param name="document">
+        /// The <see cref="Document"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
+        /// </exception>
+        private void DeserializeInfo(JsonElement jsonElement, Document document)
+        {
+            if (!jsonElement.TryGetProperty("info", out JsonElement infoProperty))
+            {
+                throw new SerializationException("The REQUIRED info property is not available, this is an invalid OpenAPI document");
+            }
+
+            var infoDeserializer = new InfoDeserializer(this.loggerFactory);
+            document.Info = infoDeserializer.DeSerialize(infoProperty);
+        }
+
+        /// <summary>
+        /// Deserializes the <see cref="Server"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Document"/> json object
+        /// </param>
+        /// <param name="document">
+        /// The <see cref="Document"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
+        /// </exception>
+        private void DeserializeServers(JsonElement jsonElement, Document document)
+        {
             if (jsonElement.TryGetProperty("servers", out JsonElement serversProperty))
             {
                 if (serversProperty.ValueKind == JsonValueKind.Array)
@@ -124,7 +174,22 @@ namespace OpenApi.Deserializers
             {
                 this.logger.LogTrace("The optional Document.servers property is not provided in the OpenApi document");
             }
+        }
 
+        /// <summary>
+        /// Deserializes the <see cref="PathItem"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Document"/> json object
+        /// </param>
+        /// <param name="document">
+        /// The <see cref="Document"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
+        /// </exception>
+        private void DeserializePathItems(JsonElement jsonElement, Document document)
+        {
             if (jsonElement.TryGetProperty("paths", out JsonElement pathsProperty))
             {
                 var pathItemDeserializer = new PathItemDeserializer(this.loggerFactory);
@@ -142,17 +207,66 @@ namespace OpenApi.Deserializers
             {
                 this.logger.LogWarning("The Document.paths property is not provided in the OpenApi document");
             }
+        }
 
-            // webhooks
+        /// <summary>
+        /// Deserializes the web hook <see cref="PathItem"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Document"/> json object
+        /// </param>
+        /// <param name="document">
+        /// The <see cref="Document"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
+        /// </exception>
+        private void DeserializeWebhooks(JsonElement jsonElement, Document document)
+        {
             if (jsonElement.TryGetProperty("webhooks", out JsonElement webhooksProperty))
             {
-                this.logger.LogWarning("TODO: the Document.webhooks property is not yet supported");
+                var pathItemDeserializer = new PathItemDeserializer(this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+                
+                foreach (var itemProperty in webhooksProperty.EnumerateObject())
+                {
+                    var key = itemProperty.Name;
+
+                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    {
+                        if (value.Name == "$ref")
+                        {
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value);
+                            document.WebhooksReferences.Add(key, reference);
+                        }
+                        else
+                        {
+                            var pathItem  =  pathItemDeserializer.DeSerialize(itemProperty.Value);
+                            document.Webhooks.Add(key, pathItem);
+                        }
+                    }
+                }
             }
             else
             {
                 this.logger.LogTrace("The optional Document.webhooks property is not provided in the OpenApi document");
             }
+        }
 
+        /// <summary>
+        /// Deserializes the <see cref="Components"/> from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Document"/> json object
+        /// </param>
+        /// <param name="document">
+        /// The <see cref="Document"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
+        /// </exception>
+        private void DeserializeComponents(JsonElement jsonElement, Document document)
+        {
             if (jsonElement.TryGetProperty("components", out JsonElement componentsProperty))
             {
                 var componentsDeSerializer = new ComponentsDeSerializer(this.loggerFactory);
@@ -163,7 +277,22 @@ namespace OpenApi.Deserializers
             {
                 this.logger.LogTrace("The optional Document.components property is not provided in the OpenApi document");
             }
-            
+        }
+
+        /// <summary>
+        /// Deserializes the <see cref="SecurityRequirement"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Document"/> json object
+        /// </param>
+        /// <param name="document">
+        /// The <see cref="Document"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
+        /// </exception>
+        private void DeserializeSecurityRequirements(JsonElement jsonElement, Document document)
+        {
             if (jsonElement.TryGetProperty("security", out JsonElement securityProperty))
             {
                 if (securityProperty.ValueKind == JsonValueKind.Array)
@@ -189,7 +318,22 @@ namespace OpenApi.Deserializers
             {
                 this.logger.LogTrace("The optional Document.security property is not provided in the OpenApi document");
             }
+        }
 
+        /// <summary>
+        /// Deserializes the <see cref="Tag"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Document"/> json object
+        /// </param>
+        /// <param name="document">
+        /// The <see cref="Document"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
+        /// </exception>
+        private void DeserializeTags(JsonElement jsonElement, Document document)
+        {
             if (jsonElement.TryGetProperty("tags", out JsonElement tagsProperty))
             {
                 if (tagsProperty.ValueKind == JsonValueKind.Array)
@@ -215,7 +359,22 @@ namespace OpenApi.Deserializers
             {
                 this.logger.LogTrace("The optional Document.tags property is not provided in the OpenApi document");
             }
-            
+        }
+
+        /// <summary>
+        /// Deserializes the <see cref="ExternalDocumentation"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Document"/> json object
+        /// </param>
+        /// <param name="document">
+        /// The <see cref="Document"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
+        /// </exception>
+        private void DeserializeExternalDocumentation(JsonElement jsonElement, Document document)
+        {
             if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
             {
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
@@ -226,8 +385,6 @@ namespace OpenApi.Deserializers
             {
                 this.logger.LogTrace("The optional Document.externalDocs property is not provided in the OpenApi document");
             }
-
-            return document;
         }
     }
 }
