@@ -72,6 +72,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal Tag DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start TagDeSerializer.DeSerialize");
+
             var tag = new Tag();
 
             if (!jsonElement.TryGetProperty("name", out JsonElement nameProperty))
@@ -85,20 +87,14 @@ namespace OpenApi.Deserializers
             {
                 tag.Description = descriptionProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Tag.description property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
             {
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
                 tag.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty);
             }
-            else
-            {
-                this.logger.LogTrace("The optional Tag.externalDocs property is not provided in the OpenApi document");
-            }
+
+            this.logger.LogTrace("Finish TagDeSerializer.DeSerialize");
 
             return tag;
         }

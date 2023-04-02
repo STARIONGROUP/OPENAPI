@@ -72,15 +72,13 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal RequestBody DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start RequestBodyDeSerializer.DeSerialize");
+
             var requestBody = new RequestBody();
-            
+
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
                 requestBody.Description = descriptionProperty.GetString();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional RequestBody.description property is not provided in the OpenApi document");
             }
 
             if (!jsonElement.TryGetProperty("content", out JsonElement contentProperty))
@@ -105,10 +103,8 @@ namespace OpenApi.Deserializers
             {
                 requestBody.Required = requiredProperty.GetBoolean();
             }
-            else
-            {
-                this.logger.LogTrace("The optional RequestBody.required property is not provided in the OpenApi document");
-            }
+
+            this.logger.LogTrace("Finish RequestBodyDeSerializer.DeSerialize");
 
             return requestBody;
         }

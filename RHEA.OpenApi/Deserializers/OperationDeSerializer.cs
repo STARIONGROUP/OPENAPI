@@ -73,6 +73,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         public Operation DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start OperationDeSerializer.DeSerialize");
+
             var operation = new Operation();
 
             this.DeserializeTags(jsonElement, operation);
@@ -81,18 +83,10 @@ namespace OpenApi.Deserializers
             {
                 operation.Summary = summaryProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Operation.summary property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
                 operation.Description = descriptionProperty.GetString();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Operation.description property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
@@ -100,18 +94,10 @@ namespace OpenApi.Deserializers
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
                 operation.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty);
             }
-            else
-            {
-                this.logger.LogTrace("The optional Operation.externalDocs property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("operationId", out JsonElement operationIdProperty))
             {
                 operation.OperationId = operationIdProperty.GetString();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Operation.operationId property is not provided in the OpenApi document");
             }
 
             this.DeserializeParameters(jsonElement, operation);
@@ -132,6 +118,8 @@ namespace OpenApi.Deserializers
             this.DeserializeSecurityRequirements(jsonElement, operation);
             
             this.DeserializeServers(jsonElement, operation);
+
+            this.logger.LogTrace("Finish OperationDeSerializer.DeSerialize");
 
             return operation;
         }
@@ -167,10 +155,6 @@ namespace OpenApi.Deserializers
                 {
                     throw new SerializationException("the Operation.tags property shall be an array");
                 }
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Operation.tags property is not provided in the OpenApi document");
             }
         }
 
@@ -224,10 +208,6 @@ namespace OpenApi.Deserializers
                     throw new SerializationException("the Operation.parameters property shall be an array");
                 }
             }
-            else
-            {
-                this.logger.LogTrace("The optional Operation.parameters property is not provided in the OpenApi document");
-            }
         }
 
         /// <summary>
@@ -272,10 +252,6 @@ namespace OpenApi.Deserializers
                     throw new SerializationException("the Operation.requestBody property shall be an object");
                 }
             }
-            else
-            {
-                this.logger.LogTrace("The optional Operation.requestBody property is not provided in the OpenApi document");
-            }
         }
 
         /// <summary>
@@ -312,10 +288,6 @@ namespace OpenApi.Deserializers
                 {
                     throw new SerializationException("the Operation.security property shall be an array");
                 }
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Document.security property is not provided in the OpenApi document");
             }
         }
 

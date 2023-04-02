@@ -65,15 +65,13 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal ExternalDocumentation DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start ExternalDocumentationDeSerializer.DeSerialize");
+
             var externalDocumentation = new ExternalDocumentation();
 
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
                 externalDocumentation.Description = descriptionProperty.GetString();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional ExternalDocumentation.description property is not provided in the OpenApi document");
             }
 
             if (!jsonElement.TryGetProperty("url", out JsonElement urlProperty))
@@ -82,6 +80,8 @@ namespace OpenApi.Deserializers
             }
 
             externalDocumentation.Url = urlProperty.GetString();
+
+            this.logger.LogTrace("Finish ExternalDocumentationDeSerializer.DeSerialize");
 
             return externalDocumentation;
         }

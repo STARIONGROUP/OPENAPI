@@ -65,34 +65,26 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal Contact DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start ContactDeSerializer.DeSerialize");
+
             var contact = new Contact();
 
             if (jsonElement.TryGetProperty("name", out JsonElement nameProperty))
             {
                 contact.Name = nameProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Contact.name property is not provided in the OpenApi document");
-            }
-
+            
             if (jsonElement.TryGetProperty("url", out JsonElement urlProperty))
             {
                 contact.Url = urlProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Contact.url property is not provided in the OpenApi document");
-            }
-
+            
             if (jsonElement.TryGetProperty("email", out JsonElement emailProperty))
             {
                 contact.Email = emailProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Contact.email property is not provided in the OpenApi document");
-            }
+            
+            this.logger.LogTrace("Finish ContactDeSerializer.DeSerialize");
 
             return contact;
         }

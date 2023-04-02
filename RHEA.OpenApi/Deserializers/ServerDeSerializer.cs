@@ -72,6 +72,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal Server DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start ServerDeSerializer.DeSerialize");
+
             var server = new Server();
 
             if (!jsonElement.TryGetProperty("url", out JsonElement urlProperty))
@@ -84,10 +86,6 @@ namespace OpenApi.Deserializers
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
                 server.Description = descriptionProperty.GetString();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Server.description property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("variables", out JsonElement variablesProperty))
@@ -105,10 +103,8 @@ namespace OpenApi.Deserializers
 
                 server.Description = descriptionProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Server.variables property is not provided in the OpenApi document");
-            }
+
+            this.logger.LogTrace("Finish ServerDeSerializer.DeSerialize");
 
             return server;
         }

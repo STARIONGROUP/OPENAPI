@@ -72,6 +72,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal Components DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start ComponentsDeSerializer.DeSerialize");
+
             var components = new Components();
 
             //  schemas
@@ -79,19 +81,11 @@ namespace OpenApi.Deserializers
             {
                 // TODO: implement schemas
             }
-            else
-            {
-                this.logger.LogTrace("The optional Components.schemas property is not provided in the OpenApi document");
-            }
 
             //  responses
             if (jsonElement.TryGetProperty("responses", out JsonElement responsesProperty))
             {
                 // TODO: implement responses
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Components.responses property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("parameters", out JsonElement parametersProperty))
@@ -107,19 +101,11 @@ namespace OpenApi.Deserializers
                     components.Parameters.Add(parameterName, parameter);
                 }
             }
-            else
-            {
-                this.logger.LogTrace("The optional Components.parameters property is not provided in the OpenApi document");
-            }
 
             //  examples
             if (jsonElement.TryGetProperty("examples", out JsonElement examplesProperty))
             {
                 // TODO: implement examples
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Components.examples property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("requestBodies", out JsonElement requestBodiesProperty))
@@ -135,19 +121,11 @@ namespace OpenApi.Deserializers
                     components.RequestBodies.Add(requestBodyName, requestBody);
                 }
             }
-            else
-            {
-                this.logger.LogTrace("The optional Components.requestBodies property is not provided in the OpenApi document");
-            }
 
             //  headers
             if (jsonElement.TryGetProperty("headers", out JsonElement headersProperty))
             {
                 // TODO: implement headers
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Components.headers property is not provided in the OpenApi document");
             }
 
             //  securitySchemes
@@ -155,28 +133,16 @@ namespace OpenApi.Deserializers
             {
                 // TODO: implement securitySchemes
             }
-            else
-            {
-                this.logger.LogTrace("The optional Components.securitySchemes property is not provided in the OpenApi document");
-            }
-
+            
             //  links
             if (jsonElement.TryGetProperty("links", out JsonElement linksProperty))
             {
                 // TODO: implement links
             }
-            else
-            {
-                this.logger.LogTrace("The optional Components.links property is not provided in the OpenApi document");
-            }
             
             if (jsonElement.TryGetProperty("callbacks", out JsonElement callbacksProperty))
             {
                 this.logger.LogWarning("TODO: callbacks are not yet supported");
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Components.callbacks property is not provided in the OpenApi document");
             }
             
             if (jsonElement.TryGetProperty("pathItems", out JsonElement pathItemsProperty))
@@ -194,10 +160,8 @@ namespace OpenApi.Deserializers
                     components.PathItems.Add(pathItemName, pathItem);
                 }
             }
-            else
-            {
-                this.logger.LogTrace("The optional Components.pathItems property is not provided in the OpenApi document");
-            }
+
+            this.logger.LogTrace("Finish ComponentsDeSerializer.DeSerialize");
 
             return components;
         }

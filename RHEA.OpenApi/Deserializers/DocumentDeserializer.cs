@@ -75,6 +75,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal Document DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start DocumentDeserializer.DeSerialize");
+
             var document = new Document();
 
             if (!jsonElement.TryGetProperty("openapi", out JsonElement openapiProperty))
@@ -90,10 +92,6 @@ namespace OpenApi.Deserializers
             {
                 document.JsonSchemaDialect = jsonSchemaDialectProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Document.jsonSchemaDialect property is not provided in the OpenApi document");
-            }
 
             this.DeserializeServers(jsonElement, document);
 
@@ -108,7 +106,9 @@ namespace OpenApi.Deserializers
             this.DeserializeTags(jsonElement, document);
 
             this.DeserializeExternalDocumentation(jsonElement, document);
-            
+
+            this.logger.LogTrace("Finish DocumentDeserializer.DeSerialize");
+
             return document;
         }
 
@@ -170,10 +170,6 @@ namespace OpenApi.Deserializers
                     throw new SerializationException("the servers property shall be an array");
                 }
             }
-            else
-            {
-                this.logger.LogTrace("The optional Document.servers property is not provided in the OpenApi document");
-            }
         }
 
         /// <summary>
@@ -202,10 +198,6 @@ namespace OpenApi.Deserializers
 
                     document.Paths.Add(pathItemName, pathItem);
                 }
-            }
-            else
-            {
-                this.logger.LogWarning("The Document.paths property is not provided in the OpenApi document");
             }
         }
 
@@ -247,10 +239,6 @@ namespace OpenApi.Deserializers
                     }
                 }
             }
-            else
-            {
-                this.logger.LogTrace("The optional Document.webhooks property is not provided in the OpenApi document");
-            }
         }
 
         /// <summary>
@@ -272,10 +260,6 @@ namespace OpenApi.Deserializers
                 var componentsDeSerializer = new ComponentsDeSerializer(this.loggerFactory);
 
                 document.Components = componentsDeSerializer.DeSerialize(componentsProperty);
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Document.components property is not provided in the OpenApi document");
             }
         }
 
@@ -314,10 +298,6 @@ namespace OpenApi.Deserializers
                     throw new SerializationException("the Document.security property shall be an array");
                 }
             }
-            else
-            {
-                this.logger.LogTrace("The optional Document.security property is not provided in the OpenApi document");
-            }
         }
 
         /// <summary>
@@ -355,10 +335,6 @@ namespace OpenApi.Deserializers
                     throw new SerializationException("the Document.tags property shall be an array");
                 }
             }
-            else
-            {
-                this.logger.LogTrace("The optional Document.tags property is not provided in the OpenApi document");
-            }
         }
 
         /// <summary>
@@ -380,10 +356,6 @@ namespace OpenApi.Deserializers
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
 
                 document.externalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty);
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Document.externalDocs property is not provided in the OpenApi document");
             }
         }
     }

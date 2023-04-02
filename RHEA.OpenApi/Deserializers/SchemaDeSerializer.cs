@@ -72,47 +72,35 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal Schema DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start SchemaDeSerializer.DeSerialize");
+
             var schema = new Schema();
 
             if (jsonElement.TryGetProperty("discriminator", out JsonElement discriminatorProperty))
             {
                 var discriminatorDeSerializer = new DiscriminatorDeSerializer(this.loggerFactory);
-                schema.Discriminator = discriminatorDeSerializer.DeSerialize(jsonElement);
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Schema.discriminator property is not provided in the OpenApi document");
+                schema.Discriminator = discriminatorDeSerializer.DeSerialize(discriminatorProperty);
             }
 
             if (jsonElement.TryGetProperty("xml", out JsonElement xmlProperty))
             {
                 var xmlDeSerializer = new XMLDeSerializer(this.loggerFactory);
-                schema.XML = xmlDeSerializer.DeSerialize(jsonElement);
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Schema.xml property is not provided in the OpenApi document");
+                schema.XML = xmlDeSerializer.DeSerialize(xmlProperty);
             }
 
             if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
             {
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
-                schema.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(jsonElement);
+                schema.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty);
 
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Schema.xml property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("example", out JsonElement exampleProperty))
             {
                 schema.Example = exampleProperty.ToString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Schema.example property is not provided in the OpenApi document");
-            }
+
+            this.logger.LogTrace("Finish SchemaDeSerializer.DeSerialize");
 
             return schema;
         }

@@ -72,6 +72,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal Info DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start InfoDeserializer.DeSerialize");
+
             var info = new Info();
 
             if (!jsonElement.TryGetProperty("title", out JsonElement titleProperty))
@@ -85,27 +87,15 @@ namespace OpenApi.Deserializers
             {
                 info.Summary = summaryProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Info.summary property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
                 info.Description = descriptionProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Info.description property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("termsOfService", out JsonElement termsOfServiceProperty))
             {
                 info.TermsOfService= termsOfServiceProperty.GetString();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Info.termsOfService property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("contact", out JsonElement contactProperty))
@@ -113,19 +103,11 @@ namespace OpenApi.Deserializers
                 var contactDeSerializer = new ContactDeSerializer(this.loggerFactory); 
                 info.Contact = contactDeSerializer.DeSerialize(contactProperty);
             }
-            else
-            {
-                this.logger.LogTrace("The optional Info.contact property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("license", out JsonElement licenseProperty))
             {
                 var licenseDeSerializer = new LicenseDeSerializer(this.loggerFactory);
                 info.License = licenseDeSerializer.DeSerialize(licenseProperty);
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Info.license property is not provided in the OpenApi document");
             }
 
             if (!jsonElement.TryGetProperty("version", out JsonElement versionProperty))
@@ -134,6 +116,8 @@ namespace OpenApi.Deserializers
             }
 
             info.Version = versionProperty.GetString();
+
+            this.logger.LogTrace("Finish InfoDeserializer.DeSerialize");
 
             return info;
         }

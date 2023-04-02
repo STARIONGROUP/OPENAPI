@@ -72,6 +72,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal MediaType DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start MediaTypeDeSerializer.DeSerialize");
+
             var mediaType = new MediaType();
 
             if (jsonElement.TryGetProperty("schema", out JsonElement schemaProperty))
@@ -79,23 +81,17 @@ namespace OpenApi.Deserializers
                 var schemaDeSerializer = new SchemaDeSerializer(this.loggerFactory);
                 mediaType.Schema = schemaDeSerializer.DeSerialize(schemaProperty);
             }
-            else
-            {
-                this.logger.LogTrace("The optional MediaType.schema property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("example", out JsonElement exampleProperty))
             {
                 mediaType.Example = exampleProperty.ToString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional MediaType.example property is not provided in the OpenApi document");
-            }
 
             this.DeserializeExamples(jsonElement, mediaType);
 
             this.DeserializeEncoding(jsonElement, mediaType);
+
+            this.logger.LogTrace("Finish MediaTypeDeSerializer.DeSerialize");
 
             return mediaType;
         }
@@ -138,10 +134,6 @@ namespace OpenApi.Deserializers
                     }
                 }
             }
-            else
-            {
-                this.logger.LogTrace("The optional MediaType.example property is not provided in the OpenApi document");
-            }
         }
 
         /// <summary>
@@ -170,10 +162,6 @@ namespace OpenApi.Deserializers
 
                     mediaType.Encoding.Add(encodingName, encoding);
                 }
-            }
-            else
-            {
-                this.logger.LogTrace("The optional MediaType.encoding property is not provided in the OpenApi document");
             }
         }
     }

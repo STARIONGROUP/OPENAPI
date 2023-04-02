@@ -65,6 +65,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal License DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start LicenseDeSerializer.DeSerialize");
+
             var license = new License();
             
             if (!jsonElement.TryGetProperty("name", out JsonElement nameProperty))
@@ -78,19 +80,13 @@ namespace OpenApi.Deserializers
             {
                 license.Identifier = identifierProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional License.identifier property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("url", out JsonElement urlProperty))
             {
                 license.Url = urlProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional License.url property is not provided in the OpenApi document");
-            }
+
+            this.logger.LogTrace("Finish LicenseDeSerializer.DeSerialize");
 
             return license;
         }

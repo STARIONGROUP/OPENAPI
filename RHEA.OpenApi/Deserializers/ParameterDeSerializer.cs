@@ -20,7 +20,6 @@
 
 namespace OpenApi.Deserializers
 {
-    using System.Data.Common;
     using System.Runtime.Serialization;
     using System.Text.Json;
 
@@ -73,6 +72,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal Parameter DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start ParameterDeSerializer.DeSerialize");
+
             var parameter = new Parameter();
 
             if (!jsonElement.TryGetProperty("name", out JsonElement nameProperty))
@@ -93,63 +94,35 @@ namespace OpenApi.Deserializers
             {
                 parameter.Description = descriptionProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Parameter.description property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("required", out JsonElement requiredProperty))
             {
                 parameter.Required = requiredProperty.GetBoolean();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Parameter.required property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("deprecated", out JsonElement deprecatedProperty))
             {
                 parameter.Deprecated = deprecatedProperty.GetBoolean();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Parameter.deprecated property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("allowEmptyValue", out JsonElement allowEmptyValueProperty))
             {
                 parameter.AllowEmptyValue = allowEmptyValueProperty.GetBoolean();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Parameter.allowEmptyValue property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("style", out JsonElement styleProperty))
             {
                 parameter.Style = styleProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Parameter.description property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("explode", out JsonElement explodeProperty))
             {
                 parameter.Explode = explodeProperty.GetBoolean();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Parameter.explode property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("allowReserved", out JsonElement allowReservedProperty))
             {
                 parameter.AllowReserved = allowReservedProperty.GetBoolean();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Parameter.allowReserved property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("schema", out JsonElement schemaProperty))
@@ -157,23 +130,17 @@ namespace OpenApi.Deserializers
                 var schemaDeSerializer = new SchemaDeSerializer(this.loggerFactory);
                 parameter.Schema = schemaDeSerializer.DeSerialize(schemaProperty);
             }
-            else
-            {
-                this.logger.LogTrace("The optional Parameter.schema property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("example", out JsonElement exampleProperty))
             {
                 parameter.Example = exampleProperty.ToString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Parameter.example property is not provided in the OpenApi document");
-            }
 
             this.DeserializeExamples(jsonElement, parameter);
 
             this.DeserializeContent(jsonElement, parameter);
+
+            this.logger.LogTrace("Finish ParameterDeSerializer.DeSerialize");
 
             return parameter;
         }
@@ -216,10 +183,6 @@ namespace OpenApi.Deserializers
                     }
                 }
             }
-            else
-            {
-                this.logger.LogTrace("The optional Header.example property is not provided in the OpenApi document");
-            }
         }
 
         /// <summary>
@@ -248,10 +211,6 @@ namespace OpenApi.Deserializers
 
                     parameter.Content.Add(mediaTypeName, mediaType);
                 }
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Header.content property is not provided in the OpenApi document");
             }
         }
     }

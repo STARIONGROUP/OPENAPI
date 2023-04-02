@@ -65,6 +65,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal Reference DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start ReferenceDeSerializer.DeSerialize");
+
             var reference = new Reference();
 
             if (!jsonElement.TryGetProperty("$ref", out JsonElement rwfProperty))
@@ -78,19 +80,13 @@ namespace OpenApi.Deserializers
             {
                 reference.Summary = summaryProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Reference.summary property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
                 reference.Description = descriptionProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Reference.description property is not provided in the OpenApi document");
-            }
+
+            this.logger.LogTrace("Finish ReferenceDeSerializer.DeSerialize");
 
             return reference;
         }

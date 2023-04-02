@@ -73,6 +73,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal PathItem DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start PathItemDeserializer.DeSerialize");
+
             var pathItem = new PathItem();
 
             var operationDeSerializer = new OperationDeSerializer(this.loggerFactory);
@@ -181,7 +183,9 @@ namespace OpenApi.Deserializers
                         break;
                 }
             }
-            
+
+            this.logger.LogTrace("Finish PathItemDeserializer.DeSerialize");
+
             return pathItem;
         }
     }

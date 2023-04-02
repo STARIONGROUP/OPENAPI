@@ -65,43 +65,31 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal Example DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start ExampleDeSerializer.DeSerialize");
+
             var example = new Example();
 
             if (jsonElement.TryGetProperty("summary", out JsonElement summaryProperty))
             {
                 example.Summary = summaryProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Example.summary property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
                 example.Description = descriptionProperty.GetString();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Example.description property is not provided in the OpenApi document");
             }
             
             if (jsonElement.TryGetProperty("value", out JsonElement valueProperty))
             {
                 example.Value = valueProperty.ToString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Example.value property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("externalValue", out JsonElement externalValueProperty))
             {
                 example.ExternalValue = externalValueProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Example.externalValue property is not provided in the OpenApi document");
-            }
+
+            this.logger.LogTrace("Finish ExampleDeSerializer.DeSerialize");
 
             return example;
         }

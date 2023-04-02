@@ -66,6 +66,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal SecurityRequirement DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start SecurityRequirementDeSerializer.DeSerialize");
+
             var securityRequirement = new SecurityRequirement();
 
             foreach (var item in jsonElement.EnumerateObject())
@@ -81,6 +83,8 @@ namespace OpenApi.Deserializers
 
                 securityRequirement.Add(key, values.ToArray());
             }
+
+            this.logger.LogTrace("Finish SecurityRequirementDeSerializer.DeSerialize");
 
             return securityRequirement;
         }

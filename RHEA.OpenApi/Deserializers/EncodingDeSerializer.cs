@@ -74,15 +74,13 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal Encoding DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start EncodingDeSerializer.DeSerialize");
+
             var encoding = new Encoding();
 
             if (jsonElement.TryGetProperty("contentType", out JsonElement contentTypeProperty))
             {
                 encoding.ContentType = contentTypeProperty.GetString();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Encoding.contentType property is not provided in the OpenApi document");
             }
 
             this.DeserializeHeaders(jsonElement, encoding);
@@ -91,28 +89,18 @@ namespace OpenApi.Deserializers
             {
                 encoding.Style = styleProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Encoding.style property is not provided in the OpenApi document");
-            }
             
             if (jsonElement.TryGetProperty("explode", out JsonElement explodeProperty))
             {
                 encoding.Explode = explodeProperty.GetBoolean();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Encoding.explode property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("allowReserved", out JsonElement allowReservedProperty))
             {
                 encoding.AllowReserved = allowReservedProperty.GetBoolean();
             }
-            else
-            {
-                this.logger.LogTrace("The optional Encoding.allowReserved property is not provided in the OpenApi document");
-            }
+
+            this.logger.LogTrace("Finish EncodingDeSerializer.DeSerialize");
 
             return encoding;
         }
@@ -154,10 +142,6 @@ namespace OpenApi.Deserializers
                         }
                     }
                 }
-            }
-            else
-            {
-                this.logger.LogTrace("The optional Encoding.headers property is not provided in the OpenApi document");
             }
         }
     }

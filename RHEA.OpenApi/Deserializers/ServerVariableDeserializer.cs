@@ -67,6 +67,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal ServerVariable DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start ServerDeSerializer.DeSerialize");
+
             var serverVariable = new ServerVariable();
             
             if (jsonElement.TryGetProperty("enum", out JsonElement enumProperty))
@@ -90,18 +92,10 @@ namespace OpenApi.Deserializers
 
                 serverVariable.Enum = enums.ToArray();
             }
-            else
-            {
-                this.logger.LogTrace("The optional ServerVariable.enum property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("default", out JsonElement defaultProperty))
             {
                 serverVariable.Default = defaultProperty.GetString();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional ServerVariable.default property is not provided in the OpenApi document");
             }
 
             if (!string.IsNullOrEmpty(serverVariable.Default))
@@ -116,10 +110,8 @@ namespace OpenApi.Deserializers
             {
                 serverVariable.Description = descriptionProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional ServerVariable.description property is not provided in the OpenApi document");
-            }
+
+            this.logger.LogTrace("Finish ServerDeSerializer.DeSerialize");
 
             return serverVariable;
         }

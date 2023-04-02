@@ -65,52 +65,36 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal XML DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start XMLDeSerializer.DeSerialize");
+
             var xml = new XML();
 
             if (jsonElement.TryGetProperty("name", out JsonElement nameProperty))
             {
                 xml.Name = nameProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional XML.name property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("namespace", out JsonElement namespaceProperty))
             {
                 xml.Namespace = namespaceProperty.GetString();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional XML.namespace property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("prefix", out JsonElement prefixProperty))
             {
                 xml.Prefix = prefixProperty.GetString();
             }
-            else
-            {
-                this.logger.LogTrace("The optional XML.prefix property is not provided in the OpenApi document");
-            }
 
             if (jsonElement.TryGetProperty("attribute", out JsonElement attributeProperty))
             {
                 xml.Attribute = attributeProperty.GetBoolean();
-            }
-            else
-            {
-                this.logger.LogTrace("The optional XML.attribute property is not provided in the OpenApi document");
             }
 
             if (jsonElement.TryGetProperty("wrapped", out JsonElement wrappedProperty))
             {
                 xml.Wrapped = wrappedProperty.GetBoolean();
             }
-            else
-            {
-                this.logger.LogTrace("The optional XML.wrapped property is not provided in the OpenApi document");
-            }
+
+            this.logger.LogTrace("Finish XMLDeSerializer.DeSerialize");
 
             return xml;
         }

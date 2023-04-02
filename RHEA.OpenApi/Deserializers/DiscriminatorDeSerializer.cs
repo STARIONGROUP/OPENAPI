@@ -65,6 +65,8 @@ namespace OpenApi.Deserializers
         /// </exception>
         internal Discriminator DeSerialize(JsonElement jsonElement)
         {
+            this.logger.LogTrace("Start DiscriminatorDeSerializer.DeSerialize");
+
             var discriminator = new Discriminator();
             
             if (!jsonElement.TryGetProperty("propertyName", out JsonElement propertyNameProperty))
@@ -81,10 +83,8 @@ namespace OpenApi.Deserializers
                     discriminator.Mapping.Add(item.Name, item.Value.GetString());
                 }
             }
-            else
-            {
-                this.logger.LogTrace("The optional Discriminator.mapping property is not provided in the OpenApi document");
-            }
+
+            this.logger.LogTrace("Finish DiscriminatorDeSerializer.DeSerialize");
 
             return discriminator;
         }
