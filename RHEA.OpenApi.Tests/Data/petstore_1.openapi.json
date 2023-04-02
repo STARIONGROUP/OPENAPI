@@ -1,298 +1,309 @@
 ﻿{
-  "openapi": "3.1.0",
-  "info": {
-    "title": "Sample Pet Store App",
-    "summary": "A pet store manager.",
-    "description": "This is a sample server for a pet store.",
-    "termsOfService": "https://example.com/terms/",
-    "contact": {
-      "name": "API Support",
-      "url": "https://www.example.com/support",
-      "email": "support@example.com"
-    },
-    "license": {
-      "name": "Apache 2.0",
-      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
-    },
-    "version": "1.0.1"
-  },
-  "servers": [
-    {
-      "url": "http://petstore.swagger.io/v1",
-      "description": "The production API server",
-      "variables": {
-        "username": {
-          "default": "demo",
-          "description": "this value is assigned by the service provider, in this example `gigantic-server.com`"
-        },
-        "port": {
-          "enum": [
-            "8443",
-            "443"
-          ],
-          "default": "8443"
-        },
-        "basePath": {
-          "default": "v2"
-        }
-      }
-    }
-  ],
-  "paths": {
-    "/pets": {
-      "get": {
-        "summary": "List all pets",
-        "operationId": "listPets",
-        "tags": [
-          "pets"
-        ],
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "How many items to return at one time (max 100)",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A paged array of pets",
-            "headers": {
-              "x-next": {
-                "description": "A link to the next page of responses",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Pets"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Create a pet",
-        "operationId": "createPets",
-        "tags": [
-          "pets"
-        ],
-        "responses": {
-          "201": {
-            "description": "Null response"
-          },
-          "default": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/pets/{petId}": {
-      "get": {
-        "summary": "Info for a specific pet",
-        "operationId": "showPetById",
-        "tags": [
-          "pets"
-        ],
-        "parameters": [
-          {
-            "name": "petId",
-            "in": "path",
-            "required": true,
-            "description": "The id of the pet to retrieve",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Expected response to a valid request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Pet"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "newPet": {
-      "post": {
-        "requestBody": {
-          "description": "Information about a new pet in the system",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Pet"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Pet": {
-        "type": "object",
-        "required": [
-          "id",
-          "name"
-        ],
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "name": {
-            "type": "string"
-          },
-          "tag": {
-            "type": "string"
-          }
-        }
-      },
-      "Pets": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/Pet"
-        }
-      },
-      "Error": {
-        "type": "object",
-        "required": [
-          "code",
-          "message"
-        ],
-        "properties": {
-          "code": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "headers": {
-      "header-sample": {
-        "description": "The number of allowed requests in the current period",
-        "required": false,
-        "deprecated": false,
-        "allowEmptyValue": false,
-        "style": "simple",
-        "explode": false,
-        "allowReserved": false,
-        "schema": {
-          "type": "integer"
-        }
-      }
-    },
-    "parameters": {
-      "skipParam": {
-        "name": "skip",
-        "in": "query",
-        "description": "number of items to skip",
-        "required": true,
-        "schema": {
-          "type": "integer",
-          "format": "int32"
-        }
-      },
-      "limitParam": {
-        "name": "limit",
-        "in": "query",
-        "description": "max records to return",
-        "required": true,
-        "schema": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "responses": {
-      "NotFound": {
-        "description": "Entity not found."
-      },
-      "IllegalInput": {
-        "description": "Illegal input for operation."
-      },
-      "GeneralError": {
-        "description": "General Error",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/GeneralError"
-            }
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "api_key": {
-		"description": "securityScheme description",
-        "type": "apiKey",
-        "name": "api_key",
-        "in": "header"
-      },
-      "petstore_auth": {
-        "type": "oauth2",
-        "flows": {
-          "implicit": {
-            "authorizationUrl": "https://example.org/api/oauth/dialog",
-            "scopes": {
-              "write:pets": "modify pets in your account",
-              "read:pets": "read your pets"
-            }
-          }
-        }
-      }
-    }
-  }
+	"openapi": "3.1.0",
+	"info": {
+		"title": "Sample Pet Store App",
+		"summary": "A pet store manager.",
+		"description": "This is a sample server for a pet store.",
+		"termsOfService": "https://example.com/terms/",
+		"contact": {
+			"name": "API Support",
+			"url": "https://www.example.com/support",
+			"email": "support@example.com"
+		},
+		"license": {
+			"name": "Apache 2.0",
+			"url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+		},
+		"version": "1.0.1"
+	},
+	"servers": [
+		{
+			"url": "http://petstore.swagger.io/v1",
+			"description": "The production API server",
+			"variables": {
+				"username": {
+					"default": "demo",
+					"description": "this value is assigned by the service provider, in this example `gigantic-server.com`"
+				},
+				"port": {
+					"enum": [
+						"8443",
+						"443"
+					],
+					"default": "8443"
+				},
+				"basePath": {
+					"default": "v2"
+				}
+			}
+		}
+	],
+	"paths": {
+		"/pets": {
+			"get": {
+				"summary": "List all pets",
+				"operationId": "listPets",
+				"tags": [
+					"pets"
+				],
+				"parameters": [
+					{
+						"name": "limit",
+						"in": "query",
+						"description": "How many items to return at one time (max 100)",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"format": "int32"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A paged array of pets",
+						"headers": {
+							"x-next": {
+								"description": "A link to the next page of responses",
+								"schema": {
+									"type": "string"
+								}
+							}
+						},
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Pets"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "unexpected error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"summary": "Create a pet",
+				"operationId": "createPets",
+				"tags": [
+					"pets"
+				],
+				"responses": {
+					"201": {
+						"description": "Null response"
+					},
+					"default": {
+						"description": "unexpected error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/pets/{petId}": {
+			"get": {
+				"summary": "Info for a specific pet",
+				"operationId": "showPetById",
+				"tags": [
+					"pets"
+				],
+				"parameters": [
+					{
+						"name": "petId",
+						"in": "path",
+						"required": true,
+						"description": "The id of the pet to retrieve",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Expected response to a valid request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Pet"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "unexpected error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"webhooks": {
+		"newPet": {
+			"post": {
+				"requestBody": {
+					"description": "Information about a new pet in the system",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Pet"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Return a 200 status to indicate that the data was received successfully"
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"Pet": {
+				"type": "object",
+				"required": [
+					"id",
+					"name"
+				],
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64"
+					},
+					"name": {
+						"type": "string"
+					},
+					"tag": {
+						"type": "string"
+					}
+				}
+			},
+			"Pets": {
+				"type": "array",
+				"items": {
+					"$ref": "#/components/schemas/Pet"
+				}
+			},
+			"Error": {
+				"type": "object",
+				"required": [
+					"code",
+					"message"
+				],
+				"properties": {
+					"code": {
+						"type": "integer",
+						"format": "int32"
+					},
+					"message": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"headers": {
+			"header-sample": {
+				"description": "The number of allowed requests in the current period",
+				"required": false,
+				"deprecated": false,
+				"allowEmptyValue": false,
+				"style": "simple",
+				"explode": false,
+				"allowReserved": false,
+				"schema": {
+					"type": "integer"
+				}
+			}
+		},
+		"parameters": {
+			"skipParam": {
+				"name": "skip",
+				"in": "query",
+				"description": "number of items to skip",
+				"required": true,
+				"schema": {
+					"type": "integer",
+					"format": "int32"
+				}
+			},
+			"limitParam": {
+				"name": "limit",
+				"in": "query",
+				"description": "max records to return",
+				"required": true,
+				"schema": {
+					"type": "integer",
+					"format": "int32"
+				}
+			}
+		},
+		"responses": {
+			"NotFound": {
+				"description": "Entity not found."
+			},
+			"IllegalInput": {
+				"description": "Illegal input for operation."
+			},
+			"GeneralError": {
+				"description": "General Error",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/GeneralError"
+						}
+					}
+				}
+			}
+		},
+		"securitySchemes": {
+			"api_key": {
+				"description": "securityScheme description",
+				"type": "apiKey",
+				"name": "api_key",
+				"in": "header"
+			},
+			"petstore_auth": {
+				"type": "oauth2",
+				"flows": {
+					"implicit": {
+						"authorizationUrl": "https://example.org/api/oauth/dialog",
+						"scopes": {
+							"write:pets": "modify pets in your account",
+							"read:pets": "read your pets"
+						},
+						"refreshUrl" : "https://example.org/api/oauth/refresh",
+						"x-dummy" : "a dummy extension"
+					},
+					"authorizationCode": {
+						"authorizationUrl": "https://example.com/api/oauth/dialog",
+						"tokenUrl": "https://example.com/api/oauth/token",
+						"scopes": {
+							"write:pets": "modify pets in your account",
+							"read:pets": "read your pets"
+						}
+					},
+					"x-dummy" : "a dummy extension"
+				}
+			}
+		}
+	}
 }

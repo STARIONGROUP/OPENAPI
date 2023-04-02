@@ -1,5 +1,5 @@
 ﻿// -------------------------------------------------------------------------------------------------
-// <copyright file="OAuthFlowsDeSerializer.cs" company="RHEA System S.A.">
+// <copyright file="OAuthFlowDeSerializer.cs" company="RHEA System S.A.">
 // 
 //   Copyright 2023 RHEA System S.A.
 // 
@@ -30,35 +30,28 @@ namespace OpenApi.Deserializers
     using OpenApi.Model;
 
     /// <summary>
-    /// The purpose of the <see cref="OAuthFlowsDeSerializer"/> is to deserialize the <see cref="OAuthFlows"/> object
+    /// The purpose of the <see cref="OAuthFlowDeSerializer"/> is to deserialize the <see cref="OAuthFlow"/> object
     /// from a <see cref="JsonElement"/>
     /// </summary>
     /// <remarks>
-    /// https://spec.openapis.org/oas/latest.html#oauth-flows-object
+    /// https://spec.openapis.org/oas/latest.html#oauth-flow-object
     /// </remarks>
-    internal class OAuthFlowsDeSerializer
+    internal class OAuthFlowDeSerializer
     {
-        /// <summary>
-        /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
-        /// </summary>
-        private readonly ILoggerFactory loggerFactory;
-
         /// <summary>
         /// The <see cref="ILogger"/> used to log
         /// </summary>
-        private readonly ILogger<OAuthFlowsDeSerializer> logger;
+        private readonly ILogger<OAuthFlowDeSerializer> logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OAuthFlowsDeSerializer"/> class.
+        /// Initializes a new instance of the <see cref="OAuthFlowDeSerializer"/> class.
         /// </summary>
         /// <param name="loggerFactory">
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
         /// </param>
-        internal OAuthFlowsDeSerializer(ILoggerFactory loggerFactory = null)
+        internal OAuthFlowDeSerializer(ILoggerFactory loggerFactory = null)
         {
-            this.loggerFactory = loggerFactory;
-
-            this.logger = this.loggerFactory == null ? NullLogger<OAuthFlowsDeSerializer>.Instance : this.loggerFactory.CreateLogger<OAuthFlowsDeSerializer>();
+            this.logger = loggerFactory == null ? NullLogger<OAuthFlowDeSerializer>.Instance : loggerFactory.CreateLogger<OAuthFlowDeSerializer>();
         }
 
         /// <summary>
@@ -78,32 +71,33 @@ namespace OpenApi.Deserializers
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Document"/> object
         /// </exception>
-        internal OAuthFlows DeSerialize(JsonElement jsonElement, bool strict)
+        internal OAuthFlow DeSerialize(JsonElement jsonElement, bool strict)
         {
             this.logger.LogTrace("Start OAuthFlowsDeSerializer.DeSerialize");
 
-            var oAuthFlows = new OAuthFlows();
+            var oAuthFlow = new OAuthFlow();
 
-            var oAuthFlowDeSerializer = new OAuthFlowDeSerializer(this.loggerFactory);
-
-            if (jsonElement.TryGetProperty("implicit", out JsonElement implicitProperty))
+            if (jsonElement.TryGetProperty("authorizationUrl", out JsonElement authorizationUrlProperty))
             {
-                oAuthFlows.Implicit = oAuthFlowDeSerializer.DeSerialize(implicitProperty, strict);
+                oAuthFlow.AuthorizationUrl = authorizationUrlProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("password", out JsonElement passwordProperty))
+            if (jsonElement.TryGetProperty("tokenUrl", out JsonElement tokenUrlProperty))
             {
-                oAuthFlows.Password = oAuthFlowDeSerializer.DeSerialize(passwordProperty, strict);
+                oAuthFlow.TokenUrl = tokenUrlProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("clientCredentials", out JsonElement clientCredentialsProperty))
+            if (jsonElement.TryGetProperty("refreshUrl", out JsonElement refreshUrlProperty))
             {
-                oAuthFlows.ClientCredentials = oAuthFlowDeSerializer.DeSerialize(clientCredentialsProperty, strict);
+                oAuthFlow.RefreshUrl = refreshUrlProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("authorizationCode", out JsonElement authorizationCodeProperty))
+            if (jsonElement.TryGetProperty("scopes", out JsonElement scopesProperty))
             {
-                oAuthFlows.AuthorizationCode = oAuthFlowDeSerializer.DeSerialize(authorizationCodeProperty, strict);
+                foreach (var item in scopesProperty.EnumerateObject())
+                {
+                    oAuthFlow.Scopes.Add(item.Name, item.Value.GetString());
+                }
             }
 
             foreach (var jsonProperty in jsonElement.EnumerateObject().Where(jsonProperty => jsonProperty.Name.StartsWith("x-")))
@@ -113,7 +107,7 @@ namespace OpenApi.Deserializers
 
             this.logger.LogTrace("Finish OAuthFlowsDeSerializer.DeSerialize");
 
-            return oAuthFlows;
+            return oAuthFlow;
         }
     }
 }

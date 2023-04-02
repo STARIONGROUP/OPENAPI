@@ -171,7 +171,7 @@ namespace OpenApi.Deserializers
             else
             {
                 var authFlowsDeSerializer = new OAuthFlowsDeSerializer(this.loggerFactory);
-                securityScheme.Flows = authFlowsDeSerializer.DeSerialize(flowsProperty);
+                securityScheme.Flows = authFlowsDeSerializer.DeSerialize(flowsProperty, strict);
             }
 
             if (!jsonElement.TryGetProperty("openIdConnectUrl", out JsonElement openIdConnectUrlProperty))

@@ -48,6 +48,6 @@ namespace OpenApi.Model
         /// <summary>
         /// REQUIRED. The available scopes for the OAuth2 security scheme. A map between the scope name and a short description for it. The map MAY be empty.
         /// </summary>
-        public Dictionary<string, string> Scopes { get; set; }
+        public Dictionary<string, string> Scopes { get; set; } = new Dictionary<string, string>();
     }
 }
