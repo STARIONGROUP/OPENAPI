@@ -39,18 +39,30 @@ namespace OpenApi.Model
         /// Maps a header name to its definition. [RFC7230] states header names are case insensitive. If a response header is defined with
         /// the name "Content-Type", it SHALL be ignored.
         /// </summary>
-        public Dictionary<string, Header> Headers { get; set; }
+        public Dictionary<string, Header> Headers { get; set; } = new Dictionary<string, Header>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Headers"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> HeadersReferences { get; set; } = new Dictionary<string, Reference>();
 
         /// <summary>
         /// A map containing descriptions of potential response payloads. The key is a media type or media type range and the value describes it.
         /// For responses that match multiple keys, only the most specific key is applicable. e.g. text/plain overrides text/*
         /// </summary>
-        public Dictionary<string, MediaType> Content { get; set; }
+        public Dictionary<string, MediaType> Content { get; set; } = new Dictionary<string, MediaType>();
 
         /// <summary>
         /// A map of operations links that can be followed from the response. The key of the map is a short name for the link,
         /// following the naming constraints of the names for Component Objects.
         /// </summary>
-        public Dictionary<string, Link> Links { get; set; }
+        public Dictionary<string, Link> Links { get; set; } = new Dictionary<string, Link>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Links"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> LinksReferences { get; set; } = new Dictionary<string, Reference>();
     }
 }

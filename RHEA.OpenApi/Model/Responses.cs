@@ -33,11 +33,17 @@ namespace OpenApi.Model
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#responses-object
     /// </remarks>
-    public class Responses : Dictionary<string, Response>
+    public class Responses
     {
         /// <summary>
-        /// The documentation of responses other than the ones declared for specific HTTP response codes. Use this field to cover undeclared responses.
+        /// Gets or sets the dictionary of <see cref="Response"/> objects
         /// </summary>
-        public Response Default { get; set; }
+        public Dictionary<string, Response> Response { get; set; } = new Dictionary<string, Response>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Response"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> ResponseReferences { get; set; } = new Dictionary<string, Reference>();
     }
 }

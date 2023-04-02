@@ -111,8 +111,12 @@ namespace OpenApi.Deserializers
             
             this.DeserializeRequestBody(jsonElement, operation, strict);
 
-            // responses
             this.logger.LogWarning("TODO: the Operation.responses property is not yet supported");
+            if (jsonElement.TryGetProperty("responses", out JsonElement responsesProperty))
+            {
+                var responsesDeSerializer = new ResponsesDeSerializer(this.loggerFactory);
+                operation.Responses = responsesDeSerializer.DeSerialize(responsesProperty, strict);
+            }
 
             // callbacks
             this.logger.LogWarning("TODO: the Operation.callbacks property is not yet supported");
