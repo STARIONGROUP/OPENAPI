@@ -563,7 +563,8 @@
               }
             }
           }
-        }
+        },
+		"deprecated": false
       },
       "put": {
         "tags": [

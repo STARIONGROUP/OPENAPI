@@ -138,10 +138,6 @@ namespace OpenApi.Deserializers
 
                             pathItem.Servers = servers.ToArray();
                         }
-                        else
-                        {
-                            throw new SerializationException("the PathItem.servers property shall be an array");
-                        }
                         break;
                     case "parameters":
                         if (jsonProperty.Value.ValueKind == JsonValueKind.Array)
@@ -172,10 +168,6 @@ namespace OpenApi.Deserializers
 
                             pathItem.ParameterReferences = parameterReferences.ToArray();
                             pathItem.Parameters = parameters.ToArray();
-                        }
-                        else
-                        {
-                            throw new SerializationException("the PathItem.parameters property shall be an array");
                         }
                         break;
                     default:

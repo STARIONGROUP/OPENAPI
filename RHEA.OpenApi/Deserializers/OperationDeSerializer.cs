@@ -158,10 +158,6 @@ namespace OpenApi.Deserializers
 
                     operation.Tags = tags.ToArray();
                 }
-                else
-                {
-                    throw new SerializationException("the Operation.tags property shall be an array");
-                }
             }
         }
 
@@ -214,10 +210,6 @@ namespace OpenApi.Deserializers
 
                     operation.ParameterReferences = parameterReferences.ToArray();
                     operation.Parameters = parameters.ToArray();
-                }
-                else
-                {
-                    throw new SerializationException("the Operation.parameters property shall be an array");
                 }
             }
         }
@@ -301,10 +293,6 @@ namespace OpenApi.Deserializers
 
                     operation.Security = securityRequirements.ToArray();
                 }
-                else
-                {
-                    throw new SerializationException("the Operation.security property shall be an array");
-                }
             }
         }
 
@@ -342,10 +330,6 @@ namespace OpenApi.Deserializers
                     }
 
                     operation.Servers = servers.ToArray();
-                }
-                else
-                {
-                    throw new SerializationException("the Operation.servers property shall be an array");
                 }
             }
         }

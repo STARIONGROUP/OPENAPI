@@ -198,10 +198,6 @@ namespace OpenApi.Deserializers
 
                     document.Servers = servers.ToArray();
                 }
-                else
-                {
-                    throw new SerializationException("the servers property shall be an array");
-                }
             }
         }
 
@@ -345,10 +341,6 @@ namespace OpenApi.Deserializers
 
                     document.Security = securityRequirements.ToArray();
                 }
-                else
-                {
-                    throw new SerializationException("the Document.security property shall be an array");
-                }
             }
         }
 
@@ -386,10 +378,6 @@ namespace OpenApi.Deserializers
                     }
 
                     document.Tags = tags.ToArray();
-                }
-                else
-                {
-                    throw new SerializationException("the Document.tags property shall be an array");
                 }
             }
         }
