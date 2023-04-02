@@ -62,6 +62,21 @@ namespace OpenApi.Model
         public Dictionary<string, PathItem> Paths { get; set; } = new Dictionary<string, PathItem>();
 
         /// <summary>
+        /// The incoming webhooks that MAY be received as part of this API and that the API consumer MAY choose to implement.
+        /// Closely related to the callbacks feature, this section describes requests initiated other than by an API call,
+        /// for example by an out of band registration. The key name is a unique string to refer to each webhook,
+        /// while the (optionally referenced) Path Item Object describes a request that may be initiated by the API provider
+        /// and the expected responses.
+        /// </summary>
+        public Dictionary<string, PathItem> Webhooks { get; set; } = new Dictionary<string, PathItem>();
+
+        /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Webhooks"/> array
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> WebhooksReferences { get; set; } = new Dictionary<string, Reference>();
+
+        /// <summary>
         /// An element to hold various schemas for the document.
         /// </summary>
         public Components Components { get; set; }

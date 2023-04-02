@@ -163,11 +163,27 @@ namespace OpenApi.Deserializers
             {
                 this.logger.LogTrace("The optional Document.components property is not provided in the OpenApi document");
             }
-
-            // security
+            
             if (jsonElement.TryGetProperty("security", out JsonElement securityProperty))
             {
-                this.logger.LogWarning("TODO: the Document.security property is not yet supported");
+                if (securityProperty.ValueKind == JsonValueKind.Array)
+                {
+                    var securityRequirementDeSerializer = new SecurityRequirementDeSerializer(this.loggerFactory);
+
+                    var securityRequirements = new List<SecurityRequirement>();
+
+                    foreach (var arrayItem in securityProperty.EnumerateArray())
+                    {
+                        var securityRequirement = securityRequirementDeSerializer.DeSerialize(arrayItem);
+                        securityRequirements.Add(securityRequirement);
+                    }
+
+                    document.Security = securityRequirements.ToArray();
+                }
+                else
+                {
+                    throw new SerializationException("the Document.security property shall be an array");
+                }
             }
             else
             {
