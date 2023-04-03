@@ -86,7 +86,7 @@ namespace OpenApi.Deserializers
 
             this.DeserializeSchemas(jsonElement, components, strict);
 
-            this.DeserializeResponses(jsonElement, components);
+            this.DeserializeResponses(jsonElement, components, strict);
             
             this.DeserializeParameters(jsonElement, components, strict);
 
@@ -169,25 +169,44 @@ namespace OpenApi.Deserializers
         /// <param name="components">
         /// The <see cref="Components"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Component"/> object
         /// </exception>
-        private void DeserializeResponses(JsonElement jsonElement, Components components)
+        private void DeserializeResponses(JsonElement jsonElement, Components components, bool strict)
         {
-            // TODO: implement responses
-
             if (jsonElement.TryGetProperty("responses", out JsonElement responsesProperty))
             {
-                //var schemaDeSerializer = new ResponseDeSerializer(this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+                var responseDeserializer = new ResponseDeserializer(this.loggerFactory);
 
-                //foreach (var item in schemasProperty.EnumerateObject())
-                //{
-                //    var key = item.Name;
+                foreach (var itemProperty in responsesProperty.EnumerateObject())
+                {
+                    var key = itemProperty.Name;
+                    var isRef = false;
 
-                //    var schema = schemaDeSerializer.DeSerialize(item.Value);
+                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    {
+                        if (value.Name == "$ref")
+                        {
+                            isRef = true;
 
-                //    components.Schemas.Add(key, schema);
-                //}
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                            components.ResponsesReferences.Add(key, reference);
+                        }
+                    }
+
+                    if (!isRef)
+                    {
+                        var response = responseDeserializer.DeSerialize(itemProperty.Value, strict);
+                        components.Responses.Add(key, response);
+                    }
+                }
+
             }
         }
 
