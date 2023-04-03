@@ -34,7 +34,7 @@ namespace OpenApi.Deserializers
     /// from a <see cref="JsonElement"/>
     /// </summary>
     /// <remarks>
-    /// https://spec.openapis.org/oas/latest.html#path-item-object
+    /// https://spec.openapis.org/oas/latest.html#operation-object
     /// </remarks>
     public class OperationDeSerializer
     {
@@ -117,10 +117,9 @@ namespace OpenApi.Deserializers
                 var responsesDeSerializer = new ResponsesDeSerializer(this.loggerFactory);
                 operation.Responses = responsesDeSerializer.DeSerialize(responsesProperty, strict);
             }
-
-            // callbacks
-            this.logger.LogWarning("TODO: the Operation.callbacks property is not yet supported");
-
+            
+            this.DeserializeCallbacks(jsonElement, operation);
+            
             if (jsonElement.TryGetProperty("deprecated", out JsonElement deprecatedProperty))
             {
                 operation.Deprecated = deprecatedProperty.GetBoolean();
@@ -264,6 +263,28 @@ namespace OpenApi.Deserializers
                 {
                     throw new SerializationException("the Operation.requestBody property shall be an object");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the <see cref="Callback"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Operation"/> json object
+        /// </param>
+        /// <param name="operation">
+        /// The <see cref="Operation"/> that is being deserialized
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Operation"/> object
+        /// </exception>
+        private void DeserializeCallbacks(JsonElement jsonElement, Operation operation)
+        {
+            if (jsonElement.TryGetProperty("callbacks", out JsonElement callbacksProperty))
+            {
+                var callbackDeSerializer = new CallbackDeSerializer(this.loggerFactory);
+
+                this.logger.LogWarning("TODO: the Operation.callbacks property is not yet supported");
             }
         }
 
