@@ -99,11 +99,8 @@ namespace OpenApi.Deserializers
             this.DeserializeSecuritySchemes(jsonElement, components, strict);
 
             this.DeserializeLinks(jsonElement, components, strict);
-            
-            if (jsonElement.TryGetProperty("callbacks", out JsonElement callbacksProperty))
-            {
-                this.logger.LogWarning("callbacks are not yet supported");
-            }
+
+            this.DeserializeCallbacks(jsonElement, components, strict);
             
             this.DeserializePathItems(jsonElement, components, strict);
             
@@ -316,14 +313,29 @@ namespace OpenApi.Deserializers
             if (jsonElement.TryGetProperty("requestBodies", out JsonElement requestBodiesProperty))
             {
                 var requestBodyDeSerializer = new RequestBodyDeSerializer(this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
-                foreach (var r in requestBodiesProperty.EnumerateObject())
+                foreach (var itemProperty in requestBodiesProperty.EnumerateObject())
                 {
-                    var requestBodyName = r.Name;
+                    var key = itemProperty.Name;
+                    var isRef = false;
 
-                    var requestBody = requestBodyDeSerializer.DeSerialize(r.Value, strict);
+                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    {
+                        if (value.Name == "$ref")
+                        {
+                            isRef = true;
 
-                    components.RequestBodies.Add(requestBodyName, requestBody);
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                            components.RequestBodiesReferences.Add(key, reference);
+                        }
+                    }
+
+                    if (!isRef)
+                    {
+                        var requestBody = requestBodyDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.RequestBodies.Add(key, requestBody);
+                    }
                 }
             }
         }
@@ -476,6 +488,55 @@ namespace OpenApi.Deserializers
         }
 
         /// <summary>
+        /// Deserializes the Components <see cref="Callback"/>s from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Components"/> json object
+        /// </param>
+        /// <param name="components">
+        /// The <see cref="Components"/> that is being deserialized
+        /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Components"/> object
+        /// </exception>
+        private void DeserializeCallbacks(JsonElement jsonElement, Components components, bool strict)
+        {
+            if (jsonElement.TryGetProperty("callbacks", out JsonElement parametersProperty))
+            {
+                var callbackDeSerializer = new CallbackDeSerializer(this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+
+                foreach (var itemProperty in parametersProperty.EnumerateObject())
+                {
+                    var key = itemProperty.Name;
+                    var isRef = false;
+
+                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    {
+                        if (value.Name == "$ref")
+                        {
+                            isRef = true;
+
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                            components.CallbacksReferences.Add(key, reference);
+                        }
+                    }
+
+                    if (!isRef)
+                    {
+                        var callback = callbackDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.Callbacks.Add(key, callback);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Deserializes the Components.<see cref="PathItem"/> from the provided <paramref name="jsonElement"/>
         /// </summary>
         /// <param name="jsonElement">
@@ -511,7 +572,7 @@ namespace OpenApi.Deserializers
                             isRef = true;
 
                             var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            components.LinksReferences.Add(key, reference);
+                            components.PathItemsReferences.Add(key, reference);
                         }
                     }
 
