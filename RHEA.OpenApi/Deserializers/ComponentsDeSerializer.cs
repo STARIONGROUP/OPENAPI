@@ -105,22 +105,8 @@ namespace OpenApi.Deserializers
                 this.logger.LogWarning("callbacks are not yet supported");
             }
             
-            if (jsonElement.TryGetProperty("pathItems", out JsonElement pathItemsProperty))
-            {
-                // TODO: add support for reference objects
-
-                var pathItemsDeSerializer = new PathItemDeserializer(this.loggerFactory);
-
-                foreach (var p in pathItemsProperty.EnumerateObject())
-                {
-                    var pathItemName = p.Name;
-
-                    var pathItem = pathItemsDeSerializer.DeSerialize(p.Value, strict);
-
-                    components.PathItems.Add(pathItemName, pathItem);
-                }
-            }
-
+            this.DeserializePathItems(jsonElement, components, strict);
+            
             this.logger.LogTrace("Finish ComponentsDeSerializer.DeSerialize");
 
             return components;
@@ -392,7 +378,7 @@ namespace OpenApi.Deserializers
         }
 
         /// <summary>
-        /// Deserializes the Components.parameters from the provided <paramref name="jsonElement"/>
+        /// Deserializes the Components.securitySchemes  from the provided <paramref name="jsonElement"/>
         /// </summary>
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Component"/> json object
@@ -441,7 +427,7 @@ namespace OpenApi.Deserializers
         }
 
         /// <summary>
-        /// Deserializes the Components.parameters from the provided <paramref name="jsonElement"/>
+        /// Deserializes the Components <see cref="Link"/>s from the provided <paramref name="jsonElement"/>
         /// </summary>
         /// <param name="jsonElement">
         /// The <see cref="JsonElement"/> that contains the <see cref="Components"/> json object
@@ -484,6 +470,55 @@ namespace OpenApi.Deserializers
                     {
                         var link = linkDeSerializer.DeSerialize(itemProperty.Value, strict);
                         components.Links.Add(key, link);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the Components.<see cref="PathItem"/> from the provided <paramref name="jsonElement"/>
+        /// </summary>
+        /// <param name="jsonElement">
+        /// The <see cref="JsonElement"/> that contains the <see cref="Components"/> json object
+        /// </param>
+        /// <param name="components">
+        /// The <see cref="Components"/> that is being deserialized
+        /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
+        /// <exception cref="SerializationException">
+        /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Components"/> object
+        /// </exception>
+        private void DeserializePathItems(JsonElement jsonElement, Components components, bool strict)
+        {
+            if (jsonElement.TryGetProperty("pathItems", out JsonElement pathItemsProperty))
+            {
+                var pathItemDeSerializer = new PathItemDeserializer(this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+
+                foreach (var itemProperty in pathItemsProperty.EnumerateObject())
+                {
+                    var key = itemProperty.Name;
+                    var isRef = false;
+
+                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    {
+                        if (value.Name == "$ref")
+                        {
+                            isRef = true;
+
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                            components.LinksReferences.Add(key, reference);
+                        }
+                    }
+
+                    if (!isRef)
+                    {
+                        var pathItem = pathItemDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.PathItems.Add(key, pathItem);
                     }
                 }
             }
