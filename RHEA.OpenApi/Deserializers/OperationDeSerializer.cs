@@ -20,13 +20,14 @@
 
 namespace OpenApi.Deserializers
 {
+    using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Text.Json;
 
     using Microsoft.Extensions.Logging;
-
     using Microsoft.Extensions.Logging.Abstractions;
+
     using OpenApi.Model;
 
     /// <summary>
@@ -118,8 +119,8 @@ namespace OpenApi.Deserializers
                 operation.Responses = responsesDeSerializer.DeSerialize(responsesProperty, strict);
             }
             
-            this.DeserializeCallbacks(jsonElement, operation);
-            
+            this.DeserializeCallbacks(jsonElement, operation, strict);
+
             if (jsonElement.TryGetProperty("deprecated", out JsonElement deprecatedProperty))
             {
                 operation.Deprecated = deprecatedProperty.GetBoolean();
@@ -275,16 +276,43 @@ namespace OpenApi.Deserializers
         /// <param name="operation">
         /// The <see cref="Operation"/> that is being deserialized
         /// </param>
+        /// <param name="strict">
+        /// a value indicating whether deserialization should be strict or not. If true, exceptions will be
+        /// raised if a required property is missing. If false, a missing required property will be logged
+        /// as a warning
+        /// </param>
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Operation"/> object
         /// </exception>
-        private void DeserializeCallbacks(JsonElement jsonElement, Operation operation)
+        private void DeserializeCallbacks(JsonElement jsonElement, Operation operation, bool strict)
         {
-            if (jsonElement.TryGetProperty("callbacks", out JsonElement callbacksProperty))
+            if (jsonElement.TryGetProperty("callbacks", out JsonElement parametersProperty))
             {
                 var callbackDeSerializer = new CallbackDeSerializer(this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
-                this.logger.LogWarning("TODO: the Operation.callbacks property is not yet supported");
+                foreach (var itemProperty in parametersProperty.EnumerateObject())
+                {
+                    var key = itemProperty.Name;
+                    var isRef = false;
+
+                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    {
+                        if (value.Name == "$ref")
+                        {
+                            isRef = true;
+
+                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                            operation.CallbacksReferences.Add(key, reference);
+                        }
+                    }
+
+                    if (!isRef)
+                    {
+                        var callback = callbackDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        operation.Callbacks.Add(key, callback);
+                    }
+                }
             }
         }
 

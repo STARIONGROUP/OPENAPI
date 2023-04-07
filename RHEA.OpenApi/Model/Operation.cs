@@ -97,6 +97,12 @@ namespace OpenApi.Model
         public Dictionary<string, Callback> Callbacks { get; set; } = new Dictionary<string, Callback>();
 
         /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Callbacks"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> CallbacksReferences { get; set; } = new Dictionary<string, Reference>();
+
+        /// <summary>
         /// Declares this operation to be deprecated. Consumers SHOULD refrain from usage of the declared operation. Default value is false.
         /// </summary>
         public bool Deprecated { get; set; }
