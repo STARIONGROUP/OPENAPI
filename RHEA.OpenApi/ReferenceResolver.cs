@@ -41,7 +41,7 @@ namespace OpenApi
         /// <summary>
         /// The list of registered <see cref="ReferenceInfo"/> instances
         /// </summary>
-        private List<ReferenceInfo> referenceInfos = new List<ReferenceInfo>();
+        private readonly List<ReferenceInfo> referenceInfos;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReferenceResolver"/> class.
@@ -52,6 +52,8 @@ namespace OpenApi
         internal ReferenceResolver(ILoggerFactory loggerFactory = null)
         {
             this.logger = loggerFactory == null ? NullLogger<ReferenceResolver>.Instance : loggerFactory.CreateLogger<ReferenceResolver>();
+
+            this.referenceInfos = new List<ReferenceInfo>();
         }
 
         /// <summary>
@@ -94,7 +96,7 @@ namespace OpenApi
                         this.Resolve(components, root.Components, uriPropertyName, uriPropertyValue, referenceInfo);
                         break;
                     case PathItem pathItem:
-                        this.Resolve(pathItem, root.Components, uriPropertyName, uriPropertyValue, referenceInfo);
+                        this.Resolve(pathItem, root.Components, uriPropertyName, uriPropertyValue);
                         break;
                     case Operation operation:
                         this.Resolve(operation, root.Components, uriPropertyName, uriPropertyValue, referenceInfo);
@@ -297,10 +299,7 @@ namespace OpenApi
         /// <param name="uriPropertyValue">
         /// The value of the property for which the <see cref="Reference"/>s need to be resolved
         /// </param>
-        /// <param name="referenceInfo">
-        /// The <see cref="ReferenceInfo"/> that contains information to resolve the <see cref="Reference"/>s
-        /// </param>
-        private void Resolve(PathItem pathItem, Components targetComponents, string uriPropertyName, string uriPropertyValue, ReferenceInfo referenceInfo)
+        private void Resolve(PathItem pathItem, Components targetComponents, string uriPropertyName, string uriPropertyValue)
         {
             if (uriPropertyName == "parameters")
             {

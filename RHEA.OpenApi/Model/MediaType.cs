@@ -20,7 +20,6 @@
 
 namespace OpenApi.Model
 {
-    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -60,6 +59,6 @@ namespace OpenApi.Model
         /// A map between a property name and its encoding information. The key, being the property name, MUST exist in the schema as a property.
         /// The encoding object SHALL only apply to requestBody objects when the media type is multipart or application/x-www-form-urlencoded
         /// </summary>
-        public Dictionary<string, Encoding> Encoding { get; set; }
+        public Dictionary<string, Encoding> Encoding { get; set; } = new Dictionary<string, Encoding>();
     }
 }

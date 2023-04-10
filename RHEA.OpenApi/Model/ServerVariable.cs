@@ -20,7 +20,7 @@
 
 namespace OpenApi.Model
 {
-    using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// An object representing a Server Variable for server URL template substitution.
@@ -33,7 +33,7 @@ namespace OpenApi.Model
         /// <summary>
         /// An enumeration of string values to be used if the substitution options are from a limited set. The array MUST NOT be empty.
         /// </summary>
-        public string[] Enum { get; set; } = Array.Empty<string>();
+        public List<string> Enum { get; set; } = new List<string>();
 
         /// <summary>
         /// REQUIRED. The default value to use for substitution, which SHALL be sent if an alternate value is not supplied.

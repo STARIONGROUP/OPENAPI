@@ -21,7 +21,6 @@
 namespace OpenApi
 {
     using System.IO;
-    using System.Threading.Tasks;
 
     using OpenApi.Model;
 

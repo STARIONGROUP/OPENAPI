@@ -400,7 +400,7 @@ namespace OpenApi.Deserializers
             {
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
 
-                document.externalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty, strict);
+                document.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty, strict);
             }
         }
     }

@@ -36,12 +36,12 @@ namespace OpenApi.Model
         /// <summary>
         /// Gets or sets the <see cref="PathItem"/> objects in this <see cref="Callback"/>
         /// </summary>
-        public Dictionary<string, PathItem> PathItems = new Dictionary<string, PathItem>();
+        public Dictionary<string, PathItem> PathItems { get; set; } = new Dictionary<string, PathItem>();
 
         /// <summary>
         /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="PathItems"/> Dictionary
         /// once the complete Open API document has been deserialized
         /// </summary>
-        internal Dictionary<string, Reference> PathItemsReferences = new Dictionary<string, Reference>();
+        internal Dictionary<string, Reference> PathItemsReferences { get; set; } = new Dictionary<string, Reference>();
     }
 }

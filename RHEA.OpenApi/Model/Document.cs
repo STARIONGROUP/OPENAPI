@@ -20,7 +20,6 @@
 
 namespace OpenApi.Model
 {
-    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -98,6 +97,6 @@ namespace OpenApi.Model
         /// <summary>
         /// Additional external documentation.
         /// </summary>
-        public ExternalDocumentation externalDocs { get; set; }
+        public ExternalDocumentation ExternalDocs { get; set; }
     }
 }

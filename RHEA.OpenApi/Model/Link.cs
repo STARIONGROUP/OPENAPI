@@ -49,7 +49,7 @@ namespace OpenApi.Model
         /// passed to the linked operation. The parameter name can be qualified using the parameter location [{in}.]{name}
         /// for operations that use the same parameter name in different locations (e.g. path.id).
         /// </summary>
-        public Dictionary<string, object> Parameters { get; set; }
+        public Dictionary<string, object> Parameters { get; set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// A literal value or {expression} to use as a request body when calling the target operation.

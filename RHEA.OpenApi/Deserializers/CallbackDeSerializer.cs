@@ -38,11 +38,6 @@ namespace OpenApi.Deserializers
     internal class CallbackDeSerializer
     {
         /// <summary>
-        /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
-        /// </summary>
-        private readonly ILoggerFactory loggerFactory;
-
-        /// <summary>
         /// The <see cref="ILogger"/> used to log
         /// </summary>
         private readonly ILogger<CallbackDeSerializer> logger;
@@ -55,9 +50,7 @@ namespace OpenApi.Deserializers
         /// </param>
         internal CallbackDeSerializer(ILoggerFactory loggerFactory = null)
         {
-            this.loggerFactory = loggerFactory;
-
-            this.logger = this.loggerFactory == null ? NullLogger<CallbackDeSerializer>.Instance : this.loggerFactory.CreateLogger<CallbackDeSerializer>();
+            this.logger = loggerFactory == null ? NullLogger<CallbackDeSerializer>.Instance : loggerFactory.CreateLogger<CallbackDeSerializer>();
         }
 
         /// <summary>

@@ -112,7 +112,7 @@ namespace OpenApi.Deserializers
                 }
                 else
                 {
-                    serverVariable.Enum = enums.ToArray();
+                    serverVariable.Enum = enums;
                 }
             }
 
