@@ -35,7 +35,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#encoding-object
     /// </remarks>
-    internal class EncodingDeSerializer
+    internal class EncodingDeSerializer : ReferencerDeserializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -50,10 +50,15 @@ namespace OpenApi.Deserializers
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactDeSerializer"/> class.
         /// </summary>
+        /// <param name="referenceResolver">
+        /// The <see cref="ReferenceResolver"/> that is used to register any <see cref="ReferenceInfo"/> objects
+        /// and later resolve them
+        /// </param>
         /// <param name="loggerFactory">
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
         /// </param>
-        internal EncodingDeSerializer(ILoggerFactory loggerFactory = null)
+        internal EncodingDeSerializer(ReferenceResolver referenceResolver, ILoggerFactory loggerFactory = null)
+            : base(referenceResolver)
         {
             this.loggerFactory = loggerFactory;
 
@@ -131,7 +136,7 @@ namespace OpenApi.Deserializers
         {
             if (jsonElement.TryGetProperty("headers", out JsonElement headersProperty))
             {
-                var headerDeSerializer = new HeaderDeSerializer(this.loggerFactory);
+                var headerDeSerializer = new HeaderDeSerializer(this.referenceResolver, this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in headersProperty.EnumerateObject())
@@ -144,6 +149,8 @@ namespace OpenApi.Deserializers
                         {
                             var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                             encoding.HeadersReferences.Add(key, reference);
+
+                            this.Register(reference, encoding, "Headers", key);
                         }
                         else
                         {

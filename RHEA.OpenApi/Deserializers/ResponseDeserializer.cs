@@ -24,8 +24,8 @@ namespace OpenApi.Deserializers
     using System.Text.Json;
 
     using Microsoft.Extensions.Logging;
-
     using Microsoft.Extensions.Logging.Abstractions;
+
     using OpenApi.Model;
 
     /// <summary>
@@ -35,7 +35,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#response-object
     /// </remarks>
-    internal class ResponseDeserializer
+    internal class ResponseDeserializer : ReferencerDeserializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -50,10 +50,15 @@ namespace OpenApi.Deserializers
         /// <summary>
         /// Initializes a new instance of the <see cref="ResponseDeserializer"/> class.
         /// </summary>
+        /// <param name="referenceResolver">
+        /// The <see cref="ReferenceResolver"/> that is sed to register any <see cref="ReferenceInfo"/> objects
+        /// and later resolve them
+        /// </param>
         /// <param name="loggerFactory">
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
         /// </param>
-        internal ResponseDeserializer(ILoggerFactory loggerFactory = null)
+        internal ResponseDeserializer(ReferenceResolver referenceResolver, ILoggerFactory loggerFactory = null) 
+            : base(referenceResolver)
         {
             this.loggerFactory = loggerFactory;
 
@@ -131,7 +136,7 @@ namespace OpenApi.Deserializers
         {
             if (jsonElement.TryGetProperty("headers", out JsonElement parametersProperty))
             {
-                var headerDeSerializer = new HeaderDeSerializer(this.loggerFactory);
+                var headerDeSerializer = new HeaderDeSerializer(this.referenceResolver, this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
@@ -147,6 +152,7 @@ namespace OpenApi.Deserializers
 
                             var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                             response.HeadersReferences.Add(key, reference);
+                            this.Register(reference, response, "Headers", key);
                         }
                     }
 
@@ -180,7 +186,7 @@ namespace OpenApi.Deserializers
         {
             if (jsonElement.TryGetProperty("content", out JsonElement contentProperty))
             {
-                var mediaTypeDeSerializer = new MediaTypeDeSerializer(this.loggerFactory);
+                var mediaTypeDeSerializer = new MediaTypeDeSerializer(this.referenceResolver, this.loggerFactory);
 
                 foreach (var x in contentProperty.EnumerateObject())
                 {
@@ -230,6 +236,7 @@ namespace OpenApi.Deserializers
 
                             var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                             response.LinksReferences.Add(key, reference);
+                            this.Register(reference, response, "links", key);
                         }
                     }
 

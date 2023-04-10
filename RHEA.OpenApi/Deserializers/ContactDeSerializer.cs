@@ -24,8 +24,8 @@ namespace OpenApi.Deserializers
     using System.Text.Json;
 
     using Microsoft.Extensions.Logging;
-
     using Microsoft.Extensions.Logging.Abstractions;
+
     using OpenApi.Model;
 
     /// <summary>

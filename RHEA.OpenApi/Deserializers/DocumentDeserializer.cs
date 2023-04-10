@@ -25,8 +25,8 @@ namespace OpenApi.Deserializers
     using System.Text.Json;
 
     using Microsoft.Extensions.Logging;
-
     using Microsoft.Extensions.Logging.Abstractions;
+
     using OpenApi.Model;
 
     /// <summary>
@@ -36,7 +36,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#openapi-object
     /// </remarks>
-    internal class DocumentDeserializer
+    internal class DocumentDeserializer : ReferencerDeserializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -51,10 +51,15 @@ namespace OpenApi.Deserializers
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentDeserializer"/> class.
         /// </summary>
+        /// <param name="referenceResolver">
+        /// The <see cref="ReferenceResolver"/> that is used to register any <see cref="ReferenceInfo"/> objects
+        /// and later resolve them
+        /// </param>
         /// <param name="loggerFactory">
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
         /// </param>
-        internal DocumentDeserializer(ILoggerFactory loggerFactory = null)
+        internal DocumentDeserializer(ReferenceResolver referenceResolver, ILoggerFactory loggerFactory = null)
+            : base(referenceResolver)
         {
             this.loggerFactory = loggerFactory;
 
@@ -186,17 +191,13 @@ namespace OpenApi.Deserializers
             {
                 if (serversProperty.ValueKind == JsonValueKind.Array)
                 {
-                    var servers = new List<Server>();
-
                     var serverDeSerializer = new ServerDeSerializer(this.loggerFactory);
 
                     foreach (var arrayItem in serversProperty.EnumerateArray())
                     {
                         var server = serverDeSerializer.DeSerialize(arrayItem, strict);
-                        servers.Add(server);
+                        document.Servers.Add(server);
                     }
-
-                    document.Servers = servers.ToArray();
                 }
             }
         }
@@ -222,7 +223,7 @@ namespace OpenApi.Deserializers
         {
             if (jsonElement.TryGetProperty("paths", out JsonElement pathsProperty))
             {
-                var pathItemDeserializer = new PathItemDeserializer(this.loggerFactory);
+                var pathItemDeserializer = new PathItemDeserializer(this.referenceResolver, this.loggerFactory);
 
                 foreach (var p in pathsProperty.EnumerateObject())
                 {
@@ -256,7 +257,7 @@ namespace OpenApi.Deserializers
         {
             if (jsonElement.TryGetProperty("webhooks", out JsonElement webhooksProperty))
             {
-                var pathItemDeserializer = new PathItemDeserializer(this.loggerFactory);
+                var pathItemDeserializer = new PathItemDeserializer(this.referenceResolver, this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
                 
                 foreach (var itemProperty in webhooksProperty.EnumerateObject())
@@ -272,6 +273,8 @@ namespace OpenApi.Deserializers
 
                             var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                             document.WebhooksReferences.Add(key, reference);
+
+                            this.Register(reference, document, "Webhooks", key);
                         }
                     }
 
@@ -305,7 +308,7 @@ namespace OpenApi.Deserializers
         {
             if (jsonElement.TryGetProperty("components", out JsonElement componentsProperty))
             {
-                var componentsDeSerializer = new ComponentsDeSerializer(this.loggerFactory);
+                var componentsDeSerializer = new ComponentsDeSerializer(this.referenceResolver, this.loggerFactory);
 
                 document.Components = componentsDeSerializer.DeSerialize(componentsProperty, strict);
             }
@@ -331,15 +334,11 @@ namespace OpenApi.Deserializers
                 {
                     var securityRequirementDeSerializer = new SecurityRequirementDeSerializer(this.loggerFactory);
 
-                    var securityRequirements = new List<SecurityRequirement>();
-
                     foreach (var arrayItem in securityProperty.EnumerateArray())
                     {
                         var securityRequirement = securityRequirementDeSerializer.DeSerialize(arrayItem);
-                        securityRequirements.Add(securityRequirement);
+                        document.Security.Add(securityRequirement);
                     }
-
-                    document.Security = securityRequirements.ToArray();
                 }
             }
         }
@@ -367,17 +366,13 @@ namespace OpenApi.Deserializers
             {
                 if (tagsProperty.ValueKind == JsonValueKind.Array)
                 {
-                    var tags = new List<Tag>();
-
                     var tagDeSerializer = new TagDeSerializer(this.loggerFactory);
 
                     foreach (var arrayItem in tagsProperty.EnumerateArray())
                     {
                         var tag = tagDeSerializer.DeSerialize(arrayItem, strict);
-                        tags.Add(tag);
+                        document.Tags.Add(tag);
                     }
-
-                    document.Tags = tags.ToArray();
                 }
             }
         }

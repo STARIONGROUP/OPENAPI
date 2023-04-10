@@ -20,7 +20,6 @@
 
 namespace OpenApi.Deserializers
 {
-    using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Text.Json;
@@ -37,7 +36,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#operation-object
     /// </remarks>
-    public class OperationDeSerializer
+    internal class OperationDeSerializer : ReferencerDeserializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -52,10 +51,15 @@ namespace OpenApi.Deserializers
         /// <summary>
         /// Initializes a new instance of the <see cref="OperationDeSerializer"/> class.
         /// </summary>
+        /// <param name="referenceResolver">
+        /// The <see cref="ReferenceResolver"/> that is used to register any <see cref="ReferenceInfo"/> objects
+        /// and later resolve them
+        /// </param>
         /// <param name="loggerFactory">
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
         /// </param>
-        internal OperationDeSerializer(ILoggerFactory loggerFactory = null)
+        internal OperationDeSerializer(ReferenceResolver referenceResolver, ILoggerFactory loggerFactory = null) 
+            : base(referenceResolver)
         {
             this.loggerFactory = loggerFactory;
 
@@ -112,10 +116,9 @@ namespace OpenApi.Deserializers
             
             this.DeserializeRequestBody(jsonElement, operation, strict);
 
-            this.logger.LogWarning("TODO: the Operation.responses property is not yet supported");
             if (jsonElement.TryGetProperty("responses", out JsonElement responsesProperty))
             {
-                var responsesDeSerializer = new ResponsesDeSerializer(this.loggerFactory);
+                var responsesDeSerializer = new ResponsesDeSerializer(this.referenceResolver, this.loggerFactory);
                 operation.Responses = responsesDeSerializer.DeSerialize(responsesProperty, strict);
             }
             
@@ -153,14 +156,10 @@ namespace OpenApi.Deserializers
             {
                 if (tagsProperty.ValueKind == JsonValueKind.Array)
                 {
-                    var tags = new List<string>();
-
                     foreach (var arrayItem in tagsProperty.EnumerateArray())
                     {
-                        tags.Add(arrayItem.GetString());
+                        operation.Tags.Add(arrayItem.GetString());
                     }
-
-                    operation.Tags = tags.ToArray();
                 }
             }
         }
@@ -189,10 +188,7 @@ namespace OpenApi.Deserializers
                 if (parametersProperty.ValueKind == JsonValueKind.Array)
                 {
                     var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
-                    var parameterReferences = new List<Reference>();
-
-                    var parameterDeSerializer = new ParameterDeSerializer(this.loggerFactory);
-                    var parameters = new List<Parameter>();
+                    var parameterDeSerializer = new ParameterDeSerializer(this.referenceResolver, this.loggerFactory);
 
                     foreach (var arrayItem in parametersProperty.EnumerateArray())
                     {
@@ -202,18 +198,16 @@ namespace OpenApi.Deserializers
                             {
                                 case "$ref":
                                     var reference = referenceDeSerializer.DeSerialize(arrayItem, strict);
-                                    parameterReferences.Add(reference);
+                                    operation.ParameterReferences.Add(reference);
+                                    this.Register(reference, operation, "Parameters");
                                     break;
                                 case "name":
                                     var parameter = parameterDeSerializer.DeSerialize(arrayItem, strict);
-                                    parameters.Add(parameter);
+                                    operation.Parameters.Add(parameter);
                                     break;
                             }
                         }
                     }
-
-                    operation.ParameterReferences = parameterReferences.ToArray();
-                    operation.Parameters = parameters.ToArray();
                 }
             }
         }
@@ -242,8 +236,7 @@ namespace OpenApi.Deserializers
                 if (requestBodyProperty.ValueKind == JsonValueKind.Object)
                 {
                     var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
-
-                    var parameterDeSerializer = new RequestBodyDeSerializer(this.loggerFactory);
+                    var parameterDeSerializer = new RequestBodyDeSerializer(this.referenceResolver, this.loggerFactory);
 
                     foreach (var itemProperty in requestBodyProperty.EnumerateObject())
                     {
@@ -252,6 +245,7 @@ namespace OpenApi.Deserializers
                             case "$ref":
                                 var reference = referenceDeSerializer.DeSerialize(requestBodyProperty, strict);
                                 operation.RequestBodyReference = reference;
+                                this.Register(reference, operation.Deprecated, "RequestBody");
                                 break;
                             case "content":
                                 var requestBody = parameterDeSerializer.DeSerialize(requestBodyProperty, strict);
@@ -304,6 +298,7 @@ namespace OpenApi.Deserializers
 
                             var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                             operation.CallbacksReferences.Add(key, reference);
+                            this.Register(reference, operation, "Callbacks", key);
                         }
                     }
 
@@ -336,15 +331,11 @@ namespace OpenApi.Deserializers
                 {
                     var securityRequirementDeSerializer = new SecurityRequirementDeSerializer(this.loggerFactory);
 
-                    var securityRequirements = new List<SecurityRequirement>();
-
                     foreach (var arrayItem in securityProperty.EnumerateArray())
                     {
                         var securityRequirement = securityRequirementDeSerializer.DeSerialize(arrayItem);
-                        securityRequirements.Add(securityRequirement);
+                        operation.Security.Add(securityRequirement);
                     }
-
-                    operation.Security = securityRequirements.ToArray();
                 }
             }
         }
@@ -372,17 +363,13 @@ namespace OpenApi.Deserializers
             {
                 if (serversProperty.ValueKind == JsonValueKind.Array)
                 {
-                    var servers = new List<Server>();
-
                     var serverDeSerializer = new ServerDeSerializer(this.loggerFactory);
 
                     foreach (var arrayItem in serversProperty.EnumerateArray())
                     {
                         var server = serverDeSerializer.DeSerialize(arrayItem, strict);
-                        servers.Add(server);
+                        operation.Servers.Add(server);
                     }
-
-                    operation.Servers = servers.ToArray();
                 }
             }
         }

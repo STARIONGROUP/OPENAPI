@@ -87,8 +87,10 @@ namespace OpenApi
                 switch (root.ValueKind)
                 {
                     case JsonValueKind.Object:
-                        var documentDeserializer = new DocumentDeserializer(loggerFactory);
+                        var referenceResolver = new ReferenceResolver();
+                        var documentDeserializer = new DocumentDeserializer(referenceResolver, loggerFactory);
                         document = documentDeserializer.DeSerialize(root, strict);
+                        referenceResolver.Resolve(document);
                         break;
                     default:
                         throw new SerializationException("The provided stream does not contain valid open api JSON");

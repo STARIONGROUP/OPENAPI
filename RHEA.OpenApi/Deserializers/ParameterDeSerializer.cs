@@ -24,8 +24,8 @@ namespace OpenApi.Deserializers
     using System.Text.Json;
 
     using Microsoft.Extensions.Logging;
-
     using Microsoft.Extensions.Logging.Abstractions;
+
     using OpenApi.Model;
 
     /// <summary>
@@ -35,7 +35,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#parameter-object
     /// </remarks>
-    internal class ParameterDeSerializer
+    internal class ParameterDeSerializer : ReferencerDeserializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -50,10 +50,15 @@ namespace OpenApi.Deserializers
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactDeSerializer"/> class.
         /// </summary>
+        /// <param name="referenceResolver">
+        /// The <see cref="ReferenceResolver"/> that is used to register any <see cref="ReferenceInfo"/> objects
+        /// and later resolve them
+        /// </param>
         /// <param name="loggerFactory">
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
         /// </param>
-        internal ParameterDeSerializer(ILoggerFactory loggerFactory = null)
+        internal ParameterDeSerializer(ReferenceResolver referenceResolver, ILoggerFactory loggerFactory = null) 
+            : base(referenceResolver)
         {
             this.loggerFactory = loggerFactory;
 
@@ -204,6 +209,8 @@ namespace OpenApi.Deserializers
                         {
                             var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                             parameter.ExamplesReferences.Add(key, reference);
+
+                            this.Register(reference, parameter, "Examples", key);
                         }
                         else
                         {
@@ -236,7 +243,7 @@ namespace OpenApi.Deserializers
         {
             if (jsonElement.TryGetProperty("content", out JsonElement contentProperty))
             {
-                var mediaTypeDeSerializer = new MediaTypeDeSerializer(this.loggerFactory);
+                var mediaTypeDeSerializer = new MediaTypeDeSerializer(this.referenceResolver, this.loggerFactory);
 
                 foreach (var x in contentProperty.EnumerateObject())
                 {

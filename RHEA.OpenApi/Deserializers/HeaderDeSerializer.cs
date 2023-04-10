@@ -35,7 +35,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#header-object
     /// </remarks>
-    internal class HeaderDeSerializer
+    internal class HeaderDeSerializer : ReferencerDeserializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -50,10 +50,15 @@ namespace OpenApi.Deserializers
         /// <summary>
         /// Initializes a new instance of the <see cref="ContactDeSerializer"/> class.
         /// </summary>
+        /// <param name="referenceResolver">
+        /// The <see cref="ReferenceResolver"/> that is used to register any <see cref="ReferenceInfo"/> objects
+        /// and later resolve them
+        /// </param>
         /// <param name="loggerFactory">
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
         /// </param>
-        internal HeaderDeSerializer(ILoggerFactory loggerFactory = null)
+        internal HeaderDeSerializer(ReferenceResolver referenceResolver, ILoggerFactory loggerFactory = null)
+            : base(referenceResolver)
         {
             this.loggerFactory = loggerFactory;
 
@@ -196,6 +201,8 @@ namespace OpenApi.Deserializers
                         {
                             var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                             header.ExamplesReferences.Add(key, reference);
+
+                            this.Register(reference, header, "Examples", key);
                         }
                         else
                         {
@@ -228,7 +235,7 @@ namespace OpenApi.Deserializers
         {
             if (jsonElement.TryGetProperty("content", out JsonElement contentProperty))
             {
-                var mediaTypeDeSerializer = new MediaTypeDeSerializer(this.loggerFactory);
+                var mediaTypeDeSerializer = new MediaTypeDeSerializer(this.referenceResolver, this.loggerFactory);
 
                 foreach (var x in contentProperty.EnumerateObject())
                 {

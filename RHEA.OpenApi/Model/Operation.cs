@@ -34,7 +34,7 @@ namespace OpenApi.Model
         /// <summary>
         /// A list of tags for API documentation control. Tags can be used for logical grouping of operations by resources or any other qualifier.
         /// </summary>
-        public string[] Tags { get; set; } = Array.Empty<string>();
+        public List<string> Tags { get; set; } = new List<string>();
 
         /// <summary>
         /// A short summary of what the operation does.
@@ -64,13 +64,13 @@ namespace OpenApi.Model
         /// A unique parameter is defined by a combination of a name and location.
         /// The list can use the Reference Object to link to parameters that are defined at the OpenAPI Object’s components/parameters.
         /// </summary>
-        public Parameter[] Parameters { get; set; } = Array.Empty<Parameter>();
+        public List<Parameter> Parameters { get; set; } = new List<Parameter>();
 
         /// <summary>
         /// gets or sets an array of <see cref="Reference"/> that can be used to populate the <see cref="Parameter"/> array
         /// once the complete Open API document has been deserialized
         /// </summary>
-        internal Reference[] ParameterReferences { get; set; } = Array.Empty<Reference>();
+        internal List<Reference> ParameterReferences { get; set; } = new List<Reference>();
 
         /// <summary>
         /// The request body applicable for this operation. The requestBody is fully supported in HTTP methods where the HTTP 1.1 specification [RFC7231]
@@ -113,12 +113,12 @@ namespace OpenApi.Model
         /// objects need to be satisfied to authorize a request. To make security optional, an empty security requirement ({}) can
         /// be included in the array. This definition overrides any declared top-level security. To remove a top-level security declaration, an empty array can be used.
         /// </summary>
-        public SecurityRequirement[] Security { get; set; } = Array.Empty<SecurityRequirement>();
+        public List<SecurityRequirement> Security { get; set; } = new List<SecurityRequirement>();
 
         /// <summary>
         /// An alternative server array to service this operation. If an alternative server object is specified at the Path Item Object or Root level,
         /// it will be overridden by this value.
         /// </summary>
-        public Server[] Servers { get; set; } = Array.Empty<Server>();
+        public List<Server> Servers { get; set; } = new List<Server>();
     }
 }

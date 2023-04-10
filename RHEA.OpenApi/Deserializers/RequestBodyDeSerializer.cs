@@ -35,7 +35,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#request-body-object
     /// </remarks>
-    internal class RequestBodyDeSerializer
+    internal class RequestBodyDeSerializer : ReferencerDeserializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -50,10 +50,15 @@ namespace OpenApi.Deserializers
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestBodyDeSerializer"/> class.
         /// </summary>
+        /// <param name="referenceResolver">
+        /// The <see cref="ReferenceResolver"/> that is used to register any <see cref="ReferenceInfo"/> objects
+        /// and later resolve them
+        /// </param>
         /// <param name="loggerFactory">
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
         /// </param>
-        internal RequestBodyDeSerializer(ILoggerFactory loggerFactory = null)
+        internal RequestBodyDeSerializer(ReferenceResolver referenceResolver, ILoggerFactory loggerFactory = null)
+            : base(referenceResolver)
         {
             this.loggerFactory = loggerFactory;
 
@@ -101,7 +106,7 @@ namespace OpenApi.Deserializers
             }
             else
             {
-                var mediaTypeDeSerializer = new MediaTypeDeSerializer(this.loggerFactory);
+                var mediaTypeDeSerializer = new MediaTypeDeSerializer(this.referenceResolver, this.loggerFactory);
 
                 foreach (var c in contentProperty.EnumerateObject())
                 {

@@ -24,8 +24,8 @@ namespace OpenApi.Deserializers
     using System.Text.Json;
 
     using Microsoft.Extensions.Logging;
-
     using Microsoft.Extensions.Logging.Abstractions;
+
     using OpenApi.Model;
 
     /// <summary>
@@ -35,7 +35,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#responses-object
     /// </remarks>
-    internal class ResponsesDeSerializer
+    internal class ResponsesDeSerializer : ReferencerDeserializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -50,10 +50,15 @@ namespace OpenApi.Deserializers
         /// <summary>
         /// Initializes a new instance of the <see cref="ResponsesDeSerializer"/> class.
         /// </summary>
+        /// <param name="referenceResolver">
+        /// The <see cref="ReferenceResolver"/> that is used to register any <see cref="ReferenceInfo"/> objects
+        /// and later resolve them
+        /// </param>
         /// <param name="loggerFactory">
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
         /// </param>
-        internal ResponsesDeSerializer(ILoggerFactory loggerFactory = null)
+        internal ResponsesDeSerializer(ReferenceResolver referenceResolver, ILoggerFactory loggerFactory = null)
+            : base(referenceResolver)
         {
             this.loggerFactory = loggerFactory;
 
@@ -84,7 +89,7 @@ namespace OpenApi.Deserializers
             var responses = new Responses();
 
             var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
-            var responseDeserializer = new ResponseDeserializer(this.loggerFactory);
+            var responseDeserializer = new ResponseDeserializer(this.referenceResolver, this.loggerFactory);
 
             foreach (var itemProperty in jsonElement.EnumerateObject())
             {
@@ -99,6 +104,7 @@ namespace OpenApi.Deserializers
 
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         responses.ResponseReferences.Add(key, reference);
+                        this.Register(reference, responses, "responses", key);
                     }
                 }
 

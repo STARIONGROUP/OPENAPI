@@ -43,7 +43,6 @@ namespace OpenApi.Model
         /// <summary>
         /// Provides metadata about the API. The metadata MAY be used by tooling as required.
         /// </summary>
-        //[JsonPropertyName("info")]
         public Info Info { get; set; }
 
         /// <summary>
@@ -55,7 +54,7 @@ namespace OpenApi.Model
         /// An array of Server Objects, which provide connectivity information to a target server.
         /// If the servers property is not provided, or is an empty array, the default value would be a Server Object with a url value of /.
         /// </summary>
-        public Server[] Servers { get; set; }
+        public List<Server> Servers { get; set; } = new List<Server>();
 
         /// <summary>
         /// The available paths and operations for the API.
@@ -87,14 +86,14 @@ namespace OpenApi.Model
         /// that can be used. Only one of the security requirement objects need to be satisfied to authorize a request.
         /// Individual operations can override this definition. To make security optional, an empty security requirement ({}) can be included in the array.
         /// </summary>
-        public SecurityRequirement[] Security { get; set; } = Array.Empty<SecurityRequirement>();
+        public List<SecurityRequirement> Security { get; set; } = new List<SecurityRequirement>();
 
         /// <summary>
         /// A list of tags used by the document with additional metadata.
         /// The order of the tags can be used to reflect on their order by the parsing tools. Not all tags that are used by the Operation Object must be declared.
         /// The tags that are not declared MAY be organized randomly or based on the tools’ logic. Each tag name in the list MUST be unique.
         /// </summary>
-        public Tag[] Tags { get; set; }
+        public List<Tag> Tags { get; set; } = new List<Tag>();
 
         /// <summary>
         /// Additional external documentation.

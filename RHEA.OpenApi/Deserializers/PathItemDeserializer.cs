@@ -25,8 +25,8 @@ namespace OpenApi.Deserializers
     using System.Text.Json;
 
     using Microsoft.Extensions.Logging;
-
     using Microsoft.Extensions.Logging.Abstractions;
+
     using OpenApi.Model;
 
     /// <summary>
@@ -36,7 +36,7 @@ namespace OpenApi.Deserializers
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#path-item-object
     /// </remarks>
-    internal class PathItemDeserializer
+    internal class PathItemDeserializer : ReferencerDeserializer
     {
         /// <summary>
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
@@ -51,10 +51,15 @@ namespace OpenApi.Deserializers
         /// <summary>
         /// Initializes a new instance of the <see cref="PathItemDeserializer"/> class.
         /// </summary>
+        /// <param name="referenceResolver">
+        /// The <see cref="ReferenceResolver"/> that is used to register any <see cref="ReferenceInfo"/> objects
+        /// and later resolve them
+        /// </param>
         /// <param name="loggerFactory">
         /// The (injected) <see cref="ILoggerFactory"/> used to setup logging
         /// </param>
-        internal PathItemDeserializer(ILoggerFactory loggerFactory = null)
+        internal PathItemDeserializer(ReferenceResolver referenceResolver, ILoggerFactory loggerFactory = null)
+            : base(referenceResolver)
         {
             this.loggerFactory = loggerFactory;
 
@@ -84,7 +89,7 @@ namespace OpenApi.Deserializers
 
             var pathItem = new PathItem();
 
-            var operationDeSerializer = new OperationDeSerializer(this.loggerFactory);
+            var operationDeSerializer = new OperationDeSerializer(this.referenceResolver, this.loggerFactory);
 
             foreach (var jsonProperty in jsonElement.EnumerateObject())
             {
@@ -126,48 +131,38 @@ namespace OpenApi.Deserializers
                     case "servers":
                         if (jsonProperty.Value.ValueKind == JsonValueKind.Array)
                         {
-                            var servers = new List<Server>();
-
                             var serverDeSerializer = new ServerDeSerializer(this.loggerFactory);
 
                             foreach (var arrayItem in jsonProperty.Value.EnumerateArray())
                             {
                                 var server = serverDeSerializer.DeSerialize(arrayItem, strict);
-                                servers.Add(server);
+                                pathItem.Servers.Add(server);
                             }
-
-                            pathItem.Servers = servers.ToArray();
                         }
                         break;
                     case "parameters":
                         if (jsonProperty.Value.ValueKind == JsonValueKind.Array)
                         {
                             var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
-                            var parameterReferences = new List<Reference>();
-
-                            var parameterDeSerializer = new ParameterDeSerializer(this.loggerFactory);
-                            var parameters = new List<Parameter>();
+                            var parameterDeSerializer = new ParameterDeSerializer(this.referenceResolver, this.loggerFactory);
 
                             foreach (var arrayItem in jsonProperty.Value.EnumerateArray())
                             {
                                 foreach (var arrayItemProperty in arrayItem.EnumerateObject())
                                 {
-                                    switch (arrayItemProperty.Name)
+                                    if (arrayItemProperty.Name == "$ref")
                                     {
-                                        case "$ref":
-                                            var reference = referenceDeSerializer.DeSerialize(arrayItem, strict);
-                                            parameterReferences.Add(reference);
-                                            break;
-                                        case "name":
-                                            var parameter = parameterDeSerializer.DeSerialize(arrayItem, strict);
-                                            parameters.Add(parameter);
-                                            break;
+                                        var reference = referenceDeSerializer.DeSerialize(arrayItem, strict);
+                                        pathItem.ParameterReferences.Add(reference);
+                                        this.Register(reference, pathItem, "Parameters");
+                                    }
+                                    else
+                                    {
+                                        var parameter = parameterDeSerializer.DeSerialize(arrayItem, strict);
+                                        pathItem.Parameters.Add(parameter);
                                     }
                                 }
                             }
-
-                            pathItem.ParameterReferences = parameterReferences.ToArray();
-                            pathItem.Parameters = parameters.ToArray();
                         }
                         break;
                     default:
