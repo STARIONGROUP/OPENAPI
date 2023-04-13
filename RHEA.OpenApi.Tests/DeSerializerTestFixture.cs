@@ -100,5 +100,16 @@ namespace OpenApi.Tests
 
             Assert.That(document, Is.Not.Null);
         }
+
+        [Test]
+        public void Verify_that_the_Urlbox_API_API_openapi_spec_can_be_read()
+        {
+            var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "Urlbox API.openapi.json");
+
+            using var fs = File.OpenRead(fileName);
+            var document = this.deSerializer.DeSerialize(fs);
+
+            Assert.That(document, Is.Not.Null);
+        }
     }
 }
