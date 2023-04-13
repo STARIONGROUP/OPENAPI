@@ -116,8 +116,6 @@ namespace OpenApi.Deserializers
 
                     server.Variables.Add(serverVariableName, serverVariable);
                 }
-
-                server.Description = descriptionProperty.GetString();
             }
 
             this.logger.LogTrace("Finish ServerDeSerializer.DeSerialize");

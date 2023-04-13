@@ -37,6 +37,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Update="Data\Adyen BinLookup API.openapi.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Data\Discourse API Documentation.openapi.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Update="Data\invalid.openapi.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>

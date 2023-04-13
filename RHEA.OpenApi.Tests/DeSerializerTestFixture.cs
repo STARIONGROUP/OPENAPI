@@ -21,6 +21,7 @@
 namespace OpenApi.Tests
 {
     using System.IO;
+    using System.Linq;
     using System.Runtime.Serialization;
     using NUnit.Framework;
 
@@ -76,6 +77,28 @@ namespace OpenApi.Tests
             using var fs = File.OpenRead(fileName);
             
             Assert.Throws<SerializationException>(() => this.deSerializer.DeSerialize(fs));
+        }
+
+        [Test]
+        public void Verify_that_the_Adyen_BinLookup_API_openapi_spec_can_be_read()
+        {
+            var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "Adyen BinLookup API.openapi.json");
+
+            using var fs = File.OpenRead(fileName);
+            var document = this.deSerializer.DeSerialize(fs);
+
+            Assert.That(document, Is.Not.Null);
+        }
+
+        [Test]
+        public void Verify_that_the_Discourse_API_API_openapi_spec_can_be_read()
+        {
+            var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "Discourse API Documentation.openapi.json");
+
+            using var fs = File.OpenRead(fileName);
+            var document = this.deSerializer.DeSerialize(fs);
+
+            Assert.That(document, Is.Not.Null);
         }
     }
 }
