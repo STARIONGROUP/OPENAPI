@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <Version>0.3.0</Version>
+        <Version>0.3.1</Version>
         <Description>A Naive .NET implementation of the OpenApi 3.1 specification.</Description>
         <PackageId>RHEA.OpenApi</PackageId>
         <Company>RHEA System S.A.</Company>
@@ -16,13 +16,7 @@
         <Authors>Sam Gerené</Authors>
         <RequireLicenseAcceptance>true</RequireLicenseAcceptance>
         <PackageReleaseNotes>
-            [Refactor[ CallBack object
-            [Add] ComponentsDeSerializer.DeserializeLinks; fixes #1
-            [Add] ComponentsDeSerializer.DeserializeCallbacks; #2
-            [Add] ComponentsDeSerializer.DeserializePathItems; fixes #3
-            [Add] deserialization of Responses to Component; fixes #4
-            [Add] OperationDeSerializer.DeserializeCallbacks; #7
-            [Add] ReferenceResolver; fixes #8
+            [Fix] ServerDeSerializer
         </PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
