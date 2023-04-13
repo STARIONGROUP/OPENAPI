@@ -91,7 +91,7 @@ namespace OpenApi.Tests
         }
 
         [Test]
-        public void Verify_that_the_Discourse_API_API_openapi_spec_can_be_read()
+        public void Verify_that_the_Discourse_API_openapi_spec_can_be_read()
         {
             var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "Discourse API Documentation.openapi.json");
 
@@ -102,9 +102,20 @@ namespace OpenApi.Tests
         }
 
         [Test]
-        public void Verify_that_the_Urlbox_API_API_openapi_spec_can_be_read()
+        public void Verify_that_the_Urlbox_API_openapi_spec_can_be_read()
         {
             var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "Urlbox API.openapi.json");
+
+            using var fs = File.OpenRead(fileName);
+            var document = this.deSerializer.DeSerialize(fs);
+
+            Assert.That(document, Is.Not.Null);
+        }
+
+        [Test]
+        public void Verify_that_the_Vercel_Support_openapi_spec_can_be_read()
+        {
+            var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "Vercel Support.openapi.json");
 
             using var fs = File.OpenRead(fileName);
             var document = this.deSerializer.DeSerialize(fs);
