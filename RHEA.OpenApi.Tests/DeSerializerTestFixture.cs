@@ -91,6 +91,17 @@ namespace OpenApi.Tests
         }
 
         [Test]
+        public void Verify_that_the_Adyen_Account_openapi_spec_can_be_read()
+        {
+            var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "Adyen Account API.openapi.json");
+
+            using var fs = File.OpenRead(fileName);
+            var document = this.deSerializer.DeSerialize(fs);
+
+            Assert.That(document, Is.Not.Null);
+        }
+
+        [Test]
         public void Verify_that_the_Discourse_API_openapi_spec_can_be_read()
         {
             var fileName = Path.Combine(TestContext.CurrentContext.WorkDirectory, "Data", "Discourse API Documentation.openapi.json");

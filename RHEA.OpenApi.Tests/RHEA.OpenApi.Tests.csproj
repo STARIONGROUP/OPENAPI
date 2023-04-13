@@ -37,6 +37,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Update="Data\Adyen Account API.openapi.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Update="Data\Adyen BinLookup API.openapi.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
