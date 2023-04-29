@@ -151,14 +151,11 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeTags(JsonElement jsonElement, Operation operation)
         {
-            if (jsonElement.TryGetProperty("tags"u8, out JsonElement tagsProperty))
+            if (jsonElement.TryGetProperty("tags"u8, out JsonElement tagsProperty) && tagsProperty.ValueKind == JsonValueKind.Array)
             {
-                if (tagsProperty.ValueKind == JsonValueKind.Array)
+                foreach (var arrayItem in tagsProperty.EnumerateArray())
                 {
-                    foreach (var arrayItem in tagsProperty.EnumerateArray())
-                    {
-                        operation.Tags.Add(arrayItem.GetString());
-                    }
+                    operation.Tags.Add(arrayItem.GetString());
                 }
             }
         }
@@ -182,26 +179,23 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeParameters(JsonElement jsonElement, Operation operation, bool strict)
         {
-            if (jsonElement.TryGetProperty("parameters"u8, out JsonElement parametersProperty))
+            if (jsonElement.TryGetProperty("parameters"u8, out JsonElement parametersProperty) && parametersProperty.ValueKind == JsonValueKind.Array)
             {
-                if (parametersProperty.ValueKind == JsonValueKind.Array)
-                {
-                    var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
-                    var parameterDeSerializer = new ParameterDeSerializer(this.referenceResolver, this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+                var parameterDeSerializer = new ParameterDeSerializer(this.referenceResolver, this.loggerFactory);
 
-                    foreach (var arrayItem in parametersProperty.EnumerateArray())
+                foreach (var arrayItem in parametersProperty.EnumerateArray())
+                {
+                    if (arrayItem.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (arrayItem.TryGetProperty("$ref", out var referenceElement))
-                        {
-                            var reference = referenceDeSerializer.DeSerialize(arrayItem, strict);
-                            operation.ParameterReferences.Add(reference);
-                            this.Register(reference, operation, "Parameters");
-                        }
-                        else
-                        {
-                            var parameter = parameterDeSerializer.DeSerialize(arrayItem, strict);
-                            operation.Parameters.Add(parameter);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(arrayItem, strict);
+                        operation.ParameterReferences.Add(reference);
+                        this.Register(reference, operation, "Parameters");
+                    }
+                    else
+                    {
+                        var parameter = parameterDeSerializer.DeSerialize(arrayItem, strict);
+                        operation.Parameters.Add(parameter);
                     }
                 }
             }
@@ -226,27 +220,20 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeRequestBody(JsonElement jsonElement, Operation operation, bool strict)
         {
-            if (jsonElement.TryGetProperty("requestBody"u8, out JsonElement requestBodyProperty))
+            if (jsonElement.TryGetProperty("requestBody"u8, out JsonElement requestBodyProperty) && requestBodyProperty.ValueKind == JsonValueKind.Object)
             {
-                if (requestBodyProperty.ValueKind == JsonValueKind.Object)
+                if (requestBodyProperty.TryGetProperty("$ref"u8, out var referenceElement))
                 {
-                    if (requestBodyProperty.TryGetProperty("$ref"u8, out var referenceElement))
-                    {
-                        var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
-                        var reference = referenceDeSerializer.DeSerialize(requestBodyProperty, strict);
-                        operation.RequestBodyReference = reference;
-                        this.Register(reference, operation.Deprecated, "RequestBody");
-                    }
-                    else 
-                    {
-                        var parameterDeSerializer = new RequestBodyDeSerializer(this.referenceResolver, this.loggerFactory);
-                        var requestBody = parameterDeSerializer.DeSerialize(requestBodyProperty, strict);
-                        operation.RequestBody = requestBody;
-                    }
+                    var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+                    var reference = referenceDeSerializer.DeSerialize(requestBodyProperty, strict);
+                    operation.RequestBodyReference = reference;
+                    this.Register(reference, operation.Deprecated, "RequestBody");
                 }
-                else
+                else 
                 {
-                    throw new SerializationException("the Operation.requestBody property shall be an object");
+                    var parameterDeSerializer = new RequestBodyDeSerializer(this.referenceResolver, this.loggerFactory);
+                    var requestBody = parameterDeSerializer.DeSerialize(requestBodyProperty, strict);
+                    operation.RequestBody = requestBody;
                 }
             }
         }
@@ -306,17 +293,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeSecurityRequirements(JsonElement jsonElement, Operation operation)
         {
-            if (jsonElement.TryGetProperty("security"u8, out JsonElement securityProperty))
+            if (jsonElement.TryGetProperty("security"u8, out JsonElement securityProperty) && securityProperty.ValueKind == JsonValueKind.Array)
             {
-                if (securityProperty.ValueKind == JsonValueKind.Array)
-                {
-                    var securityRequirementDeSerializer = new SecurityRequirementDeSerializer(this.loggerFactory);
+                var securityRequirementDeSerializer = new SecurityRequirementDeSerializer(this.loggerFactory);
 
-                    foreach (var arrayItem in securityProperty.EnumerateArray())
-                    {
-                        var securityRequirement = securityRequirementDeSerializer.DeSerialize(arrayItem);
-                        operation.Security.Add(securityRequirement);
-                    }
+                foreach (var arrayItem in securityProperty.EnumerateArray())
+                {
+                    var securityRequirement = securityRequirementDeSerializer.DeSerialize(arrayItem);
+                    operation.Security.Add(securityRequirement);
                 }
             }
         }
@@ -340,17 +324,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeServers(JsonElement jsonElement, Operation operation, bool strict)
         {
-            if (jsonElement.TryGetProperty("servers"u8, out JsonElement serversProperty))
+            if (jsonElement.TryGetProperty("servers"u8, out JsonElement serversProperty) && serversProperty.ValueKind == JsonValueKind.Array)
             {
-                if (serversProperty.ValueKind == JsonValueKind.Array)
-                {
-                    var serverDeSerializer = new ServerDeSerializer(this.loggerFactory);
+                var serverDeSerializer = new ServerDeSerializer(this.loggerFactory);
 
-                    foreach (var arrayItem in serversProperty.EnumerateArray())
-                    {
-                        var server = serverDeSerializer.DeSerialize(arrayItem, strict);
-                        operation.Servers.Add(server);
-                    }
+                foreach (var arrayItem in serversProperty.EnumerateArray())
+                {
+                    var server = serverDeSerializer.DeSerialize(arrayItem, strict);
+                    operation.Servers.Add(server);
                 }
             }
         }

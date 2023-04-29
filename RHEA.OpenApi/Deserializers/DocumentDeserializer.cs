@@ -186,17 +186,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeServers(JsonElement jsonElement, Document document, bool strict)
         {
-            if (jsonElement.TryGetProperty("servers"u8, out JsonElement serversProperty))
+            if (jsonElement.TryGetProperty("servers"u8, out JsonElement serversProperty) && serversProperty.ValueKind == JsonValueKind.Array)
             {
-                if (serversProperty.ValueKind == JsonValueKind.Array)
-                {
-                    var serverDeSerializer = new ServerDeSerializer(this.loggerFactory);
+                var serverDeSerializer = new ServerDeSerializer(this.loggerFactory);
 
-                    foreach (var arrayItem in serversProperty.EnumerateArray())
-                    {
-                        var server = serverDeSerializer.DeSerialize(arrayItem, strict);
-                        document.Servers.Add(server);
-                    }
+                foreach (var arrayItem in serversProperty.EnumerateArray())
+                {
+                    var server = serverDeSerializer.DeSerialize(arrayItem, strict);
+                    document.Servers.Add(server);
                 }
             }
         }
@@ -319,17 +316,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeSecurityRequirements(JsonElement jsonElement, Document document)
         {
-            if (jsonElement.TryGetProperty("security"u8, out JsonElement securityProperty))
+            if (jsonElement.TryGetProperty("security"u8, out JsonElement securityProperty) && securityProperty.ValueKind == JsonValueKind.Array)
             {
-                if (securityProperty.ValueKind == JsonValueKind.Array)
-                {
-                    var securityRequirementDeSerializer = new SecurityRequirementDeSerializer(this.loggerFactory);
+                var securityRequirementDeSerializer = new SecurityRequirementDeSerializer(this.loggerFactory);
 
-                    foreach (var arrayItem in securityProperty.EnumerateArray())
-                    {
-                        var securityRequirement = securityRequirementDeSerializer.DeSerialize(arrayItem);
-                        document.Security.Add(securityRequirement);
-                    }
+                foreach (var arrayItem in securityProperty.EnumerateArray())
+                {
+                    var securityRequirement = securityRequirementDeSerializer.DeSerialize(arrayItem);
+                    document.Security.Add(securityRequirement);
                 }
             }
         }
@@ -353,17 +347,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeTags(JsonElement jsonElement, Document document, bool strict)
         {
-            if (jsonElement.TryGetProperty("tags"u8, out JsonElement tagsProperty))
+            if (jsonElement.TryGetProperty("tags"u8, out JsonElement tagsProperty) && tagsProperty.ValueKind == JsonValueKind.Array)
             {
-                if (tagsProperty.ValueKind == JsonValueKind.Array)
-                {
-                    var tagDeSerializer = new TagDeSerializer(this.loggerFactory);
+                var tagDeSerializer = new TagDeSerializer(this.loggerFactory);
 
-                    foreach (var arrayItem in tagsProperty.EnumerateArray())
-                    {
-                        var tag = tagDeSerializer.DeSerialize(arrayItem, strict);
-                        document.Tags.Add(tag);
-                    }
+                foreach (var arrayItem in tagsProperty.EnumerateArray())
+                {
+                    var tag = tagDeSerializer.DeSerialize(arrayItem, strict);
+                    document.Tags.Add(tag);
                 }
             }
         }

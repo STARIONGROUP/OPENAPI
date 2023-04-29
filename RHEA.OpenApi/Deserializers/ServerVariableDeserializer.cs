@@ -78,20 +78,8 @@ namespace OpenApi.Deserializers
 
             var serverVariable = new ServerVariable();
             
-            if (jsonElement.TryGetProperty("enum"u8, out JsonElement enumProperty))
+            if (jsonElement.TryGetProperty("enum"u8, out JsonElement enumProperty) && enumProperty.ValueKind == JsonValueKind.Array)
             {
-                if (enumProperty.ValueKind != JsonValueKind.Array)
-                {
-                    if (strict)
-                    {
-                        throw new SerializationException("The ServerVariable.enum property must be an array");
-                    }
-                    else
-                    {
-                        this.logger.LogWarning("The ServerVariable.enum property must be an array");
-                    }
-                }
-
                 var enums = new List<string>();
 
                 foreach (var arrayItem in enumProperty.EnumerateArray())
