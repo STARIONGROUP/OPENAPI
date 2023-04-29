@@ -88,7 +88,7 @@ namespace OpenApi.Deserializers
 
             var response = new Response();
 
-            if (!jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (!jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 if (strict)
                 {
@@ -134,7 +134,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeHeaders(JsonElement jsonElement, Response response, bool strict)
         {
-            if (jsonElement.TryGetProperty("headers", out JsonElement parametersProperty))
+            if (jsonElement.TryGetProperty("headers"u8, out JsonElement parametersProperty))
             {
                 var headerDeSerializer = new HeaderDeSerializer(this.referenceResolver, this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
@@ -175,7 +175,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeContent(JsonElement jsonElement, Response response, bool strict)
         {
-            if (jsonElement.TryGetProperty("content", out JsonElement contentProperty))
+            if (jsonElement.TryGetProperty("content"u8, out JsonElement contentProperty))
             {
                 var mediaTypeDeSerializer = new MediaTypeDeSerializer(this.referenceResolver, this.loggerFactory);
 
@@ -209,14 +209,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeLinks(JsonElement jsonElement, Response response, bool strict)
         {
-            if (jsonElement.TryGetProperty("links", out JsonElement parametersProperty))
+            if (jsonElement.TryGetProperty("links"u8, out JsonElement parametersProperty))
             {
                 var linkDeSerializer = new LinkDeSerializer(this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         response.LinksReferences.Add(itemProperty.Name, reference);

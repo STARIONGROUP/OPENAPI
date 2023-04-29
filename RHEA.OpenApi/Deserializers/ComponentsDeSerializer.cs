@@ -133,7 +133,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeSchemas(JsonElement jsonElement, Components components, bool strict)
         {
-            if (jsonElement.TryGetProperty("schemas", out JsonElement schemasProperty))
+            if (jsonElement.TryGetProperty("schemas"u8, out JsonElement schemasProperty))
             {
                 var schemaDeSerializer = new SchemaDeSerializer(this.referenceResolver, this.loggerFactory);
 
@@ -165,14 +165,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeResponses(JsonElement jsonElement, Components components, bool strict)
         {
-            if (jsonElement.TryGetProperty("responses", out JsonElement responsesProperty))
+            if (jsonElement.TryGetProperty("responses"u8, out JsonElement responsesProperty))
             {
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
                 var responseDeserializer = new ResponseDeserializer(this.referenceResolver,  this.loggerFactory);
 
                 foreach (var itemProperty in responsesProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         components.ResponsesReferences.Add(itemProperty.Name, reference);
@@ -206,14 +206,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeParameters(JsonElement jsonElement, Components components, bool strict)
         {
-            if (jsonElement.TryGetProperty("parameters", out JsonElement parametersProperty))
+            if (jsonElement.TryGetProperty("parameters"u8, out JsonElement parametersProperty))
             {
                 var parameterDeSerializer = new ParameterDeSerializer(this.referenceResolver, this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         components.ParametersReferences.Add(itemProperty.Name, reference);
@@ -247,14 +247,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeExamples(JsonElement jsonElement, Components components, bool strict)
         {
-            if (jsonElement.TryGetProperty("examples", out JsonElement parametersProperty))
+            if (jsonElement.TryGetProperty("examples"u8, out JsonElement parametersProperty))
             {
                 var exampleDeSerializer = new ExampleDeSerializer(this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         components.ExamplesReferences.Add(itemProperty.Name, reference);
@@ -288,14 +288,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeRequestBodies(JsonElement jsonElement, Components components, bool strict)
         {
-            if (jsonElement.TryGetProperty("requestBodies", out JsonElement requestBodiesProperty))
+            if (jsonElement.TryGetProperty("requestBodies"u8, out JsonElement requestBodiesProperty))
             {
                 var requestBodyDeSerializer = new RequestBodyDeSerializer(this.referenceResolver, this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in requestBodiesProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         components.RequestBodiesReferences.Add(itemProperty.Name, reference);
@@ -329,14 +329,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeHeaders(JsonElement jsonElement, Components components, bool strict)
         {
-            if (jsonElement.TryGetProperty("headers", out JsonElement parametersProperty))
+            if (jsonElement.TryGetProperty("headers"u8, out JsonElement parametersProperty))
             {
                 var headerDeSerializer = new HeaderDeSerializer(this.referenceResolver, this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         components.HeadersReferences.Add(itemProperty.Name, reference);
@@ -370,14 +370,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeSecuritySchemes(JsonElement jsonElement, Components components, bool strict)
         {
-            if (jsonElement.TryGetProperty("securitySchemes", out JsonElement parametersProperty))
+            if (jsonElement.TryGetProperty("securitySchemes"u8, out JsonElement parametersProperty))
             {
                 var headerDeSerializer = new SecuritySchemeDeSerializer(this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         components.SecuritySchemesReferences.Add(itemProperty.Name, reference);
@@ -411,14 +411,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeLinks(JsonElement jsonElement, Components components, bool strict)
         {
-            if (jsonElement.TryGetProperty("links", out JsonElement parametersProperty))
+            if (jsonElement.TryGetProperty("links"u8, out JsonElement parametersProperty))
             {
                 var linkDeSerializer = new LinkDeSerializer(this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         components.LinksReferences.Add(itemProperty.Name, reference);
@@ -452,14 +452,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeCallbacks(JsonElement jsonElement, Components components, bool strict)
         {
-            if (jsonElement.TryGetProperty("callbacks", out JsonElement parametersProperty))
+            if (jsonElement.TryGetProperty("callbacks"u8, out JsonElement parametersProperty))
             {
                 var callbackDeSerializer = new CallbackDeSerializer(this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         components.CallbacksReferences.Add(itemProperty.Name, reference);
@@ -493,14 +493,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializePathItems(JsonElement jsonElement, Components components, bool strict)
         {
-            if (jsonElement.TryGetProperty("pathItems", out JsonElement pathItemsProperty))
+            if (jsonElement.TryGetProperty("pathItems"u8, out JsonElement pathItemsProperty))
             {
                 var pathItemDeSerializer = new PathItemDeserializer(this.referenceResolver, this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in pathItemsProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         components.PathItemsReferences.Add(itemProperty.Name, reference);

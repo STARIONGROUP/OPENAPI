@@ -83,12 +83,12 @@ namespace OpenApi.Deserializers
 
             var link = new Link();
 
-            if (jsonElement.TryGetProperty("operationRef", out JsonElement operationRefProperty))
+            if (jsonElement.TryGetProperty("operationRef"u8, out JsonElement operationRefProperty))
             {
                 link.OperationRef = operationRefProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("operationId", out JsonElement operationIdProperty))
+            if (jsonElement.TryGetProperty("operationId"u8, out JsonElement operationIdProperty))
             {
                 link.OperationId = operationIdProperty.GetString();
             }
@@ -96,17 +96,17 @@ namespace OpenApi.Deserializers
             // parameters
             this.logger.LogWarning("TODO: implement Link.parameters");
 
-            if (jsonElement.TryGetProperty("requestBody", out JsonElement requestBodyProperty))
+            if (jsonElement.TryGetProperty("requestBody"u8, out JsonElement requestBodyProperty))
             {
                 link.RequestBody = requestBodyProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 link.Description = descriptionProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("server", out JsonElement serverProperty))
+            if (jsonElement.TryGetProperty("server"u8, out JsonElement serverProperty))
             {
                 var serverDeSerializer = new ServerDeSerializer(this.loggerFactory);
 

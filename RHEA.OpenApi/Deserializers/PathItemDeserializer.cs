@@ -147,7 +147,7 @@ namespace OpenApi.Deserializers
 
                             foreach (var arrayItem in jsonProperty.Value.EnumerateArray())
                             {
-                                if (arrayItem.TryGetProperty("$ref", out var referenceElement))
+                                if (arrayItem.TryGetProperty("$ref"u8, out var referenceElement))
                                 {
                                     var reference = referenceDeSerializer.DeSerialize(arrayItem, strict);
                                     pathItem.ParameterReferences.Add(reference);

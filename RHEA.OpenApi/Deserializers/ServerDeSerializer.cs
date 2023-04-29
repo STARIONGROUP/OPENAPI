@@ -99,12 +99,12 @@ namespace OpenApi.Deserializers
                 server.Url = urlProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 server.Description = descriptionProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("variables", out JsonElement variablesProperty))
+            if (jsonElement.TryGetProperty("variables"u8, out JsonElement variablesProperty))
             {
                 var serverVariableDeserializer = new ServerVariableDeserializer(this.loggerFactory);
 

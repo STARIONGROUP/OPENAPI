@@ -88,7 +88,7 @@ namespace OpenApi.Deserializers
 
             var parameter = new Parameter();
 
-            if (!jsonElement.TryGetProperty("name", out JsonElement nameProperty))
+            if (!jsonElement.TryGetProperty("name"u8, out JsonElement nameProperty))
             {
                 if (strict)
                 {
@@ -104,7 +104,7 @@ namespace OpenApi.Deserializers
                 parameter.Name = nameProperty.GetString();
             }
 
-            if (!jsonElement.TryGetProperty("in", out JsonElement inProperty))
+            if (!jsonElement.TryGetProperty("in"u8, out JsonElement inProperty))
             {
                 if (strict)
                 {
@@ -120,48 +120,48 @@ namespace OpenApi.Deserializers
                 parameter.In = inProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 parameter.Description = descriptionProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("required", out JsonElement requiredProperty))
+            if (jsonElement.TryGetProperty("required"u8, out JsonElement requiredProperty))
             {
                 parameter.Required = requiredProperty.GetBoolean();
             }
 
-            if (jsonElement.TryGetProperty("deprecated", out JsonElement deprecatedProperty))
+            if (jsonElement.TryGetProperty("deprecated"u8, out JsonElement deprecatedProperty))
             {
                 parameter.Deprecated = deprecatedProperty.GetBoolean();
             }
 
-            if (jsonElement.TryGetProperty("allowEmptyValue", out JsonElement allowEmptyValueProperty))
+            if (jsonElement.TryGetProperty("allowEmptyValue"u8, out JsonElement allowEmptyValueProperty))
             {
                 parameter.AllowEmptyValue = allowEmptyValueProperty.GetBoolean();
             }
 
-            if (jsonElement.TryGetProperty("style", out JsonElement styleProperty))
+            if (jsonElement.TryGetProperty("style"u8, out JsonElement styleProperty))
             {
                 parameter.Style = styleProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("explode", out JsonElement explodeProperty))
+            if (jsonElement.TryGetProperty("explode"u8, out JsonElement explodeProperty))
             {
                 parameter.Explode = explodeProperty.GetBoolean();
             }
 
-            if (jsonElement.TryGetProperty("allowReserved", out JsonElement allowReservedProperty))
+            if (jsonElement.TryGetProperty("allowReserved"u8, out JsonElement allowReservedProperty))
             {
                 parameter.AllowReserved = allowReservedProperty.GetBoolean();
             }
 
-            if (jsonElement.TryGetProperty("schema", out JsonElement schemaProperty))
+            if (jsonElement.TryGetProperty("schema"u8, out JsonElement schemaProperty))
             {
                 var schemaDeSerializer = new SchemaDeSerializer(this.referenceResolver, this.loggerFactory);
                 parameter.Schema = schemaDeSerializer.DeSerialize(schemaProperty, strict);
             }
 
-            if (jsonElement.TryGetProperty("example", out JsonElement exampleProperty))
+            if (jsonElement.TryGetProperty("example"u8, out JsonElement exampleProperty))
             {
                 parameter.Example = exampleProperty.ToString();
             }
@@ -194,7 +194,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeExamples(JsonElement jsonElement, Parameter parameter, bool strict)
         {
-            if (jsonElement.TryGetProperty("examples", out JsonElement examplesProperty))
+            if (jsonElement.TryGetProperty("examples"u8, out JsonElement examplesProperty))
             {
                 var exampleDeSerializer = new ExampleDeSerializer(this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
@@ -235,7 +235,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeContent(JsonElement jsonElement, Parameter parameter, bool strict)
         {
-            if (jsonElement.TryGetProperty("content", out JsonElement contentProperty))
+            if (jsonElement.TryGetProperty("content"u8, out JsonElement contentProperty))
             {
                 var mediaTypeDeSerializer = new MediaTypeDeSerializer(this.referenceResolver, this.loggerFactory);
 

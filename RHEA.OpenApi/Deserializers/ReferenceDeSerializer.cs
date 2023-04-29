@@ -76,7 +76,7 @@ namespace OpenApi.Deserializers
 
             var reference = new Reference();
 
-            if (!jsonElement.TryGetProperty("$ref", out JsonElement refProperty))
+            if (!jsonElement.TryGetProperty("$ref"u8, out JsonElement refProperty))
             {
                 if (strict)
                 {
@@ -92,17 +92,17 @@ namespace OpenApi.Deserializers
                 reference.Ref = refProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("summary", out JsonElement summaryProperty))
+            if (jsonElement.TryGetProperty("summary"u8, out JsonElement summaryProperty))
             {
                 reference.Summary = summaryProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 reference.Description = descriptionProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("$comment", out JsonElement commentProperty))
+            if (jsonElement.TryGetProperty("$comment"u8, out JsonElement commentProperty))
             {
                 reference.Comments = commentProperty.GetString();
             }

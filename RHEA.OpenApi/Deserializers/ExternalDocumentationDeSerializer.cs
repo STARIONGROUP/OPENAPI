@@ -76,12 +76,12 @@ namespace OpenApi.Deserializers
 
             var externalDocumentation = new ExternalDocumentation();
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 externalDocumentation.Description = descriptionProperty.GetString();
             }
 
-            if (!jsonElement.TryGetProperty("url", out JsonElement urlProperty))
+            if (!jsonElement.TryGetProperty("url"u8, out JsonElement urlProperty))
             {
                 if (strict)
                 {

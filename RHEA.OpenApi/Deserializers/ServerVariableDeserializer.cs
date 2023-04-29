@@ -78,7 +78,7 @@ namespace OpenApi.Deserializers
 
             var serverVariable = new ServerVariable();
             
-            if (jsonElement.TryGetProperty("enum", out JsonElement enumProperty))
+            if (jsonElement.TryGetProperty("enum"u8, out JsonElement enumProperty))
             {
                 if (enumProperty.ValueKind != JsonValueKind.Array)
                 {
@@ -116,7 +116,7 @@ namespace OpenApi.Deserializers
                 }
             }
 
-            if (jsonElement.TryGetProperty("default", out JsonElement defaultProperty))
+            if (jsonElement.TryGetProperty("default"u8, out JsonElement defaultProperty))
             {
                 serverVariable.Default = defaultProperty.GetString();
             }
@@ -136,7 +136,7 @@ namespace OpenApi.Deserializers
                 }
             }
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 serverVariable.Description = descriptionProperty.GetString();
             }

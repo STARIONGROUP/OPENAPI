@@ -90,23 +90,23 @@ namespace OpenApi.Deserializers
 
             this.DeserializeTags(jsonElement, operation);
 
-            if (jsonElement.TryGetProperty("summary", out JsonElement summaryProperty))
+            if (jsonElement.TryGetProperty("summary"u8, out JsonElement summaryProperty))
             {
                 operation.Summary = summaryProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 operation.Description = descriptionProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
+            if (jsonElement.TryGetProperty("externalDocs"u8, out JsonElement externalDocsProperty))
             {
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
                 operation.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty, strict);
             }
 
-            if (jsonElement.TryGetProperty("operationId", out JsonElement operationIdProperty))
+            if (jsonElement.TryGetProperty("operationId"u8, out JsonElement operationIdProperty))
             {
                 operation.OperationId = operationIdProperty.GetString();
             }
@@ -115,7 +115,7 @@ namespace OpenApi.Deserializers
             
             this.DeserializeRequestBody(jsonElement, operation, strict);
 
-            if (jsonElement.TryGetProperty("responses", out JsonElement responsesProperty))
+            if (jsonElement.TryGetProperty("responses"u8, out JsonElement responsesProperty))
             {
                 var responsesDeSerializer = new ResponsesDeSerializer(this.referenceResolver, this.loggerFactory);
                 operation.Responses = responsesDeSerializer.DeSerialize(responsesProperty, strict);
@@ -123,7 +123,7 @@ namespace OpenApi.Deserializers
             
             this.DeserializeCallbacks(jsonElement, operation, strict);
 
-            if (jsonElement.TryGetProperty("deprecated", out JsonElement deprecatedProperty))
+            if (jsonElement.TryGetProperty("deprecated"u8, out JsonElement deprecatedProperty))
             {
                 operation.Deprecated = deprecatedProperty.GetBoolean();
             }
@@ -151,7 +151,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeTags(JsonElement jsonElement, Operation operation)
         {
-            if (jsonElement.TryGetProperty("tags", out JsonElement tagsProperty))
+            if (jsonElement.TryGetProperty("tags"u8, out JsonElement tagsProperty))
             {
                 if (tagsProperty.ValueKind == JsonValueKind.Array)
                 {
@@ -182,7 +182,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeParameters(JsonElement jsonElement, Operation operation, bool strict)
         {
-            if (jsonElement.TryGetProperty("parameters", out JsonElement parametersProperty))
+            if (jsonElement.TryGetProperty("parameters"u8, out JsonElement parametersProperty))
             {
                 if (parametersProperty.ValueKind == JsonValueKind.Array)
                 {
@@ -226,11 +226,11 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeRequestBody(JsonElement jsonElement, Operation operation, bool strict)
         {
-            if (jsonElement.TryGetProperty("requestBody", out JsonElement requestBodyProperty))
+            if (jsonElement.TryGetProperty("requestBody"u8, out JsonElement requestBodyProperty))
             {
                 if (requestBodyProperty.ValueKind == JsonValueKind.Object)
                 {
-                    if (requestBodyProperty.TryGetProperty("$ref", out var referenceElement))
+                    if (requestBodyProperty.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
                         var reference = referenceDeSerializer.DeSerialize(requestBodyProperty, strict);
@@ -277,7 +277,7 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         operation.CallbacksReferences.Add(itemProperty.Name, reference);
@@ -306,7 +306,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeSecurityRequirements(JsonElement jsonElement, Operation operation)
         {
-            if (jsonElement.TryGetProperty("security", out JsonElement securityProperty))
+            if (jsonElement.TryGetProperty("security"u8, out JsonElement securityProperty))
             {
                 if (securityProperty.ValueKind == JsonValueKind.Array)
                 {
@@ -340,7 +340,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeServers(JsonElement jsonElement, Operation operation, bool strict)
         {
-            if (jsonElement.TryGetProperty("servers", out JsonElement serversProperty))
+            if (jsonElement.TryGetProperty("servers"u8, out JsonElement serversProperty))
             {
                 if (serversProperty.ValueKind == JsonValueKind.Array)
                 {

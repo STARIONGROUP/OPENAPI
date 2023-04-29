@@ -88,9 +88,9 @@ namespace OpenApi.Deserializers
 
             var mediaType = new MediaType();
 
-            if (jsonElement.TryGetProperty("schema", out JsonElement schemaProperty))
+            if (jsonElement.TryGetProperty("schema"u8, out JsonElement schemaProperty))
             {
-                if (schemaProperty.TryGetProperty("$ref", out var referenceElement))
+                if (schemaProperty.TryGetProperty("$ref"u8, out var referenceElement))
                 {
                     var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
                     var reference = referenceDeSerializer.DeSerialize(schemaProperty, strict);
@@ -104,7 +104,7 @@ namespace OpenApi.Deserializers
                 }
             }
 
-            if (jsonElement.TryGetProperty("example", out JsonElement exampleProperty))
+            if (jsonElement.TryGetProperty("example"u8, out JsonElement exampleProperty))
             {
                 mediaType.Example = exampleProperty.ToString();
             }
@@ -137,14 +137,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeExamples(JsonElement jsonElement, MediaType mediaType, bool strict)
         {
-            if (jsonElement.TryGetProperty("examples", out JsonElement examplesProperty))
+            if (jsonElement.TryGetProperty("examples"u8, out JsonElement examplesProperty))
             {
                 var exampleDeSerializer = new ExampleDeSerializer(this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in examplesProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         mediaType.ExamplesReferences.Add(itemProperty.Name, reference);
@@ -178,7 +178,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeEncoding(JsonElement jsonElement, MediaType mediaType, bool strict)
         {
-            if (jsonElement.TryGetProperty("encoding", out JsonElement encodingProperty))
+            if (jsonElement.TryGetProperty("encoding"u8, out JsonElement encodingProperty))
             {
                 var encodingDeSerializer = new EncodingDeSerializer(this.referenceResolver, this.loggerFactory);
 

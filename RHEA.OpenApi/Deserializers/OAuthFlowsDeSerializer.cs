@@ -86,22 +86,22 @@ namespace OpenApi.Deserializers
 
             var oAuthFlowDeSerializer = new OAuthFlowDeSerializer(this.loggerFactory);
 
-            if (jsonElement.TryGetProperty("implicit", out JsonElement implicitProperty))
+            if (jsonElement.TryGetProperty("implicit"u8, out JsonElement implicitProperty))
             {
                 oAuthFlows.Implicit = oAuthFlowDeSerializer.DeSerialize(implicitProperty, strict);
             }
 
-            if (jsonElement.TryGetProperty("password", out JsonElement passwordProperty))
+            if (jsonElement.TryGetProperty("password"u8, out JsonElement passwordProperty))
             {
                 oAuthFlows.Password = oAuthFlowDeSerializer.DeSerialize(passwordProperty, strict);
             }
 
-            if (jsonElement.TryGetProperty("clientCredentials", out JsonElement clientCredentialsProperty))
+            if (jsonElement.TryGetProperty("clientCredentials"u8, out JsonElement clientCredentialsProperty))
             {
                 oAuthFlows.ClientCredentials = oAuthFlowDeSerializer.DeSerialize(clientCredentialsProperty, strict);
             }
 
-            if (jsonElement.TryGetProperty("authorizationCode", out JsonElement authorizationCodeProperty))
+            if (jsonElement.TryGetProperty("authorizationCode"u8, out JsonElement authorizationCodeProperty))
             {
                 oAuthFlows.AuthorizationCode = oAuthFlowDeSerializer.DeSerialize(authorizationCodeProperty, strict);
             }

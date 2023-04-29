@@ -83,7 +83,7 @@ namespace OpenApi.Deserializers
 
             var info = new Info();
 
-            if (!jsonElement.TryGetProperty("title", out JsonElement titleProperty))
+            if (!jsonElement.TryGetProperty("title"u8, out JsonElement titleProperty))
             {
                 if (strict)
                 {
@@ -99,34 +99,34 @@ namespace OpenApi.Deserializers
                 info.Title = titleProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("summary", out JsonElement summaryProperty))
+            if (jsonElement.TryGetProperty("summary"u8, out JsonElement summaryProperty))
             {
                 info.Summary = summaryProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 info.Description = descriptionProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("termsOfService", out JsonElement termsOfServiceProperty))
+            if (jsonElement.TryGetProperty("termsOfService"u8, out JsonElement termsOfServiceProperty))
             {
                 info.TermsOfService= termsOfServiceProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("contact", out JsonElement contactProperty))
+            if (jsonElement.TryGetProperty("contact"u8, out JsonElement contactProperty))
             {
                 var contactDeSerializer = new ContactDeSerializer(this.loggerFactory); 
                 info.Contact = contactDeSerializer.DeSerialize(contactProperty);
             }
 
-            if (jsonElement.TryGetProperty("license", out JsonElement licenseProperty))
+            if (jsonElement.TryGetProperty("license"u8, out JsonElement licenseProperty))
             {
                 var licenseDeSerializer = new LicenseDeSerializer(this.loggerFactory);
                 info.License = licenseDeSerializer.DeSerialize(licenseProperty, strict);
             }
 
-            if (!jsonElement.TryGetProperty("version", out JsonElement versionProperty))
+            if (!jsonElement.TryGetProperty("version"u8, out JsonElement versionProperty))
             {
                 if (strict)
                 {

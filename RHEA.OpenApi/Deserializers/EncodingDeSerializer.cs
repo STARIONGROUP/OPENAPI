@@ -88,24 +88,24 @@ namespace OpenApi.Deserializers
 
             var encoding = new Encoding();
 
-            if (jsonElement.TryGetProperty("contentType", out JsonElement contentTypeProperty))
+            if (jsonElement.TryGetProperty("contentType"u8, out JsonElement contentTypeProperty))
             {
                 encoding.ContentType = contentTypeProperty.GetString();
             }
 
             this.DeserializeHeaders(jsonElement, encoding, strict);
             
-            if (jsonElement.TryGetProperty("style", out JsonElement styleProperty))
+            if (jsonElement.TryGetProperty("style"u8, out JsonElement styleProperty))
             {
                 encoding.Style = styleProperty.GetString();
             }
             
-            if (jsonElement.TryGetProperty("explode", out JsonElement explodeProperty))
+            if (jsonElement.TryGetProperty("explode"u8, out JsonElement explodeProperty))
             {
                 encoding.Explode = explodeProperty.GetBoolean();
             }
 
-            if (jsonElement.TryGetProperty("allowReserved", out JsonElement allowReservedProperty))
+            if (jsonElement.TryGetProperty("allowReserved"u8, out JsonElement allowReservedProperty))
             {
                 encoding.AllowReserved = allowReservedProperty.GetBoolean();
             }
@@ -134,14 +134,14 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeHeaders(JsonElement jsonElement, Encoding encoding, bool strict)
         {
-            if (jsonElement.TryGetProperty("headers", out JsonElement headersProperty))
+            if (jsonElement.TryGetProperty("headers"u8, out JsonElement headersProperty))
             {
                 var headerDeSerializer = new HeaderDeSerializer(this.referenceResolver, this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var itemProperty in headersProperty.EnumerateObject())
                 {
-                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                    if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                         encoding.HeadersReferences.Add(itemProperty.Name, reference);

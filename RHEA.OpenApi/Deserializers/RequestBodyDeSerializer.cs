@@ -88,12 +88,12 @@ namespace OpenApi.Deserializers
 
             var requestBody = new RequestBody();
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 requestBody.Description = descriptionProperty.GetString();
             }
 
-            if (!jsonElement.TryGetProperty("content", out JsonElement contentProperty))
+            if (!jsonElement.TryGetProperty("content"u8, out JsonElement contentProperty))
             {
                 if (strict)
                 {
@@ -118,7 +118,7 @@ namespace OpenApi.Deserializers
                 }
             }
             
-            if (jsonElement.TryGetProperty("required", out JsonElement requiredProperty))
+            if (jsonElement.TryGetProperty("required"u8, out JsonElement requiredProperty))
             {
                 requestBody.Required = requiredProperty.GetBoolean();
             }

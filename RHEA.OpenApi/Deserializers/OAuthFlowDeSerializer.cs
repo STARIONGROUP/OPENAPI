@@ -77,22 +77,22 @@ namespace OpenApi.Deserializers
 
             var oAuthFlow = new OAuthFlow();
 
-            if (jsonElement.TryGetProperty("authorizationUrl", out JsonElement authorizationUrlProperty))
+            if (jsonElement.TryGetProperty("authorizationUrl"u8, out JsonElement authorizationUrlProperty))
             {
                 oAuthFlow.AuthorizationUrl = authorizationUrlProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("tokenUrl", out JsonElement tokenUrlProperty))
+            if (jsonElement.TryGetProperty("tokenUrl"u8, out JsonElement tokenUrlProperty))
             {
                 oAuthFlow.TokenUrl = tokenUrlProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("refreshUrl", out JsonElement refreshUrlProperty))
+            if (jsonElement.TryGetProperty("refreshUrl"u8, out JsonElement refreshUrlProperty))
             {
                 oAuthFlow.RefreshUrl = refreshUrlProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("scopes", out JsonElement scopesProperty))
+            if (jsonElement.TryGetProperty("scopes"u8, out JsonElement scopesProperty))
             {
                 foreach (var item in scopesProperty.EnumerateObject())
                 {

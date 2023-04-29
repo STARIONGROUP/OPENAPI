@@ -83,7 +83,7 @@ namespace OpenApi.Deserializers
 
             var securityScheme = new SecurityScheme();
 
-            if (!jsonElement.TryGetProperty("type", out JsonElement typeProperty))
+            if (!jsonElement.TryGetProperty("type"u8, out JsonElement typeProperty))
             {
                 if (strict)
                 {
@@ -99,12 +99,12 @@ namespace OpenApi.Deserializers
                 securityScheme.Type = typeProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 securityScheme.Description = descriptionProperty.GetString();
             }
 
-            if (!jsonElement.TryGetProperty("name", out JsonElement nameProperty))
+            if (!jsonElement.TryGetProperty("name"u8, out JsonElement nameProperty))
             {
                 if (securityScheme.Type == "apiKey" && strict)
                 {
@@ -120,7 +120,7 @@ namespace OpenApi.Deserializers
                 securityScheme.Name = nameProperty.GetString();
             }
 
-            if (!jsonElement.TryGetProperty("in", out JsonElement inProperty))
+            if (!jsonElement.TryGetProperty("in"u8, out JsonElement inProperty))
             {
                 if (securityScheme.Type == "apiKey" && strict)
                 {
@@ -136,7 +136,7 @@ namespace OpenApi.Deserializers
                 securityScheme.In = inProperty.GetString();
             }
 
-            if (!jsonElement.TryGetProperty("scheme", out JsonElement schemeProperty))
+            if (!jsonElement.TryGetProperty("scheme"u8, out JsonElement schemeProperty))
             {
                 if (securityScheme.Type == "http" && strict)
                 {
@@ -152,12 +152,12 @@ namespace OpenApi.Deserializers
                 securityScheme.Scheme = schemeProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("bearerFormat", out JsonElement bearerFormatProperty))
+            if (jsonElement.TryGetProperty("bearerFormat"u8, out JsonElement bearerFormatProperty))
             {
                 securityScheme.BearerFormat = bearerFormatProperty.GetString();
             }
 
-            if (!jsonElement.TryGetProperty("flows", out JsonElement flowsProperty))
+            if (!jsonElement.TryGetProperty("flows"u8, out JsonElement flowsProperty))
             {
                 if (securityScheme.Type == "oauth2" && strict)
                 {
@@ -174,7 +174,7 @@ namespace OpenApi.Deserializers
                 securityScheme.Flows = authFlowsDeSerializer.DeSerialize(flowsProperty, strict);
             }
 
-            if (!jsonElement.TryGetProperty("openIdConnectUrl", out JsonElement openIdConnectUrlProperty))
+            if (!jsonElement.TryGetProperty("openIdConnectUrl"u8, out JsonElement openIdConnectUrlProperty))
             {
                 if (securityScheme.Type == "openIdConnect" && strict)
                 {

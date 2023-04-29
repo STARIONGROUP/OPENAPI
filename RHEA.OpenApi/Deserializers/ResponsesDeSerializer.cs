@@ -95,7 +95,7 @@ namespace OpenApi.Deserializers
             {
                 var key = itemProperty.Name;
                 
-                if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
+                if (itemProperty.Value.TryGetProperty("$ref"u8, out var referenceElement))
                 {
                     var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
                     responses.ResponseReferences.Add(key, reference);

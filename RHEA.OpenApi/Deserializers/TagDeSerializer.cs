@@ -83,7 +83,7 @@ namespace OpenApi.Deserializers
 
             var tag = new Tag();
 
-            if (!jsonElement.TryGetProperty("name", out JsonElement nameProperty))
+            if (!jsonElement.TryGetProperty("name"u8, out JsonElement nameProperty))
             {
                 if (strict)
                 {
@@ -99,12 +99,12 @@ namespace OpenApi.Deserializers
                 tag.Name = nameProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 tag.Description = descriptionProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
+            if (jsonElement.TryGetProperty("externalDocs"u8, out JsonElement externalDocsProperty))
             {
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
                 tag.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty, strict);

@@ -76,7 +76,7 @@ namespace OpenApi.Deserializers
 
             var license = new License();
             
-            if (!jsonElement.TryGetProperty("name", out JsonElement nameProperty))
+            if (!jsonElement.TryGetProperty("name"u8, out JsonElement nameProperty))
             {
                 if (strict)
                 {
@@ -92,12 +92,12 @@ namespace OpenApi.Deserializers
                 license.Name = nameProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("identifier", out JsonElement identifierProperty))
+            if (jsonElement.TryGetProperty("identifier"u8, out JsonElement identifierProperty))
             {
                 license.Identifier = identifierProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("url", out JsonElement urlProperty))
+            if (jsonElement.TryGetProperty("url"u8, out JsonElement urlProperty))
             {
                 license.Url = urlProperty.GetString();
             }

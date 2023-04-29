@@ -128,30 +128,30 @@ namespace OpenApi.Deserializers
                 jsonSchema.Discriminator = discriminatorDeSerializer.DeSerialize(discriminatorProperty, strict);
             }
 
-            if (jsonElement.TryGetProperty("xml", out JsonElement xmlProperty))
+            if (jsonElement.TryGetProperty("xml"u8, out JsonElement xmlProperty))
             {
                 var xmlDeSerializer = new XMLDeSerializer(this.loggerFactory);
                 jsonSchema.XML = xmlDeSerializer.DeSerialize(xmlProperty);
             }
 
-            if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
+            if (jsonElement.TryGetProperty("externalDocs"u8, out JsonElement externalDocsProperty))
             {
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
                 jsonSchema.ExternalDocs = externalDocumentationDeSerializer.DeSerialize(externalDocsProperty, strict);
 
             }
 
-            if (jsonElement.TryGetProperty("example", out JsonElement exampleProperty))
+            if (jsonElement.TryGetProperty("example"u8, out JsonElement exampleProperty))
             {
                 jsonSchema.Example = exampleProperty.ToString();
             }
 
-            if (jsonElement.TryGetProperty("$id", out JsonElement idProperty))
+            if (jsonElement.TryGetProperty("$id"u8, out JsonElement idProperty))
             {
                 jsonSchema.Identifier = idProperty.ToString();
             }
 
-            if (jsonElement.TryGetProperty("type", out JsonElement typeProperty))
+            if (jsonElement.TryGetProperty("type"u8, out JsonElement typeProperty))
             {
                 switch (typeProperty.ValueKind)
                 { 
@@ -170,9 +170,9 @@ namespace OpenApi.Deserializers
 
             if (jsonSchema.Type.Count == 1 && jsonSchema.Type.Single() == JsonSchemaType.Array)
             {
-                if (jsonElement.TryGetProperty("items", out JsonElement itemsProperty))
+                if (jsonElement.TryGetProperty("items"u8, out JsonElement itemsProperty))
                 {
-                    if (itemsProperty.TryGetProperty("$ref", out var referenceElement))
+                    if (itemsProperty.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
                         var reference = referenceDeSerializer.DeSerialize(itemsProperty, strict);
@@ -189,7 +189,7 @@ namespace OpenApi.Deserializers
                 }
             }
 
-            if (jsonElement.TryGetProperty("properties", out JsonElement propertiesProperty))
+            if (jsonElement.TryGetProperty("properties"u8, out JsonElement propertiesProperty))
             {
                 var schemaDeSerializer = new SchemaDeSerializer(this.referenceResolver, this.loggerFactory);
 
@@ -201,11 +201,11 @@ namespace OpenApi.Deserializers
                 }
             }
 
-            if (jsonElement.TryGetProperty("allOf", out JsonElement allOfProperty))
+            if (jsonElement.TryGetProperty("allOf"u8, out JsonElement allOfProperty))
             {
                 foreach (var item in allOfProperty.EnumerateArray())
                 {
-                    if (item.TryGetProperty("$ref", out var referenceElement))
+                    if (item.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
                         var reference = referenceDeSerializer.DeSerialize(item, strict);
@@ -221,11 +221,11 @@ namespace OpenApi.Deserializers
                 }
             }
 
-            if (jsonElement.TryGetProperty("anyOf", out JsonElement anyOfProperty))
+            if (jsonElement.TryGetProperty("anyOf"u8, out JsonElement anyOfProperty))
             {
                 foreach (var item in anyOfProperty.EnumerateArray())
                 {
-                    if (item.TryGetProperty("$ref", out var referenceElement))
+                    if (item.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
                         var reference = referenceDeSerializer.DeSerialize(item, strict);
@@ -242,11 +242,11 @@ namespace OpenApi.Deserializers
                 }
             }
 
-            if (jsonElement.TryGetProperty("oneOf", out JsonElement oneOfProperty))
+            if (jsonElement.TryGetProperty("oneOf"u8, out JsonElement oneOfProperty))
             {
                 foreach (var item in oneOfProperty.EnumerateArray())
                 {
-                    if (item.TryGetProperty("$ref", out var referenceElement))
+                    if (item.TryGetProperty("$ref"u8, out var referenceElement))
                     {
                         var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
                         var reference = referenceDeSerializer.DeSerialize(item, strict);
@@ -263,9 +263,9 @@ namespace OpenApi.Deserializers
                 }
             }
 
-            if (jsonElement.TryGetProperty("not", out JsonElement notProperty))
+            if (jsonElement.TryGetProperty("not"u8, out JsonElement notProperty))
             {
-                if (notProperty.TryGetProperty("$ref", out var referenceElement))
+                if (notProperty.TryGetProperty("$ref"u8, out var referenceElement))
                 {
                     var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
                     var reference = referenceDeSerializer.DeSerialize(notProperty, strict);
@@ -280,7 +280,7 @@ namespace OpenApi.Deserializers
                 }
             }
 
-            if (jsonElement.TryGetProperty("required", out JsonElement requiredProperty))
+            if (jsonElement.TryGetProperty("required"u8, out JsonElement requiredProperty))
             {
                 foreach (var item in requiredProperty.EnumerateArray())
                 {
@@ -288,7 +288,7 @@ namespace OpenApi.Deserializers
                 }
             }
 
-            if (jsonElement.TryGetProperty("enum", out JsonElement enumProperty))
+            if (jsonElement.TryGetProperty("enum"u8, out JsonElement enumProperty))
             {
                 if (jsonSchema.Type.Contains(JsonSchemaType.String))
                 {
@@ -303,51 +303,51 @@ namespace OpenApi.Deserializers
                 }
             }
 
-            if (jsonElement.TryGetProperty("const", out JsonElement constProperty))
+            if (jsonElement.TryGetProperty("const"u8, out JsonElement constProperty))
             {
                 jsonSchema.Const = constProperty.ToString();
             }
 
-            if (jsonElement.TryGetProperty("title", out JsonElement titleProperty))
+            if (jsonElement.TryGetProperty("title"u8, out JsonElement titleProperty))
             {
                 jsonSchema.Title = titleProperty.ToString();
             }
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 jsonSchema.Description = descriptionProperty.ToString();
             }
 
-            if (jsonElement.TryGetProperty("$comment", out JsonElement commentProperty))
+            if (jsonElement.TryGetProperty("$comment"u8, out JsonElement commentProperty))
             {
                 jsonSchema.Comments = commentProperty.ToString();
             }
 
-            if (jsonElement.TryGetProperty("deprecated", out JsonElement deprecatedProperty))
+            if (jsonElement.TryGetProperty("deprecated"u8, out JsonElement deprecatedProperty))
             {
                 jsonSchema.Deprecated = deprecatedProperty.GetBoolean();
             }
 
-            if (jsonElement.TryGetProperty("readOnly", out JsonElement readOnlyProperty))
+            if (jsonElement.TryGetProperty("readOnly"u8, out JsonElement readOnlyProperty))
             {
                 jsonSchema.ReadOnly = readOnlyProperty.GetBoolean();
             }
 
-            if (jsonElement.TryGetProperty("writeOnly", out JsonElement writeOnlyProperty))
+            if (jsonElement.TryGetProperty("writeOnly"u8, out JsonElement writeOnlyProperty))
             {
                 jsonSchema.WriteOnly = writeOnlyProperty.GetBoolean();
             }
 
-            if (jsonElement.TryGetProperty("contentEncoding", out JsonElement contentEncodingProperty))
+            if (jsonElement.TryGetProperty("contentEncoding"u8, out JsonElement contentEncodingProperty))
             {
                 jsonSchema.ContentEncoding = contentEncodingProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("contentMediaType", out JsonElement contentMediaTypeProperty))
+            if (jsonElement.TryGetProperty("contentMediaType"u8, out JsonElement contentMediaTypeProperty))
             {
                 jsonSchema.ContentMediaType = contentMediaTypeProperty.GetString();
 
-                if (jsonElement.TryGetProperty("contentSchema", out JsonElement contentSchemaProperty))
+                if (jsonElement.TryGetProperty("contentSchema"u8, out JsonElement contentSchemaProperty))
                 {
                     var schemaDeSerializer = new SchemaDeSerializer(this.referenceResolver, this.loggerFactory);
 

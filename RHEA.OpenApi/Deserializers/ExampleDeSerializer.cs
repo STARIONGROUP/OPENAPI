@@ -69,22 +69,22 @@ namespace OpenApi.Deserializers
 
             var example = new Example();
 
-            if (jsonElement.TryGetProperty("summary", out JsonElement summaryProperty))
+            if (jsonElement.TryGetProperty("summary"u8, out JsonElement summaryProperty))
             {
                 example.Summary = summaryProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
+            if (jsonElement.TryGetProperty("description"u8, out JsonElement descriptionProperty))
             {
                 example.Description = descriptionProperty.GetString();
             }
             
-            if (jsonElement.TryGetProperty("value", out JsonElement valueProperty))
+            if (jsonElement.TryGetProperty("value"u8, out JsonElement valueProperty))
             {
                 example.Value = valueProperty.ToString();
             }
 
-            if (jsonElement.TryGetProperty("externalValue", out JsonElement externalValueProperty))
+            if (jsonElement.TryGetProperty("externalValue"u8, out JsonElement externalValueProperty))
             {
                 example.ExternalValue = externalValueProperty.GetString();
             }

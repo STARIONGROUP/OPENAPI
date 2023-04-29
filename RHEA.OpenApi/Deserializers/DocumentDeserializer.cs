@@ -88,7 +88,7 @@ namespace OpenApi.Deserializers
 
             var document = new Document();
 
-            if (!jsonElement.TryGetProperty("openapi", out JsonElement openapiProperty))
+            if (!jsonElement.TryGetProperty("openapi"u8, out JsonElement openapiProperty))
             {
                 if (strict)
                 {
@@ -106,7 +106,7 @@ namespace OpenApi.Deserializers
 
             this.DeserializeInfo(jsonElement, document, strict);
             
-            if (jsonElement.TryGetProperty("jsonSchemaDialect", out JsonElement jsonSchemaDialectProperty))
+            if (jsonElement.TryGetProperty("jsonSchemaDialect"u8, out JsonElement jsonSchemaDialectProperty))
             {
                 document.JsonSchemaDialect = jsonSchemaDialectProperty.GetString();
             }
@@ -149,7 +149,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeInfo(JsonElement jsonElement, Document document, bool strict)
         {
-            if (!jsonElement.TryGetProperty("info", out JsonElement infoProperty))
+            if (!jsonElement.TryGetProperty("info"u8, out JsonElement infoProperty))
             {
                 if (strict)
                 {
@@ -186,7 +186,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeServers(JsonElement jsonElement, Document document, bool strict)
         {
-            if (jsonElement.TryGetProperty("servers", out JsonElement serversProperty))
+            if (jsonElement.TryGetProperty("servers"u8, out JsonElement serversProperty))
             {
                 if (serversProperty.ValueKind == JsonValueKind.Array)
                 {
@@ -220,7 +220,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializePathItems(JsonElement jsonElement, Document document, bool strict)
         {
-            if (jsonElement.TryGetProperty("paths", out JsonElement pathsProperty))
+            if (jsonElement.TryGetProperty("paths"u8, out JsonElement pathsProperty))
             {
                 var pathItemDeserializer = new PathItemDeserializer(this.referenceResolver, this.loggerFactory);
 
@@ -254,7 +254,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeWebhooks(JsonElement jsonElement, Document document, bool strict)
         {
-            if (jsonElement.TryGetProperty("webhooks", out JsonElement webhooksProperty))
+            if (jsonElement.TryGetProperty("webhooks"u8, out JsonElement webhooksProperty))
             {
                 var pathItemDeserializer = new PathItemDeserializer(this.referenceResolver, this.loggerFactory);
                 var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
@@ -297,7 +297,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeComponents(JsonElement jsonElement, Document document, bool strict)
         {
-            if (jsonElement.TryGetProperty("components", out JsonElement componentsProperty))
+            if (jsonElement.TryGetProperty("components"u8, out JsonElement componentsProperty))
             {
                 var componentsDeSerializer = new ComponentsDeSerializer(this.referenceResolver, this.loggerFactory);
 
@@ -319,7 +319,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeSecurityRequirements(JsonElement jsonElement, Document document)
         {
-            if (jsonElement.TryGetProperty("security", out JsonElement securityProperty))
+            if (jsonElement.TryGetProperty("security"u8, out JsonElement securityProperty))
             {
                 if (securityProperty.ValueKind == JsonValueKind.Array)
                 {
@@ -353,7 +353,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeTags(JsonElement jsonElement, Document document, bool strict)
         {
-            if (jsonElement.TryGetProperty("tags", out JsonElement tagsProperty))
+            if (jsonElement.TryGetProperty("tags"u8, out JsonElement tagsProperty))
             {
                 if (tagsProperty.ValueKind == JsonValueKind.Array)
                 {
@@ -387,7 +387,7 @@ namespace OpenApi.Deserializers
         /// </exception>
         private void DeserializeExternalDocumentation(JsonElement jsonElement, Document document, bool strict)
         {
-            if (jsonElement.TryGetProperty("externalDocs", out JsonElement externalDocsProperty))
+            if (jsonElement.TryGetProperty("externalDocs"u8, out JsonElement externalDocsProperty))
             {
                 var externalDocumentationDeSerializer = new ExternalDocumentationDeSerializer(this.loggerFactory);
 

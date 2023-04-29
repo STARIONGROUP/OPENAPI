@@ -69,7 +69,7 @@ namespace OpenApi.Deserializers
 
             var discriminator = new Discriminator();
             
-            if (!jsonElement.TryGetProperty("propertyName", out JsonElement propertyNameProperty))
+            if (!jsonElement.TryGetProperty("propertyName"u8, out JsonElement propertyNameProperty))
             {
                 if (strict)
                 {
@@ -85,7 +85,7 @@ namespace OpenApi.Deserializers
                 discriminator.PropertyName = propertyNameProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("mapping", out JsonElement mappingProperty))
+            if (jsonElement.TryGetProperty("mapping"u8, out JsonElement mappingProperty))
             {
                 foreach (var item in mappingProperty.EnumerateObject())
                 {

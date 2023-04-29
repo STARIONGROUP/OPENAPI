@@ -69,27 +69,27 @@ namespace OpenApi.Deserializers
 
             var xml = new XML();
 
-            if (jsonElement.TryGetProperty("name", out JsonElement nameProperty))
+            if (jsonElement.TryGetProperty("name"u8, out JsonElement nameProperty))
             {
                 xml.Name = nameProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("namespace", out JsonElement namespaceProperty))
+            if (jsonElement.TryGetProperty("namespace"u8, out JsonElement namespaceProperty))
             {
                 xml.Namespace = namespaceProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("prefix", out JsonElement prefixProperty))
+            if (jsonElement.TryGetProperty("prefix"u8, out JsonElement prefixProperty))
             {
                 xml.Prefix = prefixProperty.GetString();
             }
 
-            if (jsonElement.TryGetProperty("attribute", out JsonElement attributeProperty))
+            if (jsonElement.TryGetProperty("attribute"u8, out JsonElement attributeProperty))
             {
                 xml.Attribute = attributeProperty.GetBoolean();
             }
 
-            if (jsonElement.TryGetProperty("wrapped", out JsonElement wrappedProperty))
+            if (jsonElement.TryGetProperty("wrapped"u8, out JsonElement wrappedProperty))
             {
                 xml.Wrapped = wrappedProperty.GetBoolean();
             }
