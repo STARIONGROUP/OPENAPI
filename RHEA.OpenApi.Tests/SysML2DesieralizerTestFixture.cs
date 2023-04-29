@@ -129,6 +129,17 @@ namespace OpenApi.Tests
             Assert.That(projectsPathItemPostMediaTypeJsonSchema.Identifier, Is.EqualTo("https://www.omg.org/spec/SystemsModelingAPI/20230201/ProjectRequest"));
             Assert.That(projectsPathItemPostMediaTypeJsonSchema.Title, Is.EqualTo("ProjectRequest"));
             Assert.That(projectsPathItemPostMediaTypeJsonSchema.Type.Single(), Is.EqualTo(JsonSchema.JsonSchemaType.Object ));
+
+            // COMPONENT Parameters
+            Assert.That(document.Components.Parameters.TryGetValue("projectId", out var projectIdParameter), Is.True);
+            Assert.That(projectIdParameter.Name, Is.EqualTo("projectId"));
+            Assert.That(projectIdParameter.In, Is.EqualTo("path"));
+            Assert.That(projectIdParameter.Description, Is.EqualTo("ID of the project"));
+            Assert.That(projectIdParameter.Required, Is.True);
+
+            var projectIdParameterSchema = (JsonSchema.JsonSchema)projectIdParameter.Schema;
+            Assert.That(projectIdParameterSchema.Type.Single(), Is.EqualTo(JsonSchema.JsonSchemaType.String));
+            Assert.That(projectIdParameterSchema.Format, Is.EqualTo(JsonSchema.FormatKind.Uuid));
         }
     }
 }

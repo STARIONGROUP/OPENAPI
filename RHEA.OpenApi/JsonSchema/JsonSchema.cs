@@ -55,6 +55,12 @@ namespace OpenApi.JsonSchema
         public OpenApi.Model.Schema Items { get; set; }
 
         /// <summary>
+        /// Gets or sets the <see cref="FormatKind"/>, this is only valid in case the <see cref="Type"/>
+        /// is equal to <see cref="JsonSchemaType.String"/>
+        /// </summary>
+        public FormatKind Format { get; set; } = FormatKind.Unknown;
+
+        /// <summary>
         /// gets or sets a <see cref="Reference"/> that can be used to populate the <see cref="Items"/> property
         /// once the complete Open API document has been deserialized
         /// </summary>

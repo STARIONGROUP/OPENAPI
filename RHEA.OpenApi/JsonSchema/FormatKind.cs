@@ -1,5 +1,5 @@
 ﻿// -------------------------------------------------------------------------------------------------
-// <copyright file="JsonSchemaType.cs" company="RHEA System S.A.">
+// <copyright file="FormatKind.cs" company="RHEA System S.A.">
 // 
 //   Copyright 2023 RHEA System S.A.
 // 
@@ -21,49 +21,52 @@
 namespace OpenApi.JsonSchema
 {
     /// <summary>
-    /// Specification of the data type for a Json Schema
+    /// Specification of the kind of Format in case the <see cref="JsonSchema"/> is of type
+    /// <see cref="JsonSchemaType.String"/>
     /// </summary>
-    public enum JsonSchemaType
+    public enum FormatKind
     {
-        /// <summary>
-        /// The instance is a string
-        /// </summary>
-        String,
+        DateTime,
+
+        Date,
+
+        Time,
+
+        Duration,
+
+        Email,
+
+        IdnEmail,
+
+        Hostnane,
+
+        IdnHostname,
+
+        Ipv4,
+
+        Ipv6,
+
+        Uri,
+
+        UriReference,
+
+        Iri,
+
+        IriReference,
+
+        Uuid,
+
+        UriTemplate,
+
+        JsonPointer,
+
+        RelativeJsonPointer,
+
+        Regex,
 
         /// <summary>
-        /// The instance is a number
-        /// </summary>
-        Number,
-
-        /// <summary>
-        /// The instance is an integer
-        /// </summary>
-        Integer,
-
-        /// <summary>
-        /// The instance is an object
-        /// </summary>
-        Object,
-
-        /// <summary>
-        /// The instance is an array
-        /// </summary>
-        Array,
-
-        /// <summary>
-        /// The instance is a bool
-        /// </summary>
-        Boolean,
-
-        /// <summary>
-        /// The instance is null
-        /// </summary>
-        Null,
-
-        /// <summary>
-        /// value that is retunred when the schema contains a type that is unknown
+        /// value that is retunred when the schema contains a FormatKind that is unknown
         /// </summary>
         Unknown
     }
 }
-

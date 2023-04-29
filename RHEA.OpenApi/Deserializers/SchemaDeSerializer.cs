@@ -118,7 +118,7 @@ namespace OpenApi.Deserializers
         /// <exception cref="SerializationException">
         /// Thrown in case the <see cref="JsonElement"/> is not a valid OpenApi <see cref="Schema"/> object
         /// </exception>
-        internal void DeSerialize(JsonElement jsonElement, bool strict, JsonSchema jsonSchema)
+        private void DeSerialize(JsonElement jsonElement, bool strict, JsonSchema jsonSchema)
         {
             this.logger.LogTrace("Start SchemaDeSerializer.DeSerialize");
 
@@ -186,6 +186,14 @@ namespace OpenApi.Deserializers
                         var subJsonSchema = schemaDeserializer.DeSerialize(itemsProperty, strict);
                         jsonSchema.Items = subJsonSchema;
                     }
+                }
+            }
+
+            if (jsonSchema.Type.Count == 1 && jsonSchema.Type.Single() == JsonSchemaType.String)
+            {
+                if (jsonElement.TryGetProperty("format"u8, out JsonElement formatProperty))
+                {
+                    jsonSchema.Format = FormatKindDeserializer.Deserialize(formatProperty.GetString());
                 }
             }
 
