@@ -20,7 +20,6 @@
 
 namespace OpenApi.Deserializers
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Text.Json;
 
@@ -263,22 +262,14 @@ namespace OpenApi.Deserializers
                 foreach (var itemProperty in webhooksProperty.EnumerateObject())
                 {
                     var key = itemProperty.Name;
-                    var isRef = false;
 
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            document.WebhooksReferences.Add(key, reference);
-
-                            this.Register(reference, document, "Webhooks", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        document.WebhooksReferences.Add(key, reference);
+                        this.Register(reference, document, "Webhooks", key);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var pathItem = pathItemDeserializer.DeSerialize(itemProperty.Value, strict);
                         document.Webhooks.Add(key, pathItem);

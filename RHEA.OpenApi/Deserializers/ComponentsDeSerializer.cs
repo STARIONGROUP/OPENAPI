@@ -135,14 +135,12 @@ namespace OpenApi.Deserializers
         {
             if (jsonElement.TryGetProperty("schemas", out JsonElement schemasProperty))
             {
-                var schemaDeSerializer = new SchemaDeSerializer(this.loggerFactory);
+                var schemaDeSerializer = new SchemaDeSerializer(this.referenceResolver, this.loggerFactory);
 
                 foreach (var item in schemasProperty.EnumerateObject())
                 {
                     var key = item.Name;
-
                     var schema = schemaDeSerializer.DeSerialize(item.Value, strict);
-
                     components.Schemas.Add(key, schema);
                 }
             }
@@ -174,29 +172,18 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in responsesProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-                    var isRef = false;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            components.ResponsesReferences.Add(key, reference);
-
-                            this.Register(reference, components, "Responses", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.ResponsesReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, components, "Responses", itemProperty.Name);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var response = responseDeserializer.DeSerialize(itemProperty.Value, strict);
-                        components.Responses.Add(key, response);
+                        components.Responses.Add(itemProperty.Name, response);
                     }
                 }
-
             }
         }
         
@@ -226,26 +213,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-                    var isRef = false;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            components.ParametersReferences.Add(key, reference);
-
-                            this.Register(reference, components, "Parameters", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.ParametersReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, components, "Parameters", itemProperty.Name);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var parameter = parameterDeSerializer.DeSerialize(itemProperty.Value, strict);
-                        components.Parameters.Add(key, parameter);
+                        components.Parameters.Add(itemProperty.Name, parameter);
                     }
                 }
             }
@@ -277,26 +254,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-                    var isRef = false;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            components.ExamplesReferences.Add(key, reference);
-
-                            this.Register(reference, components, "Examples", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.ExamplesReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, components, "Examples", itemProperty.Name);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var example = exampleDeSerializer.DeSerialize(itemProperty.Value);
-                        components.Examples.Add(key, example);
+                        components.Examples.Add(itemProperty.Name, example);
                     }
                 }
             }
@@ -328,26 +295,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in requestBodiesProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-                    var isRef = false;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            components.RequestBodiesReferences.Add(key, reference);
-
-                            this.Register(reference, components, "RequestBodies", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.RequestBodiesReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, components, "RequestBodies", itemProperty.Name);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var requestBody = requestBodyDeSerializer.DeSerialize(itemProperty.Value, strict);
-                        components.RequestBodies.Add(key, requestBody);
+                        components.RequestBodies.Add(itemProperty.Name, requestBody);
                     }
                 }
             }
@@ -379,26 +336,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-                    var isRef = false;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            components.HeadersReferences.Add(key, reference);
-
-                            this.Register(reference, components, "Headers", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.HeadersReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, components, "Headers", itemProperty.Name);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var header = headerDeSerializer.DeSerialize(itemProperty.Value, strict);
-                        components.Headers.Add(key, header);
+                        components.Headers.Add(itemProperty.Name, header);
                     }
                 }
             }
@@ -430,26 +377,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-                    var isRef = false;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            components.SecuritySchemesReferences.Add(key, reference);
-
-                            this.Register(reference, components, "SecuritySchemes", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.SecuritySchemesReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, components, "SecuritySchemes", itemProperty.Name);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var securityScheme = headerDeSerializer.DeSerialize(itemProperty.Value, strict);
-                        components.SecuritySchemes.Add(key, securityScheme);
+                        components.SecuritySchemes.Add(itemProperty.Name, securityScheme);
                     }
                 }
             }
@@ -481,26 +418,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-                    var isRef = false;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            components.LinksReferences.Add(key, reference);
-
-                            this.Register(reference, components, "Links", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.LinksReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, components, "Links", itemProperty.Name);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var link = linkDeSerializer.DeSerialize(itemProperty.Value, strict);
-                        components.Links.Add(key, link);
+                        components.Links.Add(itemProperty.Name, link);
                     }
                 }
             }
@@ -532,26 +459,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-                    var isRef = false;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            components.CallbacksReferences.Add(key, reference);
-
-                            this.Register(reference, components, "Callbacks", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.CallbacksReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, components, "Callbacks", itemProperty.Name);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var callback = callbackDeSerializer.DeSerialize(itemProperty.Value, strict);
-                        components.Callbacks.Add(key, callback);
+                        components.Callbacks.Add(itemProperty.Name, callback);
                     }
                 }
             }
@@ -583,26 +500,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in pathItemsProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-                    var isRef = false;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            components.PathItemsReferences.Add(key, reference);
-
-                            this.Register(reference, components, "PathItems", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        components.PathItemsReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, components, "PathItems", itemProperty.Name);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var pathItem = pathItemDeSerializer.DeSerialize(itemProperty.Value, strict);
-                        components.PathItems.Add(key, pathItem);
+                        components.PathItems.Add(itemProperty.Name, pathItem);
                     }
                 }
             }

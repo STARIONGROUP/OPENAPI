@@ -20,6 +20,7 @@
 
 namespace OpenApi
 {
+    using System;
     using System.Collections.Generic;
 
     using Microsoft.Extensions.Logging;
@@ -121,6 +122,9 @@ namespace OpenApi
                         break;
                     case Header header:
                         this.Resolve(header, root.Components, uriPropertyName, uriPropertyValue, referenceInfo);
+                        break;
+                    case JsonSchema.JsonSchema jsonSchema:
+                        this.Resolve(jsonSchema, root.Components, uriPropertyName, uriPropertyValue, referenceInfo);
                         break;
                     default:
                         this.logger.LogWarning("The {type} should not contain any $ref properties", referenceInfo.Source.GetType());
@@ -439,20 +443,39 @@ namespace OpenApi
         /// </param>
         private void Resolve(MediaType mediaType, Components targetComponents, string uriPropertyName, string uriPropertyValue, ReferenceInfo referenceInfo)
         {
-            if (uriPropertyName == "examples")
+            switch (uriPropertyName)
             {
-                if (targetComponents.Examples.TryGetValue(uriPropertyValue, out var referencedExample))
-                {
-                    mediaType.Examples.Add(referenceInfo.Key, referencedExample);
-                }
-                else
-                {
-                    this.logger.LogWarning("The {uriPropertyValue} Example was not found in the Components.Examples", uriPropertyValue);
-                }
-            }
-            else
-            {
-                this.logger.LogWarning("The {uriPropertyName} reference property is not a valid reference for the MediaType type", uriPropertyName);
+                case "examples":
+                    if (targetComponents.Examples.TryGetValue(uriPropertyValue, out var referencedExample))
+                    {
+                        mediaType.Examples.Add(referenceInfo.Key, referencedExample);
+                    }
+                    else
+                    {
+                        this.logger.LogWarning("The {uriPropertyValue} Example was not found in the Components.Examples", uriPropertyValue);
+                    }
+                    break;
+                case "schemas":
+                    if (targetComponents.Schemas.TryGetValue(uriPropertyValue, out var referencedSchema))
+                    {
+                        switch (referenceInfo.Field)
+                        {
+                            case "schema":
+                                mediaType.Schema = referencedSchema;
+                                break;
+                            default:
+                                this.logger.LogWarning("The {field} Field is not yet supported", referenceInfo.Field);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        this.logger.LogWarning("The {uriPropertyValue} Schema was not found in the Components.Schemas", uriPropertyValue);
+                    }
+                    break;
+                default:
+                    this.logger.LogWarning("The {uriPropertyName} reference property is not a valid reference for the MediaType type", uriPropertyName);
+                    break;
             }
         }
 
@@ -649,6 +672,63 @@ namespace OpenApi
             else
             {
                 this.logger.LogWarning("The {uriPropertyName} reference property is not a valid reference for the Header type", uriPropertyName);
+            }
+        }
+
+        /// <summary>
+        /// Resolves the <see cref="Reference"/>s that are contained in the <see cref="Header"/> object
+        /// </summary>
+        /// <param name="jsonSchema">
+        /// The <see cref="JsonSchema.JsonSchema"/> for which the contained <see cref="Reference"/>s need to be resolved
+        /// </param>
+        /// <param name="targetComponents">
+        /// The <see cref="Components"/> that contains the referenced items
+        /// </param>
+        /// <param name="uriPropertyName">
+        /// The name of the property for which the <see cref="Reference"/>s need to be resolved
+        /// </param>
+        /// <param name="uriPropertyValue">
+        /// The value of the property for which the <see cref="Reference"/>s need to be resolved
+        /// </param>
+        /// <param name="referenceInfo">
+        /// The <see cref="ReferenceInfo"/> that contains information to resolve the <see cref="Reference"/>s
+        /// </param>
+        private void Resolve(JsonSchema.JsonSchema jsonSchema, Components targetComponents, string uriPropertyName, string uriPropertyValue, ReferenceInfo referenceInfo)
+        {
+            if (uriPropertyName == "schemas")
+            {
+                if (targetComponents.Schemas.TryGetValue(uriPropertyValue, out var referencedSchema))
+                {
+                    switch (referenceInfo.Field)
+                    {
+                        case "items":
+                            jsonSchema.Items = referencedSchema;
+                            break;
+                        case "allOf":
+                            jsonSchema.AllOf.Add(referencedSchema);
+                            break;
+                        case "anyOf":
+                            jsonSchema.AnyOf.Add(referencedSchema);
+                            break;
+                        case "oneOf":
+                            jsonSchema.OneOf.Add(referencedSchema);
+                            break;
+                        case "not":
+                            jsonSchema.Not = referencedSchema;
+                            break;
+                        default:
+                            this.logger.LogWarning("The {field} Field is not yet supported", referenceInfo.Field);
+                            break;
+                    }
+                }
+                else
+                {
+                    this.logger.LogWarning("The {uriPropertyValue} Schema was not found in the Components.Schemas", uriPropertyValue);
+                }
+            }
+            else
+            {
+                this.logger.LogWarning("The {uriPropertyName} reference property is not a valid reference for the JsonSchema type", uriPropertyName);
             }
         }
     }

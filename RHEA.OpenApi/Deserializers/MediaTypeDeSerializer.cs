@@ -24,8 +24,8 @@ namespace OpenApi.Deserializers
     using System.Text.Json;
 
     using Microsoft.Extensions.Logging;
-
     using Microsoft.Extensions.Logging.Abstractions;
+
     using OpenApi.Model;
 
     /// <summary>
@@ -90,8 +90,18 @@ namespace OpenApi.Deserializers
 
             if (jsonElement.TryGetProperty("schema", out JsonElement schemaProperty))
             {
-                var schemaDeSerializer = new SchemaDeSerializer(this.loggerFactory);
-                mediaType.Schema = schemaDeSerializer.DeSerialize(schemaProperty, strict);
+                if (schemaProperty.TryGetProperty("$ref", out var referenceElement))
+                {
+                    var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+                    var reference = referenceDeSerializer.DeSerialize(schemaProperty, strict);
+                    mediaType.SchemaReference = reference;
+                    this.Register(reference, mediaType, "schema");
+                }
+                else
+                {
+                    var schemaDeSerializer = new SchemaDeSerializer(this.referenceResolver, this.loggerFactory);
+                    mediaType.Schema = schemaDeSerializer.DeSerialize(schemaProperty, strict);
+                }
             }
 
             if (jsonElement.TryGetProperty("example", out JsonElement exampleProperty))
@@ -134,22 +144,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in examplesProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            mediaType.ExamplesReferences.Add(key, reference);
-
-                            this.Register(reference, mediaType, "Examples", key);
-                        }
-                        else
-                        {
-                            var example = exampleDeSerializer.DeSerialize(itemProperty.Value);
-                            mediaType.Examples.Add(key, example);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        mediaType.ExamplesReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, mediaType, "Examples", itemProperty.Name);
+                    }
+                    else
+                    {
+                        var example = exampleDeSerializer.DeSerialize(itemProperty.Value);
+                        mediaType.Examples.Add(itemProperty.Name, example);
                     }
                 }
             }

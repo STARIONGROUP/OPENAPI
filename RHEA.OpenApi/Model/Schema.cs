@@ -29,7 +29,7 @@ namespace OpenApi.Model
     /// <remarks>
     /// https://spec.openapis.org/oas/latest.html#schema-object
     /// </remarks>
-    public class Schema
+    public abstract class Schema
     {
         /// <summary>
         /// Adds support for polymorphism. The discriminator is an object name that is used to differentiate between other schemas which may

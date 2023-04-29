@@ -36,6 +36,12 @@ namespace OpenApi.Model
         public Schema Schema { get; set; }
 
         /// <summary>
+        /// gets or sets a <see cref="Reference"/> that can be used to populate the <see cref="Schema"/> property
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Reference SchemaReference { get; set; }
+
+        /// <summary>
         /// Example of the media type. The example object SHOULD be in the correct format as specified by the media type.
         /// The example field is mutually exclusive of the examples field. Furthermore, if referencing a schema which contains an example,
         /// the example value SHALL override the example provided by the schema.

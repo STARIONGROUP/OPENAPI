@@ -141,22 +141,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in headersProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            encoding.HeadersReferences.Add(key, reference);
-
-                            this.Register(reference, encoding, "Headers", key);
-                        }
-                        else
-                        {
-                            var header = headerDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            encoding.Headers.Add(key, header);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        encoding.HeadersReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, encoding, "Headers", itemProperty.Name);
+                    }
+                    else
+                    {
+                        var header = headerDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        encoding.Headers.Add(itemProperty.Name, header);
                     }
                 }
             }

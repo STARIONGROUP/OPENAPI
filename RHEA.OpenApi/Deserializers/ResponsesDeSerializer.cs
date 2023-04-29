@@ -94,21 +94,14 @@ namespace OpenApi.Deserializers
             foreach (var itemProperty in jsonElement.EnumerateObject())
             {
                 var key = itemProperty.Name;
-                var isRef = false;
-
-                foreach (var value in itemProperty.Value.EnumerateObject())
+                
+                if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                 {
-                    if (value.Name == "$ref")
-                    {
-                        isRef = true;
-
-                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                        responses.ResponseReferences.Add(key, reference);
-                        this.Register(reference, responses, "responses", key);
-                    }
+                    var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                    responses.ResponseReferences.Add(key, reference);
+                    this.Register(reference, responses, "responses", key);
                 }
-
-                if (!isRef)
+                else
                 {
                     var response = responseDeserializer.DeSerialize(itemProperty.Value, strict);
                     responses.Response.Add(key, response);

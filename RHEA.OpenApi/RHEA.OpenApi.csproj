@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>11.0</LangVersion>
         <Version>0.3.1</Version>
         <Description>A Naive .NET implementation of the OpenApi 3.1 specification.</Description>
         <PackageId>RHEA.OpenApi</PackageId>
@@ -27,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 </Project>

@@ -20,7 +20,6 @@
 
 namespace OpenApi.Deserializers
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Text.Json;
 
@@ -148,19 +147,16 @@ namespace OpenApi.Deserializers
 
                             foreach (var arrayItem in jsonProperty.Value.EnumerateArray())
                             {
-                                foreach (var arrayItemProperty in arrayItem.EnumerateObject())
+                                if (arrayItem.TryGetProperty("$ref", out var referenceElement))
                                 {
-                                    if (arrayItemProperty.Name == "$ref")
-                                    {
-                                        var reference = referenceDeSerializer.DeSerialize(arrayItem, strict);
-                                        pathItem.ParameterReferences.Add(reference);
-                                        this.Register(reference, pathItem, "Parameters");
-                                    }
-                                    else
-                                    {
-                                        var parameter = parameterDeSerializer.DeSerialize(arrayItem, strict);
-                                        pathItem.Parameters.Add(parameter);
-                                    }
+                                    var reference = referenceDeSerializer.DeSerialize(arrayItem, strict);
+                                    pathItem.ParameterReferences.Add(reference);
+                                    this.Register(reference, pathItem, "Parameters");
+                                }
+                                else
+                                {
+                                    var parameter = parameterDeSerializer.DeSerialize(arrayItem, strict);
+                                    pathItem.Parameters.Add(parameter);
                                 }
                             }
                         }

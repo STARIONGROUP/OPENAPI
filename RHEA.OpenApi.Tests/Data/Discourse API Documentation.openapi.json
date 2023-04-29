@@ -878,7 +878,7 @@
                         },
                         "form_template_ids": {
                           "type": "array",
-                          "items": []
+                          "items": {}
                         },
                         "has_children": {
                           "type": [
@@ -1166,7 +1166,7 @@
                   },
                   "form_template_ids": {
                     "type": "array",
-                    "items": []
+                    "items": {}
                   }
                 },
                 "required": [
@@ -1537,7 +1537,7 @@
                         },
                         "form_template_ids": {
                           "type": "array",
-                          "items": []
+                          "items": {}
                         },
                         "has_children": {
                           "type": [
@@ -1827,7 +1827,7 @@
                   },
                   "form_template_ids": {
                     "type": "array",
-                    "items": []
+                    "items": {}
                   }
                 },
                 "required": [
@@ -2208,7 +2208,7 @@
                         },
                         "form_template_ids": {
                           "type": "array",
-                          "items": []
+                          "items": {}
                         },
                         "has_children": {
                           "type": [
@@ -4749,7 +4749,7 @@
                       "type": "integer"
                     },
                     "score": {
-                      "type": ""
+                      "type": "number"
                     },
                     "yours": {
                       "type": "boolean"
@@ -4819,7 +4819,7 @@
                     },
                     "actions_summary": {
                       "type": "array",
-                      "items": [
+                      "items": 
                         {
                           "type": "object",
                           "additionalProperties": false,
@@ -4845,7 +4845,7 @@
                             "id"
                           ]
                         }
-                      ]
+                      
                     },
                     "moderator": {
                       "type": "boolean"
@@ -4900,7 +4900,7 @@
                     },
                     "mentioned_users": {
                       "type": "array",
-                      "items": []
+                      "items": {}
                     },
                     "name": {
                       "type": [
@@ -5043,7 +5043,7 @@
                           "type": "integer"
                         },
                         "score": {
-                          "type": ""
+                          "type": "number"
                         },
                         "yours": {
                           "type": "boolean"
@@ -5113,7 +5113,7 @@
                         },
                         "actions_summary": {
                           "type": "array",
-                          "items": [
+                          "items": 
                             {
                               "type": "object",
                               "additionalProperties": false,
@@ -5130,7 +5130,6 @@
                                 "can_act"
                               ]
                             }
-                          ]
                         },
                         "moderator": {
                           "type": "boolean"
@@ -5188,7 +5187,7 @@
                         },
                         "mentioned_users": {
                           "type": "array",
-                          "items": []
+                          "items": {}
                         },
                         "name": {
                           "type": [
@@ -7253,7 +7252,7 @@
                           },
                           "form_template_ids": {
                             "type": "array",
-                            "items": []
+                            "items": {}
                           }
                         },
                         "required": [

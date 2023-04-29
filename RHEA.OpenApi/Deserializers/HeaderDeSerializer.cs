@@ -149,7 +149,7 @@ namespace OpenApi.Deserializers
 
             if (jsonElement.TryGetProperty("schema", out JsonElement schemaProperty))
             {
-                var schemaDeSerializer = new SchemaDeSerializer(this.loggerFactory);
+                var schemaDeSerializer = new SchemaDeSerializer(this.referenceResolver, this.loggerFactory);
                 header.Schema = schemaDeSerializer.DeSerialize(schemaProperty, strict);
             }
 
@@ -193,22 +193,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in examplesProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            header.ExamplesReferences.Add(key, reference);
-
-                            this.Register(reference, header, "Examples", key);
-                        }
-                        else
-                        {
-                            var example = exampleDeSerializer.DeSerialize(itemProperty.Value);
-                            header.Examples.Add(key, example);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        header.ExamplesReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, header, "Examples", itemProperty.Name);
+                    }
+                    else
+                    {
+                        var example = exampleDeSerializer.DeSerialize(itemProperty.Value);
+                        header.Examples.Add(itemProperty.Name, example);
                     }
                 }
             }

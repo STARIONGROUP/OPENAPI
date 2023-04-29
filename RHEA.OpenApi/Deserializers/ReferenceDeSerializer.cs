@@ -24,8 +24,8 @@ namespace OpenApi.Deserializers
     using System.Text.Json;
 
     using Microsoft.Extensions.Logging;
-
     using Microsoft.Extensions.Logging.Abstractions;
+
     using OpenApi.Model;
 
     /// <summary>
@@ -76,7 +76,7 @@ namespace OpenApi.Deserializers
 
             var reference = new Reference();
 
-            if (!jsonElement.TryGetProperty("$ref", out JsonElement rwfProperty))
+            if (!jsonElement.TryGetProperty("$ref", out JsonElement refProperty))
             {
                 if (strict)
                 {
@@ -89,7 +89,7 @@ namespace OpenApi.Deserializers
             }
             else
             {
-                reference.Ref = rwfProperty.GetString();
+                reference.Ref = refProperty.GetString();
             }
 
             if (jsonElement.TryGetProperty("summary", out JsonElement summaryProperty))
@@ -100,6 +100,11 @@ namespace OpenApi.Deserializers
             if (jsonElement.TryGetProperty("description", out JsonElement descriptionProperty))
             {
                 reference.Description = descriptionProperty.GetString();
+            }
+
+            if (jsonElement.TryGetProperty("$comment", out JsonElement commentProperty))
+            {
+                reference.Comments = commentProperty.GetString();
             }
 
             this.logger.LogTrace("Finish ReferenceDeSerializer.DeSerialize");

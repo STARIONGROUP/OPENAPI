@@ -1,0 +1,64 @@
+﻿// -------------------------------------------------------------------------------------------------
+// <copyright file="JsonSchemaTypeDeserializer.cs" company="RHEA System S.A.">
+// 
+//   Copyright 2023 RHEA System S.A.
+// 
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+// 
+//        http://www.apache.org/licenses/LICENSE-2.0
+// 
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+// 
+// </copyright>
+// ------------------------------------------------------------------------------------------------
+
+namespace OpenApi.Deserializers
+{
+    using OpenApi.JsonSchema;
+
+    /// <summary>
+    /// The purpose of the <see cref="JsonSchemaTypeDeserializer"/> is to provide deserialization capabilities
+    /// for the <see cref="JsonSchemaType"/> Enum
+    /// </summary>
+    internal static class JsonSchemaTypeDeserializer
+    {
+        /// <summary>
+        /// Deserializes a string value to a <see cref="JsonSchemaType"/>
+        /// </summary>
+        /// <param name="value">
+        /// The string representation of the <see cref="JsonSchemaType"/>
+        /// </param>
+        /// <returns>
+        /// The value of the <see cref="JsonSchemaType"/>
+        /// </returns>
+        internal static JsonSchemaType Deserialize(string value)
+        {
+            switch (value)
+            {
+                case "string":
+                    return JsonSchemaType.String ;
+                case "number":
+                    return JsonSchemaType.Number;
+                case "integer":
+                    return JsonSchemaType.Integer;
+                case "object":
+                    return JsonSchemaType.Object;
+                case "array":
+                    return JsonSchemaType.Array;
+                case "boolean":
+                    return JsonSchemaType.Boolean;
+                case "null":
+                    return JsonSchemaType.Null;
+                default:
+                    return JsonSchemaType.Unknown;
+            }
+        }
+    }
+}
+

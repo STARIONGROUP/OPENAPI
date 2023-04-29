@@ -20,7 +20,6 @@
 
 namespace OpenApi.Deserializers
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Text.Json;
 
@@ -192,20 +191,16 @@ namespace OpenApi.Deserializers
 
                     foreach (var arrayItem in parametersProperty.EnumerateArray())
                     {
-                        foreach (var arrayItemProperty in arrayItem.EnumerateObject())
+                        if (arrayItem.TryGetProperty("$ref", out var referenceElement))
                         {
-                            switch (arrayItemProperty.Name)
-                            {
-                                case "$ref":
-                                    var reference = referenceDeSerializer.DeSerialize(arrayItem, strict);
-                                    operation.ParameterReferences.Add(reference);
-                                    this.Register(reference, operation, "Parameters");
-                                    break;
-                                case "name":
-                                    var parameter = parameterDeSerializer.DeSerialize(arrayItem, strict);
-                                    operation.Parameters.Add(parameter);
-                                    break;
-                            }
+                            var reference = referenceDeSerializer.DeSerialize(arrayItem, strict);
+                            operation.ParameterReferences.Add(reference);
+                            this.Register(reference, operation, "Parameters");
+                        }
+                        else
+                        {
+                            var parameter = parameterDeSerializer.DeSerialize(arrayItem, strict);
+                            operation.Parameters.Add(parameter);
                         }
                     }
                 }
@@ -235,23 +230,18 @@ namespace OpenApi.Deserializers
             {
                 if (requestBodyProperty.ValueKind == JsonValueKind.Object)
                 {
-                    var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
-                    var parameterDeSerializer = new RequestBodyDeSerializer(this.referenceResolver, this.loggerFactory);
-
-                    foreach (var itemProperty in requestBodyProperty.EnumerateObject())
+                    if (requestBodyProperty.TryGetProperty("$ref", out var referenceElement))
                     {
-                        switch (itemProperty.Name)
-                        {
-                            case "$ref":
-                                var reference = referenceDeSerializer.DeSerialize(requestBodyProperty, strict);
-                                operation.RequestBodyReference = reference;
-                                this.Register(reference, operation.Deprecated, "RequestBody");
-                                break;
-                            case "content":
-                                var requestBody = parameterDeSerializer.DeSerialize(requestBodyProperty, strict);
-                                operation.RequestBody = requestBody;
-                                break;
-                        }
+                        var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+                        var reference = referenceDeSerializer.DeSerialize(requestBodyProperty, strict);
+                        operation.RequestBodyReference = reference;
+                        this.Register(reference, operation.Deprecated, "RequestBody");
+                    }
+                    else 
+                    {
+                        var parameterDeSerializer = new RequestBodyDeSerializer(this.referenceResolver, this.loggerFactory);
+                        var requestBody = parameterDeSerializer.DeSerialize(requestBodyProperty, strict);
+                        operation.RequestBody = requestBody;
                     }
                 }
                 else
@@ -287,25 +277,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-                    var isRef = false;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            operation.CallbacksReferences.Add(key, reference);
-                            this.Register(reference, operation, "Callbacks", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        operation.CallbacksReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, operation, "Callbacks", itemProperty.Name);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var callback = callbackDeSerializer.DeSerialize(itemProperty.Value, strict);
-                        operation.Callbacks.Add(key, callback);
+                        operation.Callbacks.Add(itemProperty.Name, callback);
                     }
                 }
             }

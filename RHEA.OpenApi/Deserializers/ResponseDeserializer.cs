@@ -141,25 +141,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-                    var isRef = false;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            response.HeadersReferences.Add(key, reference);
-                            this.Register(reference, response, "Headers", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        response.HeadersReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, response, "Headers", itemProperty.Name);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var header = headerDeSerializer.DeSerialize(itemProperty.Value, strict);
-                        response.Headers.Add(key, header);
+                        response.Headers.Add(itemProperty.Name, header);
                     }
                 }
             }
@@ -225,25 +216,16 @@ namespace OpenApi.Deserializers
 
                 foreach (var itemProperty in parametersProperty.EnumerateObject())
                 {
-                    var key = itemProperty.Name;
-                    var isRef = false;
-
-                    foreach (var value in itemProperty.Value.EnumerateObject())
+                    if (itemProperty.Value.TryGetProperty("$ref", out var referenceElement))
                     {
-                        if (value.Name == "$ref")
-                        {
-                            isRef = true;
-
-                            var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
-                            response.LinksReferences.Add(key, reference);
-                            this.Register(reference, response, "links", key);
-                        }
+                        var reference = referenceDeSerializer.DeSerialize(itemProperty.Value, strict);
+                        response.LinksReferences.Add(itemProperty.Name, reference);
+                        this.Register(reference, response, "links", itemProperty.Name);
                     }
-
-                    if (!isRef)
+                    else
                     {
                         var link = linkDeSerializer.DeSerialize(itemProperty.Value, strict);
-                        response.Links.Add(key, link);
+                        response.Links.Add(itemProperty.Name, link);
                     }
                 }
             }

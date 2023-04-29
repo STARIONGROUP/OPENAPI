@@ -45,5 +45,15 @@ namespace OpenApi.Model
         /// used for rich text representation. If the referenced object-type does not allow a description field, then this field has no effect.
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets a string that is not to be interpreted by schema inplementations, they are useful 
+        /// for leaving notes to future editors of a JSON schema, but should not be used to communicate
+        /// to users of the schema.
+        /// </summary>
+        /// <remarks>
+        /// https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-00#section-8.3
+        /// </remarks>
+        public string Comments { get; set; }
     }
 }
