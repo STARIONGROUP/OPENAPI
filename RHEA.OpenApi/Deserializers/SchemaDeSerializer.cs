@@ -168,33 +168,27 @@ namespace OpenApi.Deserializers
                 }
             }
 
-            if (jsonSchema.Type.Count == 1 && jsonSchema.Type.Single() == JsonSchemaType.Array)
+            if (jsonSchema.Type.Count == 1 && jsonSchema.Type.Single() == JsonSchemaType.Array && jsonElement.TryGetProperty("items"u8, out JsonElement itemsProperty))
             {
-                if (jsonElement.TryGetProperty("items"u8, out JsonElement itemsProperty))
+                if (itemsProperty.TryGetProperty("$ref"u8, out var referenceElement))
                 {
-                    if (itemsProperty.TryGetProperty("$ref"u8, out var referenceElement))
-                    {
-                        var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
-                        var reference = referenceDeSerializer.DeSerialize(itemsProperty, strict);
-                        jsonSchema.ItemsReference = reference;
+                    var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
+                    var reference = referenceDeSerializer.DeSerialize(itemsProperty, strict);
+                    jsonSchema.ItemsReference = reference;
 
-                        this.Register(reference, jsonSchema, "items");
-                    }
-                    else
-                    {
-                        var schemaDeserializer = new SchemaDeSerializer(this.referenceResolver, this.loggerFactory);
-                        var subJsonSchema = schemaDeserializer.DeSerialize(itemsProperty, strict);
-                        jsonSchema.Items = subJsonSchema;
-                    }
+                    this.Register(reference, jsonSchema, "items");
                 }
+                else
+                {
+                    var schemaDeserializer = new SchemaDeSerializer(this.referenceResolver, this.loggerFactory);
+                    var subJsonSchema = schemaDeserializer.DeSerialize(itemsProperty, strict);
+                    jsonSchema.Items = subJsonSchema;
+                }   
             }
 
-            if (jsonSchema.Type.Count == 1 && jsonSchema.Type.Single() == JsonSchemaType.String)
+            if (jsonSchema.Type.Count == 1 && jsonSchema.Type.Single() == JsonSchemaType.String && jsonElement.TryGetProperty("format"u8, out JsonElement formatProperty))
             {
-                if (jsonElement.TryGetProperty("format"u8, out JsonElement formatProperty))
-                {
-                    jsonSchema.Format = FormatKindDeserializer.Deserialize(formatProperty.GetString());
-                }
+                jsonSchema.Format = FormatKindDeserializer.Deserialize(formatProperty.GetString());   
             }
 
             if (jsonElement.TryGetProperty("properties"u8, out JsonElement propertiesProperty))
