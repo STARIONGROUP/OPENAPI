@@ -122,6 +122,12 @@ namespace OpenApi.JsonSchema
         public Dictionary<string, OpenApi.Model.Schema> Properties { get; set; } = new Dictionary<string, Model.Schema>();
 
         /// <summary>
+        /// gets or sets a dictionary of <see cref="Reference"/> that can be used to populate the <see cref="Properties"/> Dictionary
+        /// once the complete Open API document has been deserialized
+        /// </summary>
+        internal Dictionary<string, Reference> PropertiesReferences { get; set; } = new Dictionary<string, Reference>();
+
+        /// <summary>
         /// Gets or sets the list of required properties
         /// </summary>
         public List<string> Required { get; set; } = new List<string>();

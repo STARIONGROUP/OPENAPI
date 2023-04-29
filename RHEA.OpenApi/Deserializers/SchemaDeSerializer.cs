@@ -194,12 +194,21 @@ namespace OpenApi.Deserializers
             if (jsonElement.TryGetProperty("properties"u8, out JsonElement propertiesProperty))
             {
                 var schemaDeSerializer = new SchemaDeSerializer(this.referenceResolver, this.loggerFactory);
+                var referenceDeSerializer = new ReferenceDeSerializer(this.loggerFactory);
 
                 foreach (var item in propertiesProperty.EnumerateObject())
                 {
-                    var key = item.Name;
-                    var schema = schemaDeSerializer.DeSerialize(item.Value, strict);
-                    jsonSchema.Properties.Add(key, schema);
+                    if (item.Value.TryGetProperty("$ref"u8, out var referenceElement))
+                    {
+                        var reference = referenceDeSerializer.DeSerialize(item.Value, strict);
+                        jsonSchema.PropertiesReferences.Add(item.Name, reference);
+                        this.Register(reference, jsonSchema, "properties", item.Name);
+                    }
+                    else
+                    {
+                        var schema = schemaDeSerializer.DeSerialize(item.Value, strict);
+                        jsonSchema.Properties.Add(item.Name, schema);
+                    }
                 }
             }
 

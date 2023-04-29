@@ -107,14 +107,17 @@ namespace OpenApi.Tests
 
             Assert.That(projectSchema.Properties.TryGetValue("@type", out var typeProperty), Is.True);
             var typePropertySchema = (JsonSchema.JsonSchema)typeProperty;
-            Assert.That(typePropertySchema.Type.Single, Is.EqualTo(JsonSchema.JsonSchemaType.String));
+            Assert.That(typePropertySchema.Type.Single, Is.EqualTo(JsonSchema.JsonSchemaType.String));            
             Assert.That(typePropertySchema.Const, Is.EqualTo("Project"));
+
+            Assert.That(projectSchema.Properties.TryGetValue("created", out var createdProperty), Is.True);
+            var createdPropertySchema = (JsonSchema.JsonSchema)createdProperty;
+            Assert.That(createdPropertySchema.Format, Is.EqualTo(JsonSchema.FormatKind.DateTime));
 
             Assert.That(projectSchema.Properties.TryGetValue("defaultBranch", out var defaultBranchProperty), Is.True);
             var defaultBranchPropertySchema = (JsonSchema.JsonSchema)defaultBranchProperty;
-            //TODO: Assert.That(defaultBranchPropertySchema.Type.Single, Is.EqualTo(JsonSchema.JsonSchemaType.Object));
-
-            Assert.That(defaultBranchPropertySchema.Comments, Is.EqualTo("https://www.omg.org/spec/SystemsModelingAPI/20230201/Branch"));
+            Assert.That(defaultBranchPropertySchema.Type.Single, Is.EqualTo(JsonSchema.JsonSchemaType.Object));
+            Assert.That(defaultBranchPropertySchema.Identifier, Is.EqualTo("https://www.omg.org/spec/SysML/20230201/Identified"));
 
             Assert.That(projectSchema.Properties.TryGetValue("description", out var descriptionProperty), Is.True);
             var descriptionPropertySchema = (JsonSchema.JsonSchema)descriptionProperty;

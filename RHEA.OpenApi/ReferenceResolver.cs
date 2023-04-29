@@ -704,6 +704,9 @@ namespace OpenApi
                         case "items":
                             jsonSchema.Items = referencedSchema;
                             break;
+                        case "properties":
+                            jsonSchema.Properties.Add(referenceInfo.Key, referencedSchema);
+                            break;
                         case "allOf":
                             jsonSchema.AllOf.Add(referencedSchema);
                             break;
