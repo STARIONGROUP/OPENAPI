@@ -2,7 +2,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>11.0</LangVersion>
-        <Version>0.4.0</Version>
+        <Version>0.5.0</Version>
         <Description>A Naive .NET implementation of the OpenApi 3.1 specification.</Description>
         <PackageId>RHEA.OpenApi</PackageId>
         <Company>RHEA System S.A.</Company>
@@ -17,10 +17,7 @@
         <Authors>Sam Gerené</Authors>
         <RequireLicenseAcceptance>true</RequireLicenseAcceptance>
         <PackageReleaseNotes>
-            [Implement] reading Schema objects from OpenAPI document; fixes #9
-            [Add] format DeSerialization; fixes #11
-            [Improve] performance of deserialization using u8 syntax; fixes #12
-            [Update] SchemaDeSerializer and ReferenceResolver to handle Schema references in the properties field
+            [Add] PathItemExtensions
         </PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
